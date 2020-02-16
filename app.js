@@ -6,7 +6,7 @@ const env = require('dotenv').config();
 const app = express();
 
 // import routes
-// const adminRoutes = require('./routes/api/admin');
+const adminRoutes = require('./routes/api/admin');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); 
@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 //     res.send('api running');
 // });
 
-// app.use('/admin', adminRoutes);
+app.use('/admin', adminRoutes);
 
 app.use((req, res, next) => {
     res.status(404).send('page not found');

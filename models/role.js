@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         }
     }, {
-        timestamps: false
+        timestamps: false,
+        tableName: 'roles'
     });
 
     Role.associate = function(models) {

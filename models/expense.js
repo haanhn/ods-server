@@ -6,7 +6,9 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         }
-    }, {});
+    }, {
+        tableName: 'expenses'
+    });
 
     Expense.associate = function(models) {
         Expense.belongsTo(models.Campaign, { foreignKey: 'campaignId' });

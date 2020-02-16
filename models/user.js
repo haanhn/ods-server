@@ -43,7 +43,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('not verified', 'verified'),
             defaultValue: 'not verified'
         }
-    }, {});
+    }, {
+        tableName: 'users'
+    });
 
     User.associate = function(models) {
         User.belongsTo(models.Role, { foreignKey: 'roleId' });

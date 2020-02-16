@@ -10,7 +10,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         }
-    }, {});
+    }, {
+        tableName: 'medias'
+    });
 
     Media.associate = function(models) {
         Media.belongsTo(models.Post, { foreignKey: 'postId' });

@@ -39,7 +39,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('waiting', 'public'),
             defaultValue: 'waiting'
         }
-    }, {});
+    }, {
+        tableName: 'campaigns'
+    });
 
     Campaign.associate = function(models) {
         Campaign.belongsTo(models.Category, { foreignKey: 'categoryId' });

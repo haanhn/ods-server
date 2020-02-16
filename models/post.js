@@ -18,7 +18,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('enable', 'disable'),
             defaultValue: 'enable'
         }
-    }, {});
+    }, {
+        tableName: 'posts'
+    });
 
     Post.associate = function(models) {
         Post.belongsTo(models.Campaign, { foreignKey: 'campaignId' });

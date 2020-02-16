@@ -22,7 +22,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('enable', 'disable'),
             defaultValue: 'enable'
         }
-    }, {});
+    }, {
+        tableName: 'categories'
+    });
 
     Category.associate = function(models) {
         Category.hasMany(models.Campaign, { foreignKey: 'categoryId' });

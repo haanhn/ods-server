@@ -18,7 +18,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('pending', 'reject' ,'done'),
             defaultValue: 'pending'
         }
-    }, {});
+    }, {
+        tableName: 'donations'
+    });
 
     Donation.associate = function(models) {
         Donation.belongsTo(models.User, { foreignKey: 'userId' });

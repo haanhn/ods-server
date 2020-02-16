@@ -8,10 +8,10 @@
     "operatorsAliases": false
   },
   "test": {
-    "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
+    "username": "ojouplahosting_haivt",
+    "password": "vuthienhai9",
+    "database": "ojouplahosting_haivt_db",
+    "host": "103.57.221.26",
     "dialect": "mysql",
     "operatorsAliases": false
   },
