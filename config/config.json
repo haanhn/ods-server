@@ -8,9 +8,9 @@
     "operatorsAliases": false
   },
   "test": {
-    "username": "ojouplahosting_haivt",
-    "password": "vuthienhai9",
-    "database": "ojouplahosting_haivt_db",
+    "username": "ojouplahosting_team17",
+    "password": "onlinetest12",
+    "database": "ojouplahosting_online_donation_db",
     "host": "103.57.221.26",
     "dialect": "mysql",
     "operatorsAliases": false
