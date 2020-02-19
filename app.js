@@ -6,12 +6,14 @@ const env = require('dotenv').config();
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const flash = require('connect-flash');
+const logger = require('morgan');
 
 
 const app = express();
 
 // import routes
 const adminRoutes = require('./routes/api/admin');
+const authenRoutes = require('./routes/api/authenticate');
 
 //import model
 const models = require("./models");
@@ -31,6 +33,7 @@ app.use(session({
     saveUninitialized: false
 }));
 app.use(flash());
+app.use(logger('dev'));
 
 // app.use((req, res, next) => {
 //     res.locals.isAuthenticated = req.session.isLoggedIn;
@@ -45,6 +48,7 @@ app.use(flash());
 // });
 
 app.use('/admin', adminRoutes);
+app.use('/api', authenRoutes);
 
 app.use((req, res, next) => {
     res.status(404).send('page not found');

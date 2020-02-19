@@ -35,10 +35,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        createdOTP: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
         status: {
             type: DataTypes.ENUM('not verified', 'verified'),
             defaultValue: 'not verified'
