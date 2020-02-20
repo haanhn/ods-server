@@ -1,4 +1,5 @@
 const randomstring = require('randomstring');
+const { Op } = require('sequelize');
 
 const User = require('../models').User;
 const OTP = require('../models').OTP;
@@ -20,7 +21,8 @@ const createRegisterOTP = async (body) => {
     if (user === null) {
         const otp = await OTP.create({
             otpToken: otpToken,
-            email: body.user.email
+            email: body.user.email,
+            expirate: Date.now() + 180000
         });
         await sendOTPMail(otp);
         return true;
@@ -28,32 +30,30 @@ const createRegisterOTP = async (body) => {
     return false;
 }
 
-const checkOTPExpirate =  (otp) => {
-    const currentTimestamp = new Date().getTime();
-    const otpTimestamp = otp.createdAt.getTime();
-    if (currentTimestamp - otpTimestamp <= 300000) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 
 const checkOTP = async (body) => {
     const otps = await OTP.findAll({
         where: {
-            email: body.user.email
+            email: body.user.email,
+            expirate: {
+                [Op.gt]: Date.now()
+            }
         },
         order: [
             ['createdAt', 'DESC']
         ]
     });
     const otp = otps[0];
-    console.log(otp);
-    if (otp.otpToken === body.otpToken && checkOTPExpirate(otp) ) {
-        return true;
+    if (!otp) {
+        console.log('null');
+        return false;
+    } else {
+        console.log(otp);
+        if (otp.otpToken === body.otpToken) {
+            return true;
+        }
+        return false;
     }
-    return false;
 }
 
 

@@ -31,6 +31,13 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: true
         },
+        resetToken: {
+            type: DataTypes.STRING
+        },
+        resetTokenExpiration: {
+            type: DataTypes.DATE
+        }
+        ,
         rememberToken: {
             type: DataTypes.STRING,
             allowNull: true
@@ -40,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'not verified'
         }
     }, {
-        tableName: 'users'
+        tableName: 'ods_users'
     });
 
     User.associate = function(models) {

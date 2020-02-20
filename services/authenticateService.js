@@ -1,8 +1,10 @@
 const bcrypt = require('bcryptjs');
+const randomstring = require('randomstring');
+const { Op } = require('sequelize');
 
 const User = require('../models').User;
-const OTP = require('../models').OTP;
-const { checkOTP } = require('./otpService')
+const {sendResetPasswordMail} = require('./mailService')
+
 
 const findUser = async (body) => {
     return await User.findOne({
@@ -52,4 +54,49 @@ const isLogging = async (req) => {
     }
 }
 
-module.exports = { register, signIn, isLogging }
+const resetPassword = async (body) => {
+    const resetToken = randomstring.generate({
+        length: 6,
+        charset: 'numeric'
+    });
+    const user = await findUser(body);
+    if (!user) {
+        console.log('ko tim thay');
+        return false;
+    } else {
+        user.resetToken = resetToken;
+        user.resetTokenExpiration = Date.now() + 180000;
+        await user.save();
+        await sendResetPasswordMail(user);
+        return true;
+    }
+}
+
+const newPassword = async (body) => {
+    let user = await User.findOne({
+        where: {
+            email: body.user.email,
+            resetToken: body. resetToken,
+            resetTokenExpiration: {
+                [Op.gt]: Date.now()
+            }
+        }
+    })
+    if (!user) {
+        return false;
+    } else {
+        console.log(body.user.password);
+        bcrypt.hash(body.user.password, 10, async (err, hash) => {
+            if (err) {
+                console.log(err);
+            }
+            user.password = hash;
+            user.resetToken = null;
+            user.resetTokenExpiration = null;
+            await user.save()
+        });
+        return true;
+    }
+}
+
+module.exports = { register, signIn, isLogging, resetPassword, newPassword }

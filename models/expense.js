@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4
         }
     }, {
-        tableName: 'expenses'
+        tableName: 'ods_expenses'
     });
 
     Expense.associate = function(models) {

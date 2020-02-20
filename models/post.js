@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'enable'
         }
     }, {
-        tableName: 'posts'
+        tableName: 'ods_posts'
     });
 
     Post.associate = function(models) {

@@ -13,9 +13,12 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        expirate: {
+            type: DataTypes.DATE
         }
     }, {
-        tableName: 'otps'
+        tableName: 'ods_otps'
     });
     
     return OTP;

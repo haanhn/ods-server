@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         }
     }, {
-        tableName: 'campaign_reviews'
+        tableName: 'ods_campaign_reviews'
     });
 
     CampaignReview.associate = function(models) {

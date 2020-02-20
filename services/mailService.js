@@ -21,5 +21,17 @@ const sendOTPMail = async (otp) => {
     }
 }
 
+const sendResetPasswordMail = async (user) => {
+    try {
+        await transporter.sendMail({
+            to: user.email,
+            from: 'admin@loveus.com',
+            subject: 'Reset password OTP Token',
+            html: '<p>Here is your OTP token to reset password: <b>' + user.resetToken + '</b></p>'
+        }) 
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-module.exports = { sendOTPMail }
+module.exports = { sendOTPMail, sendResetPasswordMail }

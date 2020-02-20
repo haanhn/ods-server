@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'waiting'
         }
     }, {
-        tableName: 'campaigns'
+        tableName: 'ods_campaigns'
     });
 
     Campaign.associate = function(models) {

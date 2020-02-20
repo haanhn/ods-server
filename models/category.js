@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'enable'
         }
     }, {
-        tableName: 'categories'
+        tableName: 'ods_categories'
     });
 
     Category.associate = function(models) {

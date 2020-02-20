@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         }
     }, {
-        tableName: 'comments'
+        tableName: 'ods_comments'
     });
 
     Comment.associate = function(models) {

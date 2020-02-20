@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }, {
         timestamps: false,
-        tableName: 'user_campaigns'
+        tableName: 'ods_user_campaigns'
     });
 
     return UserCampaign;

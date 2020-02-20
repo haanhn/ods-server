@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'pending'
         }
     }, {
-        tableName: 'donations'
+        tableName: 'ods_donations'
     });
 
     Donation.associate = function(models) {

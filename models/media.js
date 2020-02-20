@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         }
     }, {
-        tableName: 'medias'
+        tableName: 'ods_medias'
     });
 
     Media.associate = function(models) {

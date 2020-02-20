@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }, {
         timestamps: false,
-        tableName: 'roles'
+        tableName: 'ods_roles'
     });
 
     Role.associate = function(models) {
