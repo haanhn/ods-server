@@ -7,6 +7,7 @@ const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const flash = require('connect-flash');
 const logger = require('morgan');
+const cors = require('cors') ;
 
 
 const app = express();
@@ -40,13 +41,7 @@ app.use(logger('dev'));
 //     next();
 // });
 
-
-
-// app.use('/', (req, res, next) => {
-//     res.send('api running');
-//     // next();
-// });
-
+app.use(cors());
 app.use('/admin', adminRoutes);
 app.use('/api', authenRoutes);
 
