@@ -7,6 +7,7 @@ const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const flash = require('connect-flash');
 const logger = require('morgan');
+const cors = require('cors');
 
 
 const app = express();
@@ -14,6 +15,7 @@ const app = express();
 // import routes
 const adminRoutes = require('./routes/api/admin');
 const authenRoutes = require('./routes/api/authenticate');
+const frontEndRoutes = require('./routes/api/frontEnd');
 
 //import model
 const models = require("./models");
@@ -22,7 +24,7 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -47,8 +49,11 @@ app.use(logger('dev'));
 //     // next();
 // });
 
+app.use(cors());
+
 app.use('/admin', adminRoutes);
 app.use('/api', authenRoutes);
+app.use('', frontEndRoutes);
 
 app.use((req, res, next) => {
     res.status(404).send('page not found');
@@ -58,6 +63,7 @@ app.use((req, res, next) => {
 //Sync Database
 models.sequelize
     // .sync({ force: true })
+    // .sync({ alter: true })
     .sync()
     .then(() => {
         console.log('Nice! Database looks fine')

@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: true
         },
+        address: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         resetToken: {
             type: DataTypes.STRING
         },
@@ -56,6 +60,7 @@ module.exports = (sequelize, DataTypes) => {
         User.hasMany(models.Donation, { foreignKey: 'userId' });
         User.hasMany(models.CampaignReview, { foreignKey: 'userId' });
         User.belongsToMany(models.Campaign, { through: 'UserCampaign', foreignKey: 'userId' });
+        User.hasOne(models.BankAccountInfo, { foreignKey: 'userId' });
     };
 
     return User;

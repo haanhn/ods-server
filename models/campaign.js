@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         campaignStatus: {
-            type: DataTypes.ENUM('waiting', 'public'),
+            type: DataTypes.ENUM('waiting', 'public', 'closed', 'blocked'),
             defaultValue: 'waiting'
         }
     }, {

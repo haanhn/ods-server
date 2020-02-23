@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         relation: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM('host', 'subscriber'),
             allowNull: false
         }
     }, {
