@@ -5,7 +5,7 @@ const authenticateController = require('../../controllers/authenticateController
 const router = express.Router();
 
 
-router.post('/getOTP', authenticateController.sendOTP);
+router.post('/getOTP', authenticateController.getOTP);
 
 router.post('/register', authenticateController.register);
 
