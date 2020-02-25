@@ -16,15 +16,11 @@ const findUser = async (body) => {
 const register = async (body) => {
     const checkUser = await findUser(body);
     if (checkUser == null) {
-        bcrypt.hash(body.user.password, 10, async (err, hash) => {
-            if (err) {
-                console.log(err);
-            }
-            await User.create({
+        const hash = bcrypt.hashSync(body.user.password, 10);
+        await User.create({
                 email: body.user.email,
                 password: hash,
                 fullname: body.user.fullname
-            })
         });
         return true;
     }
@@ -99,4 +95,4 @@ const newPassword = async (body) => {
     }
 }
 
-module.exports = { register, signIn, isLogging, resetPassword, newPassword }
+module.exports = { findUser, register, signIn, isLogging, resetPassword, newPassword }

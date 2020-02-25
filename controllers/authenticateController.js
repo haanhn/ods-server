@@ -1,4 +1,4 @@
-const { register, signIn, isLogging, resetPassword, newPassword } = require('../services/authenticateService');
+const { findUser, register, signIn, isLogging, resetPassword, newPassword } = require('../services/authenticateService');
 const { createRegisterOTP, checkOTP } = require('../services/otpService');
 const { registerValidator, getOTPValidator, loginValidator, newPasswordValidatior } = require('../validators/authenticateValidator');
 
@@ -12,11 +12,14 @@ exports.getOTP = async (req, res, next) => {
         if (validator !== null) {
             res.status(400).send({ message: validator });
         } else {
-            const result = await createRegisterOTP(req.body);
-            if (result) {
-                res.status(200).json({ message: 'OTP has been sended successfully' });
-            } else {
+            const user = await findUser(req.body);
+            if (user !== null) {
                 res.status(400).json({ message: 'Email has been already used' });
+            } else {
+                const result = await createRegisterOTP(req.body);
+                if (result == true) {
+                    res.status(200).json({ message: 'OTP has been sended successfully' });
+                }
             }
         }
     } catch (error) {

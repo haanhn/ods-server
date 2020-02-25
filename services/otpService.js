@@ -5,45 +5,48 @@ const User = require('../models').User;
 const OTP = require('../models').OTP;
 const {sendOTPMail} = require('./mailService')
 
-const findUser = async (body) => {
-    return await User.findOne({
+const findOTP = async (body) => {
+    return await OTP.findOne({
         where: { email: body.user.email}
     })
 };
 
+// const findUser = async ()
+
 const createRegisterOTP = async (body) => {
-    const user = await findUser(body);
+    const checkOtp = await findOTP(body);
     const otpToken = randomstring.generate({
         length: 6,
         charset: 'numeric'
     });
 
-    if (user === null) {
+    if (checkOtp === null) {
         const otp = await OTP.create({
             otpToken: otpToken,
             email: body.user.email,
             expirate: Date.now() + 180000
         });
         await sendOTPMail(otp);
-        return true;
+    } else {
+        checkOtp.update({
+            otpToken: otpToken,
+            expirate: Date.now() + 180000
+        })
+        await sendOTPMail(checkOtp);
     }
-    return false;
+    return true; 
 }
 
 
 const checkOTP = async (body) => {
-    const otps = await OTP.findAll({
+    const otp = await OTP.findOne({
         where: {
             email: body.user.email,
             expirate: {
                 [Op.gt]: Date.now()
             }
-        },
-        order: [
-            ['createdAt', 'DESC']
-        ]
+        }
     });
-    const otp = otps[0];
     if (!otp) {
         console.log('null');
         return false;
