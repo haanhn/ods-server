@@ -1,16 +1,26 @@
-const { register, signIn, isLogging, resetPassword, newPassword } = require('../services/authenticateService');
+const { findUser, register, signIn, isLogging, resetPassword, newPassword } = require('../services/authenticateService');
 const { createRegisterOTP, checkOTP } = require('../services/otpService');
+const { registerValidator, getOTPValidator, loginValidator, newPasswordValidatior } = require('../validators/authenticateValidator');
+
 
 const OTP = require('../models').OTP;
 const User = require('../models').User;
 
-exports.sendOTP = async (req, res, next) => {
+exports.getOTP = async (req, res, next) => {
     try {
-        const result = await createRegisterOTP(req.body);
-        if (result) {
-            res.status(200).json({ message: 'OTP has been sended successfully' });
+        let validator = await getOTPValidator(req);
+        if (validator !== null) {
+            res.status(400).send({ message: validator });
         } else {
-            res.status(400).json({ message: 'Email has been already used' });
+            const user = await findUser(req.body);
+            if (user !== null) {
+                res.status(400).json({ message: 'Email has been already used' });
+            } else {
+                const result = await createRegisterOTP(req.body);
+                if (result == true) {
+                    res.status(200).json({ message: 'OTP has been sended successfully' });
+                }
+            }
         }
     } catch (error) {
         console.log(error);
@@ -21,16 +31,21 @@ exports.sendOTP = async (req, res, next) => {
 
 exports.register = async (req, res, next) => {
     try {
-        const checkValidOTP = await checkOTP(req.body);
-        if (checkValidOTP) {
-            const createAccount = await register(req.body);
-            if (createAccount) {
-                res.status(200).json({ message: 'Your account created successfully' });
-            } else {
-                res.status(400).json({ message: 'Email has been already used' });
+        let validator = await registerValidator(req);
+        if (validator !== null) {
+            res.status(400).send({ message: validator });
+        } else {
+            const checkValidOTP = await checkOTP(req.body);
+            if (checkValidOTP) {
+                const createAccount = await register(req.body);
+                if (createAccount) {
+                    res.status(200).json({ message: 'Your account created successfully' });
+                } else {
+                    res.status(400).json({ message: 'Email has been already used' });
+                }
+            }else {
+                res.status(400).json({ message: 'Invalid OTP' });
             }
-        }else {
-            res.status(400).json({ message: 'Invalid OTP' });
         }
     } catch (error) {
         console.log(error);
@@ -40,15 +55,20 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
     try {
-        const isLogged = await isLogging(req);
-        if (isLogged === true) {
-            return res.status(200).json({ message: 'You are logged in' });
-        }
-        const signIned = await signIn(req);
-        if (signIned === false) {
-            return res.status(400).json({ message: 'Invalid username or password' });
+        let validator = await loginValidator(req);
+        if (validator !== null) {
+            res.status(400).send({ message: validator });
         } else {
-            return res.status(200).json({ message: 'You are loggin successfull' });
+            const isLogged = await isLogging(req);
+            if (isLogged === true) {
+                return res.status(200).json({ message: 'You are logged in' });
+            }
+            const signIned = await signIn(req);
+            if (signIned === false) {
+                return res.status(400).json({ message: 'Invalid username or password' });
+            } else {
+                res.status(200).json({ message: 'You are loggin successfull' });
+            }
         }
     } catch (error) {
         console.log(error);
@@ -63,7 +83,7 @@ exports.logout = async (req, res, next) => {
             return res.status(400).json({ message: 'You are not logged in' });
         }
         req.session.user = null;
-        return res.status(200).json({ message: 'You are logout successfully'});
+        res.status(200).json({ message: 'You are logout successfully'});
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error'});
@@ -72,11 +92,16 @@ exports.logout = async (req, res, next) => {
 
 exports.resetPassword = async (req, res, next) => {
     try {
-        const result = await resetPassword(req.body);
-        if (result === false) {
-            return res.status(400).json({ message: 'Invalid email address' });
+        let validator = await getOTPValidator(req);
+        if (validator !== null) {
+            res.status(400).send({ message: validator });
         } else {
-            return res.status(200).json({ message: 'Reset OTP token has been seended successful'});
+            const result = await resetPassword(req.body);
+            if (result === false) {
+                res.status(400).json({ message: 'Invalid email address' });
+            } else {
+                res.status(200).json({ message: 'Reset OTP token has been seended successful'});
+            }
         }
     } catch (error) {
         console.log(error);
@@ -87,12 +112,17 @@ exports.resetPassword = async (req, res, next) => {
 
 exports.newPassword = async (req, res, next) => {
     try {
-        const result = await newPassword(req.body);
-        console.log(result);
-        if (result === false) {
-            return res.status(400).json({ message: 'Invalid OTP token' });
+        let validator = await newPasswordValidatior(req);
+        if (validator !== null) {
+            res.status(400).send({ message: validator });
         } else {
-            return res.status(200).json({ message: 'Your password has been updated successful'});
+            const result = await newPassword(req.body);
+            console.log(result);
+            if (result === false) {
+                res.status(400).json({ message: 'Invalid OTP token' });
+            } else {
+                res.status(200).json({ message: 'Your password has been updated successful'});
+            }
         }
     } catch (error) {
         console.log(error);
