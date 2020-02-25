@@ -8,6 +8,7 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const flash = require('connect-flash');
 const logger = require('morgan');
 const cors = require('cors') ;
+const expressValidator = require('express-validator');
 
 
 const app = express();
@@ -35,6 +36,7 @@ app.use(session({
 }));
 app.use(flash());
 app.use(logger('dev'));
+app.use(expressValidator());
 
 // app.use((req, res, next) => {
 //     res.locals.isAuthenticated = req.session.isLoggedIn;
