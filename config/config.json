@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": null,
-    "database": "ods_db",
+    "database": "nodedb",
     "host": "localhost",
     "dialect": "mysql",
     "operatorsAliases": false

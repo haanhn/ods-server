@@ -4,8 +4,10 @@
 
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">Categories</h1>
-        
-
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+        <script src="sweetalert2/dist/sweetalert2.all.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/promise-polyfill9/dist/polyfill.js"></script>
+  
         <div class="row mt-5">
             <div class="col-md-8 offset-md-2">
                 <div class="card">
@@ -37,9 +39,20 @@
                         <div class="border-top">
                             <div class="card-body">
                                 <button type="submit" class="btn btn-primary">Add category</button>
+                                <% if(message == 'error') { %>
+                                <script>
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Lỗi',
+                                        text: 'Title đã tồn tại !!!',
+                                        // footer: '<a href>Why do I have this issue?</a>'
+                                        });
+                                </script>
+                                <% } %>
                                 <a href="/admin/categories" class="btn btn-secondary">Cancel</a>
                             </div>
                         </div>
+                        
                     </form>
                 </div>
             </div>
