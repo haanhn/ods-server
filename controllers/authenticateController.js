@@ -90,6 +90,7 @@ exports.logout = async (req, res, next) => {
             return res.status(400).json({ message: 'You are not logged in' });
         }
         req.session.user = null;
+        // req.accessToken = null;
         res.status(200).json({ message: 'You are logout successfully'});
     } catch (error) {
         console.log(error);

@@ -16,6 +16,7 @@ const app = express();
 // import routes
 const adminRoutes = require('./routes/api/admin');
 const authenRoutes = require('./routes/api/authenticate');
+const campaignRoutes = require('./routes/api/campaign');
 
 //import model
 const models = require("./models");
@@ -46,6 +47,7 @@ app.use(expressValidator());
 app.use(cors());
 app.use('/admin', adminRoutes);
 app.use('/api', authenRoutes);
+app.use('/api/campaign', campaignRoutes);
 
 app.use((req, res, next) => {
     res.status(404).send('page not found');

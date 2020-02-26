@@ -16,32 +16,43 @@ module.exports = (sequelize, DataTypes) => {
         },
         campaignGoal: {
             type: DataTypes.DOUBLE,
-            allowNull: false
+            allowNull: true
         },
         campaignEndDate: {
             type: DataTypes.DATE,
-            allowNull: false
+            allowNull: true
+        },
+        campaignThumbnail: {
+            type: DataTypes.STRING,
+            allowNull: true
         },
         campaignRatingPoint: {
             type: DataTypes.DOUBLE,
-            defaultValue: '0',
-            allowNull: true
+            defaultValue: '0'
         },
         campaignShortDescription: {
             type: DataTypes.TEXT,
-            allowNull: false
+            allowNull: true
         },
         campaignDescription: {
             type: DataTypes.TEXT,
-            allowNull: false
+            allowNull: true
+        },
+        campaignCity: {
+            type: DataTypes.ENUM('hanoi', 'hochiminh', 'danang')
+        },
+        campaignAddress: {
+            type: DataTypes.STRING,
+            allowNull: true
         },
         campaignStatus: {
-            type: DataTypes.ENUM('waiting', 'public'),
-            defaultValue: 'waiting'
+            type: DataTypes.ENUM('setting', 'waiting', 'public'),
+            defaultValue: 'setting'
         }
     }, {
         tableName: 'ods_campaigns'
     });
+
 
     Campaign.associate = function(models) {
         Campaign.belongsTo(models.Category, { foreignKey: 'categoryId' });
