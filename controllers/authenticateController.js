@@ -1,10 +1,12 @@
 const { findUser, register, signIn, isLogging, resetPassword, newPassword } = require('../services/authenticateService');
 const { createRegisterOTP, checkOTP } = require('../services/otpService');
 const { registerValidator, getOTPValidator, loginValidator, newPasswordValidatior } = require('../validators/authenticateValidator');
-
-
+const jwtHelper = require('../helper/jwt.helper');
 const OTP = require('../models').OTP;
 const User = require('../models').User;
+
+const accessTokenLife = process.env.ACCESS_TOKEN_LIFE || '2h';
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || 'access-token-secret-by-cuong-nv-a@';
 
 exports.getOTP = async (req, res, next) => {
     try {
@@ -59,6 +61,7 @@ exports.login = async (req, res, next) => {
         if (validator !== null) {
             res.status(400).send({ message: validator });
         } else {
+            
             const isLogged = await isLogging(req);
             if (isLogged === true) {
                 return res.status(200).json({ message: 'You are logged in' });
@@ -67,7 +70,11 @@ exports.login = async (req, res, next) => {
             if (signIned === false) {
                 return res.status(400).json({ message: 'Invalid username or password' });
             } else {
-                res.status(200).json({ message: 'You are loggin successfull' });
+                //dung username va password
+                //khoi tao token
+                const user = await findUser(req.body);
+                const accessToken = await jwtHelper.generateToken(user, accessTokenSecret, accessTokenLife);
+                res.status(200).json({ message: 'You are loggin successfull', accessToken });
             }
         }
     } catch (error) {

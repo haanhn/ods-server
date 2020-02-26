@@ -5,7 +5,6 @@ const { Op } = require('sequelize');
 const User = require('../models').User;
 const {sendResetPasswordMail} = require('./mailService')
 
-
 const findUser = async (body) => {
     return await User.findOne({
         where: { email: body.user.email}
@@ -36,7 +35,6 @@ const signIn = async (req) => {
         if (comparePassword == false) {
             return false;
         } else {
-            req.session.user = user;
             return true;
         }
     }
