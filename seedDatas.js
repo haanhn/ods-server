@@ -1,4 +1,4 @@
-
+const bcrypt = require('bcryptjs');
 const slug = require('slug');
 
 const seedRoles = [
@@ -12,22 +12,22 @@ const seedRoles = [
 const seedUsers = [
     {
         email: 'adminods@gmail.com',
-        password: 'adminods',
+        password: bcrypt.hashSync('adminods', 10),
         fullname: 'Lưu Văn Tịnh'
     },
     {
         email: 'haanhx701@gmail.com',
-        password: '12345678',
+        password: bcrypt.hashSync('12345678', 10),
         fullname: 'Nguyễn Thị Hà Anh'
     },
     {
         email: 'honghax701@gmail.com',
-        password: '12345678',
+        password: bcrypt.hashSync('12345678', 10),
         fullname: 'Lưu Thị Hồng Hà'
     },
     {
         email: 'huutamx701@gmail.com',
-        password: '12345678',
+        password: bcrypt.hashSync('12345678', 10),
         fullname: 'Nguyễn Hữu Tâm'
     }
 ];
