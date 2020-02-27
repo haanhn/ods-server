@@ -72,7 +72,7 @@ const createCampaignStep2 = async (req, res, next) => {
 const createCampaignStep3 = async (req, res, next) => {
     const reqSlug = req.body.campaign.campaignSlug;
     const reqAddress = req.body.campaign.campaignAddress;
-    const reqCity = req.body.campaign.campaignCity;
+    const reqCity = req.body.campaign.regionId;
     const reqGoal = req.body.campaign.campaignGoal;
     const reqEndDate = req.body.campaign.campaignEndDate;
 
@@ -82,7 +82,7 @@ const createCampaignStep3 = async (req, res, next) => {
         const campaign = await findCampaign(reqSlug);
         if (campaign != null) {
             campaign.campaignAddress = reqAddress;
-            campaign.campaignCity = reqCity;
+            campaign.regionId = reqCity;
             campaign.campaignGoal = reqGoal;
             campaign.campaignEndDate = reqEndDate;
 

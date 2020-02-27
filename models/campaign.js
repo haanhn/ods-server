@@ -38,9 +38,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: true
         },
-        campaignCity: {
-            type: DataTypes.ENUM('hanoi', 'hochiminh', 'danang')
-        },
         campaignAddress: {
             type: DataTypes.STRING,
             allowNull: true
@@ -56,6 +53,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Campaign.associate = function(models) {
         Campaign.belongsTo(models.Category, { foreignKey: 'categoryId' });
+        Campaign.belongsTo(models.Region, { foreignKey: 'regionId' });
         Campaign.hasMany(models.Comment, { foreignKey: 'campaignId' });
         Campaign.hasMany(models.Post, { foreignKey: 'campaignId' });
         Campaign.hasMany(models.Expense, { foreignKey: 'campaignId' });
