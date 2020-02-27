@@ -1,5 +1,6 @@
 const slug = require('slug');
 const Category = require('../models').Category;
+const Campaign = require('../models').Campaign;
 const Swal = require('sweetalert2');
 
 exports.index = async (req, res, next) => {
@@ -8,7 +9,8 @@ exports.index = async (req, res, next) => {
         res.render('categories/index', {
             pageTitle: 'Admin - Categories',
             path: '/admin/categories',
-            categories: categories
+            categories: categories,
+            message: ''
         });
     } catch (error) {
         console.log(error);
@@ -19,7 +21,7 @@ exports.create = (req, res, next) => {
     res.render('categories/create', {
         pageTitle: 'Admin - Create Categories ',
         path: '/admin/categories',
-        message : ''
+        message: ''
     })
 };
 
@@ -148,11 +150,33 @@ exports.update = async (req, res, next) => {
 exports.delete = async(req, res, next) => {
     const categoryId = req.params.id;
     try{
-        let catogory =  await Category.findByPk(categoryId);
-        if (catogory != null) {
-                catogory.destroy(); 
+        //let category =  await Category.findByPk(categoryId);
+        let category =  await Category.findOne({
+            where: {
+                id : categoryId
+            },
+            include:[Campaign]
+        });
+        let check = category.Campaigns.length;
+        if (category != null) {
+            if(check == 0){
+            category.destroy(); 
             req.flash('success', 'Catogory được xóa thành công.');
-            res.redirect('/admin/categories');        
+            res.redirect('/admin/categories');  
+            }
+            else{
+                try {
+                    const categories = await Category.findAll();
+                    res.render('categories/index', {
+                        pageTitle: 'Admin - Categories',
+                        path: '/admin/categories',
+                        categories: categories,
+                        message: 'error'
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            }     
         } else {
             req.flash('error', 'Role existed.');
             res.redirect('/admin/categories');

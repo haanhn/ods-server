@@ -3,17 +3,18 @@ const Campaign = require('../models').Campaign;
 exports.index = async (req, res, next) => {
     try {
         const campaigns = await Campaign.findAll();
-        res.render('campaign/index', {
+        res.render('campaigns/index', {
             pageTitle: 'Admin - Campaign',
             path: '/admin/campaigns',
-            campaigns: campaigns
+            campaigns: campaigns,
+            message: ''
         });
     } catch (error) {
         console.log(error);
     }
 };
 exports.create = (req, res, next) => {
-    res.render('campaign/create', {
+    res.render('campaigns/create', {
         pageTitle: 'Admin - Create Campaigns ',
         path: '/admin/campaigns',
         message: ''
@@ -50,7 +51,7 @@ exports.store = async (req, res, next) => {
 
         } else {
             // req.flash('error', 'Category đã tồn tại.');
-            res.render('campaign/create', {
+            res.render('campaigns/create', {
                 pageTitle: 'Admin - Create Campaign ',
                 path: '/admin/campaigns',
                 message: 'error'

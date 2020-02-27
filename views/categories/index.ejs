@@ -4,6 +4,9 @@
 
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">Categories</h1>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+        <script src="sweetalert2/dist/sweetalert2.all.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/promise-polyfill9/dist/polyfill.js"></script>
         <a href="/admin/categories/create" class="btn btn-success btn-icon-split">
             <span class="icon text-white-50">
                 <i class="fas fa-plus"></i>
@@ -25,7 +28,13 @@
                             <th class="text-center">Title</th>
                             <th class="text-center">Slug</th>
                             <th class="text-center">Icon</th>
-                            <th class="text-center">Status</th>
+                            <th class="text-center"><select id="MySelectOption" class="custom-select custom-select-sm form-control form-control-sm" onchange="myFunction()">
+                                    <option value="" selected="selected">All status</option>
+                                    <option value="enable" >enable</option>
+                                    <option value="disable">disable</option>
+                             </select>
+                            
+                         </th>
                             <th class="text-center text-danger"><i class="fa fa-bolt"></th>
                         </tr>
                     </thead>
@@ -50,26 +59,38 @@
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
                                     <a href="/admin/categories/edit/<%= category.categorySlug %> " class="btn btn-sm btn-success" title="Edit category"><i class="fa fa-edit"></i></a>
+                                    <% if(message == 'error') { %>
+                                        <script>
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Lỗi',
+                                                text: 'Category còn chứa campaign !!!',
+                                                // footer: '<a href>Why do I have this issue?</a>'
+                                            });
+                                        </script>
+                                        <% } %>
                                     <a href="/admin/categories/delete/<%= category.id %> " class="btn btn-sm btn-danger ml-2" title="Delete category"><i class="fa fa-trash"></i></a>
                                 </div></td>
                             </tr>
                         <% }  %> 
                     </tbody>
                     </table>
-                    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+                    
                     <script>
                         function myFunction() {
                           // Declare variables
                           var input, filter, table, tr, td, i, txtValue;
-                          input = document.getElementById("myInput");             
-                          filter = input.value.toUpperCase();
+                          input = document.getElementById("MySelectOption"); 
+                          var option = input.options[input.selectedIndex].value;            
+                          filter = option.toUpperCase();
+                          console.log(filter);
                           table = document.getElementById("dataTable");
                           tr = table.getElementsByTagName("tr");
                         
                           // Loop through all table rows, and hide those who don't match the search query
                           for (i = 0; i < tr.length; i++) {
                             td = tr[i].getElementsByTagName("td")[4];
-                            if (    td) {
+                            if (td) {
                               txtValue = td.textContent || td.innerText;
                               if (txtValue.toUpperCase().indexOf(filter) > -1) {
                                 tr[i].style.display = "";

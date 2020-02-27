@@ -1,6 +1,6 @@
 const slug = require('slug');
 const Role = require('../models').Role;
-
+const User = require('../models').User;
 exports.index = async (req, res, next) => {
     try {
         const roles = await Role.findAll();
@@ -94,18 +94,52 @@ exports.update = async (req, res, next) => {
         console.log(error);
     }
 };
+// exports.delete = async (req, res, next) =>{
+//     const roleId = req.params.id;
+//     try{
+//         let role =  await Role.findByPk(roleId);
+//         if (role != null) {
+//                 role.destroy(); 
+//             req.flash('success', 'Role được cập nhật thành công.');
+//             res.redirect('/admin/roles');        
+//         } else {
+//             req.flash('error', 'Role existed.');
+//             res.redirect('/admin/roles');
+//         } 
+//     }catch(err){
+//         console.log(err);
+//     }
+ 
+
+// };
 exports.delete = async (req, res, next) =>{
     const roleId = req.params.id;
     try{
-        let role =  await Role.findByPk(roleId);
+        let role =  await Role.findOne({
+            where: {
+                id : roleId
+            },
+            include:[User]
+        });
+        let check = role.Users.length;
         if (role != null) {
-                role.destroy(); 
-            req.flash('success', 'Role được cập nhật thành công.');
-            res.redirect('/admin/roles');        
+            if(check == 0){
+            role.destroy(); 
+            req.flash('success', 'Role được xóa thành công.');
+            res.redirect('/admin/roles');  
+            }
+            else{
+                res.redirect('/admin/roles');
+            }     
         } else {
+            // res.render('categories/index', {
+            //     pageTitle: 'Admin - Create Categories ',
+            //     path: '/admin/categories',
+            //     message : 'error'
+            // })
             req.flash('error', 'Role existed.');
             res.redirect('/admin/roles');
-        } 
+        }
     }catch(err){
         console.log(err);
     }

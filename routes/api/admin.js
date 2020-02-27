@@ -45,9 +45,9 @@ router.get('/roles/delete/:id', role.delete);
 //Campaign router
 router.get('/campaigns', campaign.index);
 
-router.get('/campaigns/create', campaign.create);
+// router.get('/campaigns/create', campaign.create);
 
-router.post('/campaigns', campaign.store);
+// router.post('/campaigns', campaign.store);
 
 router.get('/campaigns/edit/:id', campaign.edit);
 
