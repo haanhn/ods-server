@@ -7,9 +7,8 @@ const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const flash = require('connect-flash');
 const logger = require('morgan');
-const cors = require('cors') ;
+const cors = require('cors');
 const expressValidator = require('express-validator');
-
 
 const app = express();
 
@@ -21,11 +20,14 @@ const campaignRoutes = require('./routes/api/campaign');
 //import model
 const models = require("./models");
 
+//import seed datas
+const { seedRoles, seedUsers, seedCategories } = require("./seedDatas");
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -59,7 +61,12 @@ models.sequelize
     // .sync({ force: true })
     .sync()
     .then(() => {
-        console.log('Nice! Database looks fine')
+        console.log('Nice! Database looks fine');
+        //insert all data seeds here
+        //campaigns x5 cái
+        models.Role.bulkCreate(seedRoles);
+        models.User.bulkCreate(seedUsers);
+        models.Category.bulkCreate(seedCategories);
     })
     .catch(err => {
         console.log(err, "Something went wrong with the Database Update!")

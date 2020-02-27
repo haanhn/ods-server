@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         categoryIcon: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         status: {
             type: DataTypes.ENUM('enable', 'disable'),
