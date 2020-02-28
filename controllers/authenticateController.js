@@ -83,21 +83,6 @@ exports.login = async (req, res, next) => {
     }
 }
 
-exports.logout = async (req, res, next) => {
-    try {
-        const isLogged = await isLogging(req);
-        if (isLogged === false) {
-            return res.status(400).json({ message: 'You are not logged in' });
-        }
-        req.session.user = null;
-        // req.accessToken = null;
-        res.status(200).json({ message: 'You are logout successfully'});
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Server Error'});
-    }
-}
-
 exports.resetPassword = async (req, res, next) => {
     try {
         let validator = await getOTPValidator(req);

@@ -16,9 +16,5 @@ router.post('/reset-password', authenticateController.resetPassword);
 
 router.post('/new-password', authenticateController.newPassword);
 
-// router.use(AuthMiddleware.isAuth);
-
-router.post('/logout', authenticateController.logout);
-
 
 module.exports = router;

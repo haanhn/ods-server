@@ -1,6 +1,7 @@
 const slug = require('slug');
 
 const Category = require('../models').Category;
+const { findCategoriesByStatus } = require('../services/categoriesService');
 
 exports.index = async (req, res, next) => {
     try {
@@ -124,4 +125,14 @@ exports.delete = (req, res, next) => {
             }
             next(err);
         });
+}
+
+exports.getOpenCategories = async (req, res, next) => {
+    try {
+        const categories = await findCategoriesByStatus();
+        res.status(200).json(categories);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
 }

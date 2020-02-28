@@ -17,7 +17,7 @@ const createCampaign = async (req) => {
     const reqTitle = req.body.campaign.campaignTitle;
     const reqCategory = req.body.campaign.category;
     const reqShortDescription = req.body.campaign.campaignShortDescription;
-    if (reqSlug === undefined) {
+    if (!reqSlug) {
         console.log('tao moi');
         const campaign = await Campaign.create({
             campaignTitle: reqTitle,
