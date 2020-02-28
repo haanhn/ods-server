@@ -10,21 +10,9 @@ const raiseErr = async (req) => {
     return null;
 }
 
-const updateAddressValidator = async (req) => {
+exports.updateAddressValidator = async (req) => {
     req.check('address', 'address is required.').not().isEmpty();
-    req.check('regionId', 'regionId is require.').not().isEmpty();
+    req.check('region', 'region is require.').not().isEmpty();
 
     return raiseErr(req);
-}
-
-const createBankAccountValidator = async (req) => {
-    req.check('bankAccount.bankName', 'Bank name is required.').not().isEmpty();
-    req.check('bankAccount.bankAgency', 'Bank agency is required.').not().isEmpty();
-    req.check('bankAccount.accountNumber', 'Account number is required.').not().isEmpty();
-
-    return raiseErr(req);
-}
-
-module.exports = {
-    updateAddressValidator, createBankAccountValidator
 }

@@ -19,6 +19,7 @@ const campaignRoutes = require('./routes/api/campaign');
 const openCampaignRoutes = require('./routes/api/openCampaignsRoutes');
 const userRoutes = require('./routes/api/user');
 const regionRoutes = require('./routes/api/regions');
+const bankAccountRoutes = require('./routes/api/bankAccount');
 
 //import model
 const models = require("./models");
@@ -53,6 +54,7 @@ app.use(cors());
 app.use('/api/regions', regionRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', authenRoutes);
+app.use('/api/bank-account', bankAccountRoutes);
 app.use('/api/campaign', campaignRoutes);
 app.use('/api', openCampaignRoutes);
 app.use('/api/user', userRoutes);

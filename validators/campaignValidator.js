@@ -24,7 +24,7 @@ const createCampaignStep2Validator = async (req) => {
 
 const createCampaignStep3Validator = async (req) => {
     req.check('campaign.campaignAddress', 'Address is required.').not().isEmpty();
-    req.check('campaign.campaignCity', 'City is required.').not().isEmpty();
+    req.check('campaign.campaignRegion', 'City is required.').not().isEmpty();
     req.check('campaign.campaignGoal', 'Goal is required.').not().isEmpty();
     req.check('campaign.campaignEndDate', 'End date is required.').not().isEmpty();
     
