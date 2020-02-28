@@ -10,7 +10,7 @@
   "test": {
     "username": "ojouplahosting_team17",
     "password": "onlinetest12",
-    "database": "ojouplahosting_online_donation_db",
+    "database": "ojouplahosting_ods_test_db",
     "host": "103.57.221.26",
     "dialect": "mysql",
     "operatorsAliases": false

@@ -60,8 +60,8 @@ app.use((req, res, next) => {
 
 //Sync Database
 models.sequelize
-    .sync({ force: true })
-    // .sync()
+    // .sync({ force: true })
+    .sync()
     .then(() => {
         console.log('Nice! Database looks fine');
         //insert all data seeds here
