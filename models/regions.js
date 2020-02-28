@@ -18,10 +18,5 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'ods_regions'
     });
 
-    Region.associate = function(models) {
-        // Region.belongsTo(models.User, { foreignKey: 'regionId' });
-        // Region.belongsTo(models.Campaign, { foreignKey: 'regionId' });
-    };
-
     return Region;
 };

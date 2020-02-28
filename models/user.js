@@ -35,6 +35,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        region: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         resetToken: {
             type: DataTypes.STRING
         },
@@ -56,7 +60,6 @@ module.exports = (sequelize, DataTypes) => {
 
     User.associate = function(models) {
         User.belongsTo(models.Role, { foreignKey: 'roleId' });
-        User.belongsTo(models.Region, { foreignKey: 'regionId' });
         User.hasMany(models.Comment, { foreignKey: 'userId' });
         User.hasMany(models.Donation, { foreignKey: 'userId' });
         User.hasMany(models.CampaignReview, { foreignKey: 'userId' });

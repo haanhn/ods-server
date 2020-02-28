@@ -42,6 +42,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        campaignRegion: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         campaignStatus: {
             type: DataTypes.ENUM('setting', 'waiting', 'public'),
             defaultValue: 'setting'
@@ -53,7 +57,6 @@ module.exports = (sequelize, DataTypes) => {
 
     Campaign.associate = function(models) {
         Campaign.belongsTo(models.Category, { foreignKey: 'categoryId' });
-        Campaign.belongsTo(models.Region, { foreignKey: 'regionId' });
         Campaign.hasMany(models.Comment, { foreignKey: 'campaignId' });
         Campaign.hasMany(models.Post, { foreignKey: 'campaignId' });
         Campaign.hasMany(models.Expense, { foreignKey: 'campaignId' });

@@ -3,7 +3,7 @@ let generateToken = (user, secretSignature, tokenLife) => {
     return new Promise((resolve, reject) => {
         const userData = {
             id: user.id,
-            name: user.name,
+            name: user.fullname,
             email: user.email,
         }
 
