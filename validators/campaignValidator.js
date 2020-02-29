@@ -8,21 +8,21 @@ const raiseErr = async (req) => {
     return null;
 }
 
-const createCampaignValidator = async (req) => {
+exports.createCampaignValidator = async (req) => {
     req.check('campaign.campaignTitle', 'title is required.').not().isEmpty();
     req.check('campaign.category', 'category is required.').not().isEmpty();
     
     return raiseErr(req);
 }
 
-const createCampaignStep2Validator = async (req) => {
+exports.createCampaignStep2Validator = async (req) => {
     req.check('campaign.campaignThumbnail', 'Thumbnail is required.').not().isEmpty();
     req.check('campaign.campaignDescription', 'Description is required.').not().isEmpty();
     
     return raiseErr(req);
 }
 
-const createCampaignStep3Validator = async (req) => {
+exports.createCampaignStep3Validator = async (req) => {
     req.check('campaign.campaignAddress', 'Address is required.').not().isEmpty();
     req.check('campaign.campaignRegion', 'City is required.').not().isEmpty();
     req.check('campaign.campaignGoal', 'Goal is required.').not().isEmpty();
@@ -30,4 +30,3 @@ const createCampaignStep3Validator = async (req) => {
     
     return raiseErr(req);
 }
-module.exports = { createCampaignValidator, createCampaignStep2Validator, createCampaignStep3Validator }

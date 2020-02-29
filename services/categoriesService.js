@@ -1,8 +1,10 @@
 const Category = require('../models').Category;
 
-const findCategoriesByStatus = async (status) => {
+exports.findCategoriesByStatus = async (status) => {
     const statusValue =  status ? status : 'enable';
     return await Category.findAll({ where: { status: statusValue } });
 }
 
-module.exports = { findCategoriesByStatus }
+exports.findCategoryBySlug = async (slug) => {
+    return await Category.findOne({ where: { categorySlug: slug } });
+}

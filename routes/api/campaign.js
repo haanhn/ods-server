@@ -5,6 +5,12 @@ const campaignController = require('../../controllers/campaignController');
 
 const router = express.Router();
 
+router.get('/', campaignController.getAll);
+
+router.get('/:campaignSlug', campaignController.getCampaignDetail);
+
+router.get('/get-all-by-category/:categorySlug', campaignController.getAllByCategory);
+
 router.use(AuthMiddleware.isAuth);
 
 router.post('/create', campaignController.createCampaign);

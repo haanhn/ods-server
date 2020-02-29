@@ -16,7 +16,7 @@ const app = express();
 const adminRoutes = require('./routes/api/admin');
 const authenRoutes = require('./routes/api/authenticate');
 const campaignRoutes = require('./routes/api/campaign');
-const openCampaignRoutes = require('./routes/api/openCampaignsRoutes');
+const categoryRoutes = require('./routes/api/category');
 const userRoutes = require('./routes/api/user');
 const regionRoutes = require('./routes/api/regions');
 const bankAccountRoutes = require('./routes/api/bankAccount');
@@ -56,7 +56,7 @@ app.use('/admin', adminRoutes);
 app.use('/api', authenRoutes);
 app.use('/api/bank-account', bankAccountRoutes);
 app.use('/api/campaign', campaignRoutes);
-app.use('/api', openCampaignRoutes);
+app.use('/api/categories', categoryRoutes);
 app.use('/api/user', userRoutes);
 
 
