@@ -22,10 +22,10 @@ const regionRoutes = require('./routes/api/regions');
 const bankAccountRoutes = require('./routes/api/bankAccount');
 
 //import model
-const models = require("./models");
+const models = require('./models');
 
 //import seed datas
-const { seedRoles, seedUsers, seedCategories } = require("./seedDatas");
+const { seedRoles, seedUsers, seedCategories } = require('./seedDatas');
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -33,14 +33,16 @@ app.set('views', 'views');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
+app.use(
+  session({
     secret: process.env.SESSION_SECRET,
     store: new SequelizeStore({
-        db: models.sequelize
+      db: models.sequelize
     }),
     resave: false,
     saveUninitialized: false
-}));
+  })
+);
 app.use(flash());
 app.use(logger('dev'));
 app.use(expressValidator());
@@ -59,28 +61,26 @@ app.use('/api/campaign', campaignRoutes);
 app.use('/api', openCampaignRoutes);
 app.use('/api/user', userRoutes);
 
-
 app.use((req, res, next) => {
-    res.status(404).send('page not found');
+  res.status(404).send('page not found');
 });
-
 
 //Sync Database
 models.sequelize
-    // .sync({ force: true })
-    .sync()
-    .then(() => {
-        console.log('Nice! Database looks fine');
-        //insert all data seeds here
-        //campaigns x5 cái
-        // models.Role.bulkCreate(seedRoles);
-        // models.User.bulkCreate(seedUsers);
-        // models.Category.bulkCreate(seedCategories);
-    })
-    .catch(err => {
-        console.log(err, "Something went wrong with the Database Update!")
-    });
+  // .sync({ force: true })
+  .sync()
+  .then(() => {
+    console.log('Nice! Database looks fine');
+    //insert all data seeds here
+    //campaigns x5 cái
+    // models.Role.bulkCreate(seedRoles);
+    // models.User.bulkCreate(seedUsers);
+    // models.Category.bulkCreate(seedCategories);
+  })
+  .catch(err => {
+    console.log(err, 'Something went wrong with the Database Update!');
+  });
 
-app.listen(3000, () => {
-    console.log('App listening on port 3000!');
+app.listen(5000, () => {
+  console.log('App listening on port 5000!');
 });

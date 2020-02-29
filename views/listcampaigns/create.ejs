@@ -2,19 +2,19 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
   <!-- Page Heading -->
-  <h1 class="h3 mb-2 text-gray-800">Categories</h1>
+  <h1 class="h3 mb-2 text-gray-800">Campaigns</h1>
 
   <div class="row mt-5">
     <div class="col-md-8 offset-md-2">
       <div class="card">
-        <form action="/admin/categories" method="POST">
+        <form action="/admin/listcampaigns" method="POST">
           <div class="card-body">
-            <h4 class="card-title">Create category</h4>
+            <h4 class="card-title">Create campaign</h4>
             <div class="form-group row">
               <label
                 for="categoryTitle"
                 class="col-sm-3 text-right control-label col-form-label"
-                >Category Title</label
+                >Campaign Title</label
               >
               <div class="col-sm-6">
                 <input
@@ -60,7 +60,9 @@
               <button type="submit" class="btn btn-primary">
                 Add category
               </button>
-              <a href="/admin/categories" class="btn btn-secondary">Cancel</a>
+              <a href="/admin/listcampaigns" class="btn btn-secondary"
+                >Cancel</a
+              >
             </div>
           </div>
         </form>

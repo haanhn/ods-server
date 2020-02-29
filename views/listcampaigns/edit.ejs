@@ -7,9 +7,10 @@
   <div class="row mt-5">
     <div class="col-md-8 offset-md-2">
       <div class="card">
-        <form action="/admin/categories" method="POST">
+        <form action="/admin/listcampaigns" method="POST">
           <div class="card-body">
-            <h4 class="card-title">Create category</h4>
+            <h4 class="card-title">Edit category</h4>
+            <input type="hidden" name="categoryId" value="<%= category.id %>" />
             <div class="form-group row">
               <label
                 for="categoryTitle"
@@ -22,6 +23,7 @@
                   class="form-control"
                   id="categoryTitle"
                   name="categoryTitle"
+                  value="<%= category.categoryTitle %> "
                 />
               </div>
             </div>
@@ -37,6 +39,7 @@
                   class="form-control"
                   id="categoryIcon"
                   name="categoryIcon"
+                  value="<%= category.categoryIcon %>"
                 />
               </div>
             </div>
@@ -44,12 +47,9 @@
               <label class="col-sm-3 text-right">Status</label>
               <div class="col-sm-9">
                 <div class="custom-control custom-checkbox mr-sm-2">
-                  <input
-                    type="checkbox"
-                    class="custom-control-input"
-                    id="status"
-                    name="status"
-                  />
+                  <input type="checkbox" class="custom-control-input"
+                  id="status" name="status" <%= category.status === 'enable' ?
+                  'checked' : '' %> >
                   <label class="custom-control-label" for="status"></label>
                 </div>
               </div>
