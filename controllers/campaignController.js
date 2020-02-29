@@ -4,9 +4,11 @@ const campaignValidator = require('../validators/campaignValidator');
 exports.getCampaignDetail = async (req, res, next) => {
     try {
         const campaignSlug = req.params.campaignSlug;
-        console.log(campaignSlug);
         const campaign = await campaignService.getCampaignDetail(campaignSlug);
-        return res.status(200).json({campaign});
+        if (campaign) {
+            return res.status(200).json({campaign});
+        } 
+        return res.status(404).json({ success: 'false', message: 'cannot find this campaign.' });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
@@ -16,7 +18,10 @@ exports.getCampaignDetail = async (req, res, next) => {
 exports.getAllByCategory = async (req, res, next) => {
     try {
         const campaigns = await campaignService.getAllByCategory(req);
-        return res.status(200).json({campaigns});
+        if (campaigns === false) {
+            return res.status(400).json({ success: 'false', message: 'This category does not exist' });
+        } 
+        return res.status(200).json({ success: 'true', campaigns});
         // if (!campaigns)
     } catch (error) {
         console.log(error);
@@ -24,11 +29,29 @@ exports.getAllByCategory = async (req, res, next) => {
     }
 }
 
-// exports.getAll
+exports.getNewest = async (req, res, next) => {
+    try {
+        const campaigns = await campaignService.getNewest(req);
+        return res.status(200).json({ success: 'true', campaigns });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
 
 exports.getAll = async (req, res, next) => {
     try {
         const campaigns = await campaignService.getAll();
+        return res.status(200).json({ success: 'true',campaigns });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.getByRelation = async (req, res, next) => {
+    try {
+        const campaigns = await campaignService.getHosted(req);
         return res.status(200).json({campaigns});
     } catch (error) {
         console.log(error);

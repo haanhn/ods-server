@@ -3,37 +3,69 @@ const slug = require('slug');
 const Models = require('../models');
 const categoryService = require('../services/categoriesService');
 
-
+//tim api theo slug
 exports.findBySlug = async (slug) => {
     return await Models.Campaign.findOne({ where: { campaignSlug: slug } });
 }
 
-exports.getCampaignDetail = async (slug) => {
-    return await Models.Campaign.findOne({ 
-        where: { 
-            campaignSlug: slug 
-        },
-        include: [
-            { model: Models.Category, attributes: [ 'categoryTitle' ] },
-            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ] }
-        ]
-    });
-}
-
+//lay tat ca campaign
 exports.getAll = async () => {
     return await Models.Campaign.findAll();
 }
 
+//lay tat ca campaign theo category
 exports.getAllByCategory = async (req) => {
     const categorySlug = req.params.categorySlug;
     const category = await categoryService.findCategoryBySlug(categorySlug);
-    return await category.getCampaigns();
+    if (!category) {
+        return false;
+    }
+    return await category.getCampaigns({ where: { campaignStatus: 'public' } });
 }
 
-// exports.getNewest = async (req) => {
-//     const count = req.params.count;
-//     return await Models.Campaign.
-// }
+//lay so luong nhat dinh (amount) campaign moi nhat
+exports.getNewest = async (req) => {
+    const count = Number(req.params.amount);
+    console.log(count);
+    return await Models.Campaign.findAll({
+        where: { campaignStatus: 'public' },
+        order:[
+            ["createdAt","DESC"]
+        ],
+        limit: count
+    })
+}
+
+//lay tat ca nhung campaign ma minh lam host hoac supporter
+exports.getByRelation = async (req) => {
+    const relation = req.params.relation;
+    const reqUser = req.jwtDecoded.data;
+    if (relation !== 'host' || relation != 'supporter') {
+        return false;
+    }
+    return await Models.User.findOne({
+        where: {
+            id: reqUser.id 
+        },
+        include: [
+            { model: Models.Campaign, through: { where: { relation: relation } } }
+        ]
+    })
+}
+
+//lay ra detail cua 1 campaign + category + host theo slug
+exports.getCampaignDetail = async (slug) => {
+    return await Models.Campaign.findOne({ 
+        where: { 
+            campaignSlug: slug,
+            campaignStatus: 'public'
+        },
+        include: [
+            { model: Models.Category, attributes: [ 'categoryTitle' ] },
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+        ]
+    });
+}
 
 exports.create = async (req) => {
     const user = req.jwtDecoded.data;
