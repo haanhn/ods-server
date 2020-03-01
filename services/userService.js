@@ -1,5 +1,4 @@
 const User = require('../models').User;
-const BankAccount = require('../models').BankAccount;
 
 exports.findByEmail = async (req) => {
     const email = req.jwtDecoded.data.email;
