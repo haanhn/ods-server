@@ -2,11 +2,17 @@ const User = require('../models').User;
 const BankAccount = require('../models').BankAccount;
 
 exports.find = async (req) => {
-    const accountNumber = req.body.accountNumber;
-    return await BankAccount.findOne({ where: { 
-        userId: req.jwtDecoded.data.id,
-        accountNumber: accountNumber
-    } });
+    const user = await User.findOne({ where: { id: req.jwtDecoded.data.id }});
+    console.log('User ' +user);
+    if (user) {
+        const bankAccount = await BankAccount.findOne({ where: { 
+            userId: req.jwtDecoded.data.id
+        } });
+        console.log('bank account ' + bankAccount);
+        return bankAccount ? bankAccount : {};
+    } else {
+        return null;
+    }
 }
 
 exports.findAll = async () => {

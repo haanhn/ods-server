@@ -1,7 +1,7 @@
 const slug = require('slug');
 
-const Category = require('../models').Category;
-const { findCategoriesByStatus } = require('../services/categoriesService');
+const Category = require('../../models').Category;
+const { findCategoriesByStatus } = require('../../services/categoriesService');
 
 exports.index = async (req, res, next) => {
   try {

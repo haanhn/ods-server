@@ -1,31 +1,104 @@
 const slug = require('slug');
 
-const Campaign = require('../models').Campaign;
-const UserCampaign = require('../models').UserCampaign;
-const Category = require('../models').Category;
-const { findUser } = require('../services/authenticateService');
+const Models = require('../models');
+const categoryService = require('../services/categoriesService');
 
-
-const findCampaign = async (slug) => {
-    return await Campaign.findOne({ where: { campaignSlug: slug } });
+//tim api theo slug
+exports.findBySlug = async (slug) => {
+    return await Models.Campaign.findOne({ where: { campaignSlug: slug } });
 }
 
-const createCampaign = async (req) => {
+//lay tat ca campaign
+exports.getAll = async () => {
+    return await Models.Campaign.findAll({
+        include: [
+            { model: Models.Category, attributes: [ 'categoryTitle' ] },
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+        ]
+    });
+}
+
+exports.getAllByStatus = async (status) => {
+    return await Models.Campaign.findAll({
+        where: {
+            campaignStatus: status
+        },
+        include: [
+            { model: Models.Category, attributes: [ 'categoryTitle' ] },
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+        ]
+    });
+}
+
+//lay tat ca campaign theo category
+exports.getAllByCategory = async (req) => {
+    const categorySlug = req.params.categorySlug;
+    const category = await categoryService.findCategoryBySlug(categorySlug);
+    if (!category) {
+        return false;
+    }
+    return await category.getCampaigns({ where: { campaignStatus: 'public' } });
+}
+
+//lay so luong nhat dinh (amount) campaign moi nhat
+exports.getNewest = async (req) => {
+    const count = Number(req.params.amount);
+    console.log(count);
+    return await Models.Campaign.findAll({
+        where: { campaignStatus: 'public' },
+        order:[
+            ["createdAt","DESC"]
+        ],
+        limit: count
+    })
+}
+
+//lay tat ca nhung campaign ma minh lam host hoac supporter
+exports.getByRelation = async (req) => {
+    const relation = req.params.relation;
+    const reqUser = req.jwtDecoded.data;
+    if (relation !== 'host' || relation != 'supporter') {
+        return false;
+    }
+    return await Models.User.findOne({
+        where: {
+            id: reqUser.id 
+        },
+        include: [
+            { model: Models.Campaign, through: { where: { relation: relation } } }
+        ]
+    })
+}
+
+//lay ra detail cua 1 campaign + category + host theo slug
+exports.getCampaignDetail = async (slug) => {
+    return await Models.Campaign.findOne({ 
+        where: { 
+            campaignSlug: slug,
+            campaignStatus: 'public'
+        },
+        include: [
+            { model: Models.Category, attributes: [ 'categoryTitle' ] },
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+        ]
+    });
+}
+
+exports.create = async (req) => {
     const user = req.jwtDecoded.data;
-    console.log(user);
     const reqSlug = req.body.campaign.campaignSlug;
     const reqTitle = req.body.campaign.campaignTitle;
     const reqCategory = req.body.campaign.category;
     const reqShortDescription = req.body.campaign.campaignShortDescription;
     if (!reqSlug) {
         console.log('tao moi');
-        const campaign = await Campaign.create({
+        const campaign = await Models.Campaign.create({
             campaignTitle: reqTitle,
             campaignSlug: slug(reqTitle),
             campaignShortDescription: reqShortDescription,
             categoryId: reqCategory
         });
-        const userCampaign = await UserCampaign.create({
+        const userCampaign = await Models.UserCampaign.create({
             relation: 'host',
             userId: user.id,
             campaignId: campaign.id
@@ -33,7 +106,7 @@ const createCampaign = async (req) => {
         return campaign;
     } else {
         console.log('update');
-        const campaign = await findCampaign(reqSlug);
+        const campaign = await this.findBySlug(reqSlug);
         if (campaign != null) {
             campaign.campaignTitle = reqTitle;
             campaign.campaignSlug = slug(reqTitle);
@@ -49,14 +122,14 @@ const createCampaign = async (req) => {
     }
 }
 
-const createCampaignStep2 = async (req, res, next) => {
+exports.createCampaignStep2 = async (req, res, next) => {
     const reqSlug = req.body.campaign.campaignSlug;
     const reqThumbnail = req.body.campaign.campaignThumbnail;
     const reqDescription = req.body.campaign.campaignDescription;
-    if (reqSlug === undefined) {
+    if (!reqSlug) {
         return false;
     } else {
-        const campaign = await findCampaign(reqSlug);
+        const campaign = await this.findBySlug(reqSlug);
         if (campaign != null) {
             campaign.campaignThumbnail = reqThumbnail;
             campaign.campaignDescription = reqDescription;
@@ -69,17 +142,17 @@ const createCampaignStep2 = async (req, res, next) => {
     }
 }
 
-const createCampaignStep3 = async (req, res, next) => {
+exports.createCampaignStep3 = async (req, res, next) => {
     const reqSlug = req.body.campaign.campaignSlug;
     const reqAddress = req.body.campaign.campaignAddress;
     const reqCity = req.body.campaign.campaignRegion;
     const reqGoal = req.body.campaign.campaignGoal;
     const reqEndDate = req.body.campaign.campaignEndDate;
 
-    if (reqSlug === undefined) {
+    if (!reqSlug) {
         return false;
     } else {
-        const campaign = await findCampaign(reqSlug);
+        const campaign = await this.findBySlug(reqSlug);
         if (campaign != null) {
             campaign.campaignAddress = reqAddress;
             campaign.campaignRegion = reqCity;
@@ -95,4 +168,3 @@ const createCampaignStep3 = async (req, res, next) => {
     }
 }
 
-module.exports = { createCampaign, createCampaignStep2, createCampaignStep3 }

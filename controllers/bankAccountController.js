@@ -3,10 +3,6 @@ const bankAccountValidator = require('../validators/bankAccountValidator');
 
 exports.find = async (req, res, next) => {
     try {
-        const validator = await bankAccountValidator.findBankAccountValidator(req);
-        if (validator !== null) {
-            res.status(400).send({ success: 'false', message: validator });
-        } else {
             const bankAccount = await bankAccountService.find(req);
             console.log(bankAccount);
             if (bankAccount) {
@@ -14,7 +10,6 @@ exports.find = async (req, res, next) => {
             } else {
                 return res.status(404).json({ success: 'false', message: 'Cannot found'})
             }
-        } 
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });

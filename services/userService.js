@@ -1,5 +1,4 @@
 const User = require('../models').User;
-const BankAccount = require('../models').BankAccount;
 
 exports.findByEmail = async (req) => {
     const email = req.jwtDecoded.data.email;
@@ -9,7 +8,7 @@ exports.findByEmail = async (req) => {
 };
 
 exports.updateUserAddress = async (req) => {
-    const user = await findUser(req);
+    const user = await this.findByEmail(req);
     user.address = req.body.address;
     user.region = req.body.region;
     return await user.save();

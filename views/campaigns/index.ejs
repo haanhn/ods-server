@@ -1,81 +1,156 @@
-<%- include('../includes/head.ejs') %> 
-    <!-- Begin Page Content -->
-    <div class="container-fluid">
+<%- include('../includes/head.ejs') %>
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Campaigns</h1>
-        <a href="/admin/campaigns/create" class="btn btn-success btn-icon-split">
-            <span class="icon text-white-50">
-                <i class="fas fa-plus"></i>
-            </span>
-            <span class="text">Add Campaigns</span>
-        </a>
 
-        <!-- DataTales Example -->
-        <div class="card shadow mb-4 mt-5">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Campaigns</h6>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th class="text-center">#</th>
-                            <th class="text-center">Title</th>
-                            <th class="text-center">Slug</th>
-                            <th class="text-center">Goal</th>
-                            <th class="text-center">End Date</th>
-                            <th class="text-center">Thumbnail</th>
-                            <th class="text-center">Rating Point</th>
-                            <th class="text-center">Short Description</th>
-                            <th class="text-center">Description</th>
-                            <th class="text-center">Address</th>
-                            <th class="text-center">Region</th>
-                            <th class="text-center">Status</th>
-                            <th class="text-center text-danger"><i class="fa fa-bolt"></th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th class="text-center">#</th>
-                            <th class="text-center">Title</th>
-                            <th class="text-center">Slug</th>
-                            <th class="text-center">Goal</th>
-                            <th class="text-center">End Date</th>
-                            <th class="text-center">Thumbnail</th>
-                            <th class="text-center">Rating Point</th>
-                            <th class="text-center">Short Description</th>
-                            <th class="text-center">Description</th>
-                            <th class="text-center">Address</th>
-                            <th class="text-center">Region</th>
-                            <th class="text-center">Status</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-                        <% for (let campaign of campaigns) { %> 
-                            <tr>
-                                <td class="text-center"><%= campaign.id %></td>
-                                <td class="text-center"><%= campaign.campaignTitle %></td>
-                                <td class="text-center"><%= campaign.campaignSlug %></td>
-                                <td class="text-center"><%= campaign.campaignGoal %></td>
-                                <td class="text-center"><%= campaign.campaignEndDate %></td>
-                                <td class="text-center"><%= campaign.campaignRatingPoint %></td>
-                                <td class="text-center"><%= campaign.campaignShortDescription %></td>
-                                <td class="text-center"><%= campaign.campaignDescription %></td>
-                                <td class="text-center"><%= campaign.campainAddress %></td>
-                                <td class="text-center"><%= campaign.campainRegion %></td>
-                                <td class="text-center"><%= campaign.campainStatus %></td>
-                                
-                            </tr>
-                        <% }  %> 
-                    </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800">Campaigns</h1>
+  <a href="/admin/listcampaigns/create" class="btn btn-success btn-icon-split">
+    <span class="icon text-white-50">
+      <i class="fas fa-plus"></i>
+    </span>
+    <span class="text">Add Campaigns</span>
+  </a>
+  <select
+    id="selection"
+    onchange="location = this.value"
+    style="margin-left: 30px"
+  >
+  <%
+    var options = ["All", "setting", "waiting", "public", "close", "block"];
+    for ( var i = 0; i < options.length; i++ )
+    {
+      if (options[i] != 'All') {
+        var selected = ( status == options[i] ) ? "selected" : "";
+        %><option value="<%='http://localhost:5000/admin/campaigns/' + options[ i ] %>" <%=selected %>><%=options[i] %></option><%
+      } else { %>
+        <option value="http://localhost:5000/admin/campaigns/" selected>All</option>
+      <% }
         
+    }
+    %>
+    
+    
+  </select>
+
+  <!-- DataTales Example -->
+  <div class="card shadow mb-4 mt-5">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Campaigns</h6>
     </div>
-    <!-- /.container-fluid -->
-    <%- include('../includes/end.ejs') %> 
+    <div class="card-body">
+      <div class="table-responsive">
+        <table
+          class="table table-bordered"
+          id="dataTable"
+          width="100%"
+          cellspacing="0"
+        >
+          <thead>
+            <tr>
+              <th class="text-center">Title</th>
+              <th class="text-center">Host Name</th>
+              <th class="text-center">Category</th>
+              <th class="text-center">Status</th>
+              <th class="text-center text-danger"><i class="fa fa-bolt"></th>
+          </tr>
+          </thead>
+          <tbody>
+            <% for (let campaign of campaigns) { %>
+            <tr>
+              <td class="text-center"><%= campaign.campaignTitle %></td>
+              <td class="text-center"><%= campaign.Users[0].fullname %></td>
+              <td class="text-center"><%= campaign.Category.categoryTitle %></td>
+              <td class="text-center">
+                <% if(campaign.campaignStatus === 'setting'){%>
+                <span class="badge badge-secondary"
+                  ><%= campaign.campaignStatus %></span
+                >
+                <% } else if(campaign.campaignStatus === 'waiting'){ %>
+                <span class="badge badge-warning"
+                  ><%= campaign.campaignStatus %></span
+                >
+                <% } else if(campaign.campaignStatus === 'block'){ %>
+                <span class="badge badge-danger"
+                  ><%= campaign.campaignStatus %></span
+                >
+                <% } else if(campaign.campaignStatus === 'public'){ %>
+                <span class="badge badge-success"
+                  ><%= campaign.campaignStatus %></span
+                >
+                <% } else if(campaign.campaignStatus === 'close'){ %>
+                <span class="badge badge-success"
+                  ><%= campaign.campaignStatus %></span
+                >
+                <% } %>
+              </td>
+              <td class="text-center">
+                <div class="btn-group" role="group">
+                  <a href="#" class="btn btn-sm btn-primary" title="View list campaign"><i class="fas fa-eye"></i></a>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.container-fluid -->
+</div>
+<!-- End of Main Content -->
+
+<!-- Footer -->
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+    <div class="copyright text-center my-auto">
+        <span>Copyright &copy; Your Website 2019</span>
+    </div>
+    </div>
+</footer>
+<!-- End of Footer -->
+
+</div>
+<!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+<i class="fas fa-angle-up"></i>
+</a>
+
+
+
+<!-- Bootstrap core JavaScript-->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="/js/sb-admin-2.min.js"></script>
+
+<!-- Datatable Page level plugins -->
+<script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+<!-- Datatable Page level custom scripts -->
+<script src="/js/demo/datatables-demo.js"></script>
+<script>
+  function validate(){
+    let card = document.getElementById("selection");
+    let selectedValue = card.options[card.selectedIndex].value;
+    console.log(selectedValue);
+    if (card.value === status) {
+    ("Please select a card type");
+    }
+  }
+</script>
+</body>
+</html>
+
