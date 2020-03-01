@@ -61,10 +61,12 @@ exports.getByRelation = async (req) => {
     if (relation != 'host' && relation != 'supporter') {
         return false;
     }
+
     return await Models.User.findOne({
         where: {
             id: reqUser.id 
         },
+        attributes: [ 'id','email', 'fullname', 'avatar' ],
         include: [
             { model: Models.Campaign, through: { where: { relation: relation } } }
         ]
