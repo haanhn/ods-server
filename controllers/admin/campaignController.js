@@ -1,10 +1,9 @@
-const Campaign = require('../../models').Campaign;
+const models = require('../../models');
 const campaignService = require('../../services/campaignService');
 
 exports.index = async (req, res, next) => {
     try {
         const campaigns = await campaignService.getAll();
-        console.log(campaigns);
         res.render('campaigns/index', {
             pageTitle: 'Admin - Campaigns',
             path: '/admin/campaigns',
@@ -26,3 +25,45 @@ exports.getByStatus = async (req, res, next) => {
         status: status
     });
 };
+
+exports.show = async (req, res, next) => {
+    const slug = req.params.campaignSlug;
+    const campaign = await models.Campaign.findOne({ 
+        where: { 
+            campaignSlug: slug
+        },
+        include: [
+            { model: models.Category, attributes: [ 'categoryTitle' ] },
+            { model: models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+        ]
+    });
+    res.render('campaigns/details', {
+        pageTitle: 'Admin - Campaigns',
+        path: '/admin/campaigns',
+        campaign: campaign,
+    })
+}
+
+exports.campaignAction = async (req, res, next) => {
+    const action = req.params.action;
+    const campaignSlug = req.body.campaignSlug;
+    
+    const campaign = await models.Campaign.findOne({
+        where: {
+            campaignSlug: campaignSlug
+        }
+    });
+    
+    if (campaign) {
+        if (action === 'approve') {
+            campaign.campaignStatus = 'public';
+            await campaign.save();
+        } else {
+            campaign.campaignStatus = 'block';
+            await campaign.save();
+        }
+        return res.redirect('/admin/campaigns');    
+    } else {
+        return res.redirect('/admin/campaigns');    
+    }
+}
