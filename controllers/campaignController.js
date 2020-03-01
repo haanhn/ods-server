@@ -110,3 +110,17 @@ exports.createCampaignStep3 = async (req, res, next) => {
         res.status(500).json({ error: 'Server Error' });
     }
 };
+
+exports.createCampaignStep6 = async (req, res, next) => {
+    try {
+        const campaign = await campaignService.createStep6(req);
+        if (campaign != false) {
+            return res.status(200).json({ message: "success", campaign });
+        } else {
+            return res.status(400).json({ message: 'fail'})
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}

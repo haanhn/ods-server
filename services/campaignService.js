@@ -171,3 +171,20 @@ exports.createCampaignStep3 = async (req, res, next) => {
     }
 }
 
+exports.createStep6 = async (req, res, next) => {
+    const campaignSlug = req.body.campaign.campaignSlug;
+    if (!campaignSlug) {
+        return false;
+    } else {
+        const campaign = await Models.Campaign.findOne({ 
+                where: { campaignSlug: campaignSlug } 
+            }
+        );
+        if (campaign) {
+            campaign.campaignStatus = 'waiting';
+            return campaign.save();
+        }
+        return false;
+    }
+}
+
