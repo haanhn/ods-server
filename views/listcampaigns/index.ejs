@@ -1,61 +1,165 @@
-<%- include('../includes/head.ejs') %> 
-    <!-- Begin Page Content -->
-    <div class="container-fluid">
+<%- include('../includes/head.ejs') %>
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Campaigns</h1>
-        <a href="/admin/listcampaigns/create" class="btn btn-success btn-icon-split">
-            <span class="icon text-white-50">
-                <i class="fas fa-plus"></i>
-            </span>
-            <span class="text">Add Campaigns</span>
-        </a>
 
-        <!-- DataTales Example -->
-        <div class="card shadow mb-4 mt-5">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Campaigns</h6>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th class="text-center">#</th>
-                            <th class="text-center">Title</th>
-                            <th class="text-center">Host Name</th>
-                            <th class="text-center">Status</th>
-                            <th class="text-center text-danger"><i class="fa fa-bolt"></th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th class="text-center">#</th>
-                            <th class="text-center">Title</th>
-                            <th class="text-center">Host Name</th>
-                            <th class="text-center">Status</th>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-                        <% for (let listcampaign of listcampaigns) { %> 
-                            <tr>
-                                <td class="text-center"><%= listcampaign.id %></td>
-                                <td class="text-center"><%= listcampaign.campaignTitle %></td>
-                                <td class="text-center"><%= listcampaign.campaignGoal %></td>
-                                <td class="text-center"><%= listcampaign.campaignStatus %></td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                    <a href="/admin/listcampaigns/edit/<%= listcampaign.id %> " class="btn btn-sm btn-success" title="Edit campaign"><i class="fa fa-edit"></i></a>
-                                    <a href="/admin/listcampaigns/" class="btn btn-sm btn-danger ml-2" title="Delete campaign"><i class="fa fa-trash"></i></a>
-                                </div></td>
-                            </tr>
-                        <% }  %> 
-                    </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800">Campaigns</h1>
+  <a href="/admin/listcampaigns/create" class="btn btn-success btn-icon-split">
+    <span class="icon text-white-50">
+      <i class="fas fa-plus"></i>
+    </span>
+    <span class="text">Add Campaigns</span>
+  </a>
+  <select
+    id="selection"
+    onchange="location = this.value"
+    style="margin-left: 30px"
+  >
+  <%
+    var options = ["All", "setting", "waiting", "public", "close", "block"];
+    for ( var i = 0; i < options.length; i++ )
+    {
+      if (options[i] != 'All') {
+        var selected = ( status == options[i] ) ? "selected" : "";
+        %><option value="<%='http://localhost:5000/admin/listcampaigns/list-by-status/' + options[ i ] %>" <%=selected %>><%=options[i] %></option><%
+      } else { %>
+        <option value="http://localhost:5000/admin/listcampaigns" selected>All</option>
+      <% }
         
+    }
+    %>
+    
+    
+  </select>
+
+  <!-- DataTales Example -->
+  <div class="card shadow mb-4 mt-5">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Campaigns</h6>
     </div>
-    <!-- /.container-fluid -->
-    <%- include('../includes/end.ejs') %> 
+    <div class="card-body">
+      <div class="table-responsive">
+        <table
+          class="table table-bordered"
+          id="dataTable"
+          width="100%"
+          cellspacing="0"
+        >
+          <thead>
+            <tr>
+              <th class="text-center">#</th>
+              <th class="text-center">Title</th>
+              <th class="text-center">Host Name</th>
+              <th class="text-center">Status</th>
+              <th class="text-center text-danger"><i class="fa fa-bolt"></th>
+          </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th class="text-center">#</th>
+              <th class="text-center">Title</th>
+              <th class="text-center">Host Name</th>
+              <th class="text-center">Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </tfoot>
+          <tbody>
+            <% for (let listcampaign of listcampaigns) { %>
+            <tr>
+              <td class="text-center"><%= listcampaign.id %></td>
+              <td class="text-center"><%= listcampaign.campaignTitle %></td>
+              <td class="text-center"><%= listcampaign.campaignGoal %></td>
+              <td class="text-center">
+                <% if(listcampaign.campaignStatus === 'setting'){%>
+                <span class="badge badge-secondary"
+                  ><%= listcampaign.campaignStatus %></span
+                >
+                <% } else if(listcampaign.campaignStatus === 'waiting'){ %>
+                <span class="badge badge-warning"
+                  ><%= listcampaign.campaignStatus %></span
+                >
+                <% } else if(listcampaign.campaignStatus === 'block'){ %>
+                <span class="badge badge-danger"
+                  ><%= listcampaign.campaignStatus %></span
+                >
+                <% } else if(listcampaign.campaignStatus === 'public'){ %>
+                <span class="badge badge-success"
+                  ><%= listcampaign.campaignStatus %></span
+                >
+                <% } else if(listcampaign.campaignStatus === 'close'){ %>
+                <span class="badge badge-success"
+                  ><%= listcampaign.campaignStatus %></span
+                >
+                <% } %>
+              </td>
+              <td class="text-center">
+                <div class="btn-group" role="group">
+                  <a href="#" class="btn btn-sm btn-primary" title="View list campaign"><i class="fa fa-edit"></i></a>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.container-fluid -->
+</div>
+<!-- End of Main Content -->
+
+<!-- Footer -->
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+    <div class="copyright text-center my-auto">
+        <span>Copyright &copy; Your Website 2019</span>
+    </div>
+    </div>
+</footer>
+<!-- End of Footer -->
+
+</div>
+<!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+<i class="fas fa-angle-up"></i>
+</a>
+
+
+
+<!-- Bootstrap core JavaScript-->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="/js/sb-admin-2.min.js"></script>
+
+<!-- Datatable Page level plugins -->
+<script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+<!-- Datatable Page level custom scripts -->
+<script src="/js/demo/datatables-demo.js"></script>
+<script>
+  function validate(){
+    let card = document.getElementById("selection");
+    let selectedValue = card.options[card.selectedIndex].value;
+    console.log(selectedValue);
+    if (card.value === status) {
+    ("Please select a card type");
+    }
+  }
+</script>
+</body>
+</html>
+

@@ -36,5 +36,15 @@ router.get('/campaigns', campaign.index);
 //List Campaign routes
 router.get('/listcampaigns', listcampaign.index);
 router.get('/listcampaigns/create', listcampaign.create);
+// router.get('/campaigns/list', (req, res, next) => {
+//   res.send('abc');
+//   next();
+// });
+// router.get('/campaigns/list-by-status/:status', (req, res, next) => {
+//   res.send('abc' + req.params.status);
+//   next();
+// });
+
+router.get('/listcampaigns/list-by-status/:status', listcampaign.getByStatus);
 
 module.exports = router;
