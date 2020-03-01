@@ -17,8 +17,6 @@ exports.findBankAccountValidator = async (req) => {
 
 exports.createBankAccountValidator = async (req) => {
     req.check('bankAccount.bankName', 'Bank name is required.').not().isEmpty();
-    req.check('bankAccount.bankAgency', 'Bank agency is required.').not().isEmpty();
     req.check('bankAccount.accountNumber', 'Account number is required.').not().isEmpty();
-
     return raiseErr(req);
 }
