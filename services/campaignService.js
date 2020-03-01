@@ -56,8 +56,9 @@ exports.getNewest = async (req) => {
 //lay tat ca nhung campaign ma minh lam host hoac supporter
 exports.getByRelation = async (req) => {
     const relation = req.params.relation;
+    console.log(relation);
     const reqUser = req.jwtDecoded.data;
-    if (relation !== 'host' || relation != 'supporter') {
+    if (relation != 'host' && relation != 'supporter') {
         return false;
     }
     return await Models.User.findOne({
