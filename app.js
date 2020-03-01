@@ -41,10 +41,7 @@ app.use(logger('dev'));
 app.use(expressValidator());
 
 app.use(cors());
-app.use('/',(req, res, next) => {
-    res.send('API RUNNING');
-    next();
-});
+
 app.use('/admin', adminRoutes);
 app.use('/api', api);
 

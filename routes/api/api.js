@@ -7,6 +7,7 @@ const categoryRoutes = require('./category');
 const userRoutes = require('./user');
 const regionRoutes = require('./regions');
 const bankAccountRoutes = require('./bankAccount');
+const commentRoutes = require('./comment');
 
 const router = express.Router();
 
@@ -21,5 +22,7 @@ router.use('/campaign', campaignRoutes);
 router.use('/categories', categoryRoutes);
 
 router.use('/user', userRoutes);
+
+router.use('/comment', commentRoutes);
 
 module.exports = router;
