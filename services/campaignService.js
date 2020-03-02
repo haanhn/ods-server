@@ -62,7 +62,7 @@ exports.getCampaignDetail = async (slug) => {
         },
         include: [
             { model: Models.Category, attributes: [ 'categoryTitle' ] },
-            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar', 'region' ], through: { where: { relation: 'host' } } }
         ]
     });
 }
