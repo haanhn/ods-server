@@ -171,7 +171,7 @@ exports.createCampaignStep3 = async (req, res, next) => {
     }
 }
 
-exports.createStep6 = async (req, res, next) => {
+exports.createStep5 = async (req, res, next) => {
     const campaignSlug = req.body.campaign.campaignSlug;
     if (!campaignSlug) {
         return false;

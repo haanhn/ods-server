@@ -111,9 +111,9 @@ exports.createCampaignStep3 = async (req, res, next) => {
     }
 };
 
-exports.createCampaignStep6 = async (req, res, next) => {
+exports.createCampaignStep5 = async (req, res, next) => {
     try {
-        const campaign = await campaignService.createStep6(req);
+        const campaign = await campaignService.createStep5(req);
         if (campaign != false) {
             return res.status(200).json({ message: "success", campaign });
         } else {
