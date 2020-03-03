@@ -51,7 +51,7 @@ exports.getAll = async (req, res, next) => {
 
 exports.getByRelation = async (req, res, next) => {
     try {
-        const campaigns = await campaignService.getHosted(req);
+        const campaigns = await campaignService.getByRelation(req);
         return res.status(200).json({campaigns});
     } catch (error) {
         console.log(error);
@@ -76,7 +76,7 @@ exports.createCampaign = async (req, res, next) => {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
     }
-}
+};
 
 exports.createCampaignStep2 = async (req, res, next) => {
     try {
@@ -90,8 +90,7 @@ exports.createCampaignStep2 = async (req, res, next) => {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
     }
-    
-}
+};
 
 exports.createCampaignStep3 = async (req, res, next) => {
     try {
@@ -110,5 +109,18 @@ exports.createCampaignStep3 = async (req, res, next) => {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
     }
-    
+};
+
+exports.createCampaignStep5 = async (req, res, next) => {
+    try {
+        const campaign = await campaignService.createStep5(req);
+        if (campaign != false) {
+            return res.status(200).json({ message: "success", campaign });
+        } else {
+            return res.status(400).json({ message: 'fail'})
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
 }

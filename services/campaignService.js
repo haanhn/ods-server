@@ -10,7 +10,24 @@ exports.findBySlug = async (slug) => {
 
 //lay tat ca campaign
 exports.getAll = async () => {
-    return await Models.Campaign.findAll();
+    return await Models.Campaign.findAll({
+        include: [
+            { model: Models.Category, attributes: [ 'categoryTitle' ] },
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+        ]
+    });
+}
+
+exports.getAllByStatus = async (status) => {
+    return await Models.Campaign.findAll({
+        where: {
+            campaignStatus: status
+        },
+        include: [
+            { model: Models.Category, attributes: [ 'categoryTitle' ] },
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+        ]
+    });
 }
 
 //lay tat ca campaign theo category
@@ -39,14 +56,17 @@ exports.getNewest = async (req) => {
 //lay tat ca nhung campaign ma minh lam host hoac supporter
 exports.getByRelation = async (req) => {
     const relation = req.params.relation;
+    console.log(relation);
     const reqUser = req.jwtDecoded.data;
-    if (relation !== 'host' || relation != 'supporter') {
+    if (relation != 'host' && relation != 'supporter') {
         return false;
     }
+
     return await Models.User.findOne({
         where: {
             id: reqUser.id 
         },
+        attributes: [ 'id','email', 'fullname', 'avatar' ],
         include: [
             { model: Models.Campaign, through: { where: { relation: relation } } }
         ]
@@ -62,7 +82,7 @@ exports.getCampaignDetail = async (slug) => {
         },
         include: [
             { model: Models.Category, attributes: [ 'categoryTitle' ] },
-            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar', 'region' ], through: { where: { relation: 'host' } } }
         ]
     });
 }
@@ -148,6 +168,23 @@ exports.createCampaignStep3 = async (req, res, next) => {
             console.log('ko tim thay slug');
             return false;
         }
+    }
+}
+
+exports.createStep5 = async (req, res, next) => {
+    const campaignSlug = req.body.campaign.campaignSlug;
+    if (!campaignSlug) {
+        return false;
+    } else {
+        const campaign = await Models.Campaign.findOne({ 
+                where: { campaignSlug: campaignSlug } 
+            }
+        );
+        if (campaign) {
+            campaign.campaignStatus = 'waiting';
+            return campaign.save();
+        }
+        return false;
     }
 }
 

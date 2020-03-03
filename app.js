@@ -13,14 +13,14 @@ const expressValidator = require('express-validator');
 const app = express();
 
 // import routes
-const adminRoutes = require('./routes/api/admin');
+const adminRoutes = require('./routes/admin/admin');
 const api = require('./routes/api/api');
 
 //import model
-const models = require("./models");
+const models = require('./models');
 
 //import seed datas
-const { seedRoles, seedUsers, seedCategories } = require("./seedDatas");
+const { seedRoles, seedUsers, seedCategories } = require('./seedDatas');
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -28,28 +28,31 @@ app.set('views', 'views');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
+app.use(
+  session({
     secret: process.env.SESSION_SECRET,
     store: new SequelizeStore({
-        db: models.sequelize
+      db: models.sequelize
     }),
     resave: false,
     saveUninitialized: false
-}));
+  })
+);
 app.use(flash());
 app.use(logger('dev'));
 app.use(expressValidator());
 
 app.use(cors());
-
+// app.use('/',(req, res, next) => {
+//     res.send('API RUNNING');
+//     next();
+// });
 app.use('/admin', adminRoutes);
 app.use('/api', api);
-
 
 app.use((req, res, next) => {
     res.status(404).json({ success: 'false', message: 'Page not found'});
 });
-
 
 //Sync Database
 models.sequelize
@@ -63,5 +66,5 @@ models.sequelize
     });
 
 app.listen(3000, () => {
-    console.log('App listening on port 3000!');
+  console.log('App listening on port 5000!');
 });

@@ -32,11 +32,11 @@ exports.create = async (req, res, next) => {
         if (validator !== null) {
             res.status(400).send({ success: 'false', message: validator });
         } else {
-            const result = await bankAccountService.create(req);
-            if (result != false) {
-                return res.status(201).json({ success: 'true', message: "Bank account has been created successfully", result });
+            const bankAccount = await bankAccountService.create(req);
+            if (bankAccount) {
+                return res.status(201).json({ success: 'true', message: "Bank account has been created successfully", bankAccount });
             } else {
-                return res.status(409).json({ success: 'false', message: 'Bank account has been already exist'})
+                return res.status(500).json({ success: 'false', message: 'Server error'})
             }
         } 
     } catch (error) {
