@@ -5,7 +5,7 @@ const commentController = require('../../controllers/commentController');
 
 const router = express.Router();
 
-router.get('/', commentController.getAll);
+router.get('/:campaignSlug', commentController.getAll);
 
 router.use(AuthMiddleware.isAuth);
 

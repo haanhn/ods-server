@@ -25,10 +25,10 @@ exports.create = async (req) => {
 }
 
 exports.getAll = async (req) => {
-    const campaignId = req.body.campaign.id;
+    const campaignSlug = req.params.campaignSlug;
     const campaign = await models.Campaign.findOne({
         where: {
-            id: req.body.campaign.id
+            campaignSlug : campaignSlug
         }
     });
     if (campaign) {
