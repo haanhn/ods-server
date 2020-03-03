@@ -24,16 +24,7 @@
 					<div class="font-italic"><i class="fas fa-user mr-3"></i><%= campaign.Users[0].fullname  %></div>
 					<div class="font-italic"><i class="fas fa-tag mr-3"></i><%= campaign.Category.categoryTitle  %></div>
 					<div class="font-italic"><i class="fas fa-map-marker-alt mr-3"></i><%= campaign.campaignAddress + ' - ' + campaign.campaignRegion %></div>
-					<% 
-						if (campaign.campaignEndDate) {
-							let endDate = campaign.campaignEndDate;
-							let formatted_endDate = endDate.getDate() + "-" + (endDate.getMonth() + 1) + "-" + endDate.getFullYear()
-						} else{
-							formatted_endDate = "Không Xác Định";
-						}
-						
-					%>
-					<div class="font-italic"><i class="fas fa-calendar-week mr-3"></i><%= formatted_endDate  %></div>
+					<div class="font-italic"><i class="fas fa-calendar-week mr-3"></i><%= campaign.campaignEndDate.getDate() + "-" + (campaign.campaignEndDate.getMonth() + 1) + "-" + campaign.campaignEndDate.getFullYear(); %></div>
 					<%= campaign.campaignDescription %>
 					<div class="row">
 						<% 

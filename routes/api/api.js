@@ -23,6 +23,6 @@ router.use('/categories', categoryRoutes);
 
 router.use('/user', userRoutes);
 
-router.use('/comment', commentRoutes);
+router.use('/comments', commentRoutes);
 
 module.exports = router;
