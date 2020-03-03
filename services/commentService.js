@@ -1,3 +1,5 @@
+const { Op } = require('sequelize');
+
 const models = require('../models');
 
 exports.create = async (req) => {
@@ -6,7 +8,10 @@ exports.create = async (req) => {
     const campaign = await models.Campaign.findOne({
         where: {
             id: req.body.campaign.id,
-            campaignStatus: ['pubic', 'close']
+            [Op.or]: [
+                { campaignStatus: 'public' },
+                { campaignStatus: 'close' }
+            ]
         }
     });
     if (!campaign) {
