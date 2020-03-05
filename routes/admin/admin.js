@@ -3,6 +3,7 @@ const express = require('express');
 const category = require('../../controllers/admin/category');
 
 const campaignRoutes = require('./campaign');
+const userRoutes = require('./user');
 
 const router = express.Router();
 
@@ -31,5 +32,8 @@ router.post('/categories/delete', category.delete);
 
 //Campaign routes
 router.use('/campaigns', campaignRoutes);
+
+//user routes
+router.use('/users', userRoutes);
 
 module.exports = router;

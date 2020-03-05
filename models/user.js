@@ -23,9 +23,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         gender: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: '1',
-            allowNull: true
+            type: DataTypes.ENUM('male', 'female', 'orther'),
+            defaultValue: 'male'
         },
         dateOfBirth: {
             type: DataTypes.DATE,
@@ -37,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         region: {
             type: DataTypes.STRING,
+            allowNull: true
+        },
+        bio: {
+            type: DataTypes.TEXT,
             allowNull: true
         },
         resetToken: {
