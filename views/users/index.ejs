@@ -28,12 +28,8 @@
         >
           <thead>
             <tr>
-              <th class="text-center">Avatar</th>
               <th class="text-center">Full name</th>
               <th class="text-center">Email</th>
-              <th class="text-center">Gender</th>
-              <th class="text-center">Birthday</th>
-              <th class="text-center">Address</th>
               <th class="text-center">City</th>
               <th class="text-center">Role</th>
               <th class="text-center">Created At</th>
@@ -43,12 +39,8 @@
           <tbody>
             <% for (let user of users) { %>
             <tr>
-              <td class="text-center"><%= user.avatar %></td>
               <td class="text-center"><%= user.fullname %></td>
               <td class="text-center"><%= user.email  %></td>
-              <td class="text-center"><%= user.gender %></td>
-              <td class="text-center"><%= user.dateOfBirth === null ? "" : user.dateOfBirth.getDate() + "-" + (user.dateOfBirth.getMonth() + 1) + "-" + user.dateOfBirth.getFullYear(); %></td>
-              <td class="text-center"><%= user.address %></td>
               <td class="text-center"><%= user.region %></td>
               <td class="text-center"><%= user.role %></td>
               <td class="text-center"><%= user.createdAt.getDate() + "-" + (user.createdAt.getMonth() + 1) + "-" + user.createdAt.getFullYear(); %></td>
