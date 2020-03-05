@@ -74,7 +74,13 @@ exports.login = async (req, res, next) => {
                 //khoi tao token
                 const user = await findUser(req.body);
                 const accessToken = await jwtHelper.generateToken(user, accessTokenSecret, accessTokenLife);
-                res.status(200).json({ message: 'You are loggin successfull', accessToken });
+                const userInfo = {
+                    id: user.id,
+                    email: user.email,
+                    fullname: user.fullname,
+                    avatar: user.avatar,
+                }
+                res.status(200).json({ message: 'You are loggin successfull', accessToken, user: userInfo });
             }
         }
     } catch (error) {
