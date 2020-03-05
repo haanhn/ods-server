@@ -24,7 +24,6 @@ module.exports = (sequelize, DataTypes) => {
 
     Post.associate = function(models) {
         Post.belongsTo(models.Campaign, { foreignKey: 'campaignId' });
-        Post.hasMany(models.Media, { foreignKey: 'postId' });
     };
 
     return Post;

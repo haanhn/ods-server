@@ -6,16 +6,20 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         },
+        title: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         url: {
             type: DataTypes.STRING,
             allowNull: false,
         }
     }, {
-        tableName: 'ods_medias'
+        tableName: 'ods_media'
     });
 
     Media.associate = function(models) {
-        Media.belongsTo(models.Post, { foreignKey: 'postId' });
+        Media.belongsTo(models.Campaign, { foreignKey: 'campaignId' });
     };
 
     return Media;

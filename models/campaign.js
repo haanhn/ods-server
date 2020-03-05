@@ -62,6 +62,7 @@ module.exports = (sequelize, DataTypes) => {
         Campaign.hasMany(models.Expense, { foreignKey: 'campaignId' });
         Campaign.hasMany(models.Donation, { foreignKey: 'campaignId' });
         Campaign.hasMany(models.CampaignReview, { foreignKey: 'campaignId' });
+        Campaign.hasMany(models.Media, { foreignKey: 'campaignId' });
         Campaign.belongsToMany(models.User, { through: 'UserCampaign', foreignKey: 'campaignId' });
     };
 

@@ -8,6 +8,7 @@ const userRoutes = require('./user');
 const regionRoutes = require('./regions');
 const bankAccountRoutes = require('./bankAccount');
 const commentRoutes = require('./comment');
+const uploadRoutes = require('./upload');
 
 const router = express.Router();
 
@@ -24,5 +25,7 @@ router.use('/categories', categoryRoutes);
 router.use('/user', userRoutes);
 
 router.use('/comments', commentRoutes);
+
+router.use('/uploads', uploadRoutes);
 
 module.exports = router;
