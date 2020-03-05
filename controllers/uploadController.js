@@ -5,7 +5,7 @@ const models = require('../models');
 
 exports.uploadCampaignImage = async (req, res, next) => {
     const campaignSlug = req.params.campaignSlug;
-    const user = req.jwtDecoded.data;
+    const reqUserId = req.jwtDecoded.data.id;
     try {
         if (!campaignSlug) {
             return res.status(400).json({ success: 'false', message: 'No provided campaign slug' });
@@ -20,7 +20,7 @@ exports.uploadCampaignImage = async (req, res, next) => {
             return res.status(400).json({ success: 'false', message: 'cannot find this campaign' });
         }
 
-        const checkCampaign = await Models.UserCampaign.findOne({
+        const checkCampaign = await models.UserCampaign.findOne({
             where: {
                 campaignId: campaign.id,
                 userId: reqUserId,
@@ -31,7 +31,7 @@ exports.uploadCampaignImage = async (req, res, next) => {
         if (!checkCampaign) {
             return res.status(403).json({ success: 'false', message: 'Your are not a host of campaign' });
         }
-        
+
         const uploader = async (path) => await cloudinary.uploads(path, 'Images');
         
         const file = req.file;
