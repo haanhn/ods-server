@@ -1,0 +1,63 @@
+<%- include('../includes/head.ejs') %>
+
+
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800">User</h1>
+  <!-- <a href="/admin/listcampaigns/create" class="btn btn-success btn-icon-split">
+    <span class="icon text-white-50">
+      <i class="fas fa-plus"></i>
+    </span>
+    <span class="text">Add Campaigns</span>
+  </a> -->
+
+  <!-- DataTales Example -->
+  <div class="card shadow mb-4 mt-5">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">User</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table
+          class="table table-bordered"
+          id="dataTable"
+          width="100%"
+          cellspacing="0"
+        >
+          <thead>
+            <tr>
+              <th class="text-center">Full name</th>
+              <th class="text-center">Email</th>
+              <th class="text-center">City</th>
+              <th class="text-center">Role</th>
+              <th class="text-center">Created At</th>
+              <th class="text-center text-danger"><i class="fa fa-bolt"></th>
+          </tr>
+          </thead>
+          <tbody>
+            <% for (let user of users) { %>
+            <tr>
+              <td class="text-center"><%= user.fullname %></td>
+              <td class="text-center"><%= user.email  %></td>
+              <td class="text-center"><%= user.region %></td>
+              <td class="text-center"><%= user.role %></td>
+              <td class="text-center"><%= user.createdAt.getDate() + "-" + (user.createdAt.getMonth() + 1) + "-" + user.createdAt.getFullYear(); %></td>
+              <td class="text-center">
+                <div class="btn-group" role="group">
+                  <a href="/admin/users/<%= user.id %>" class="btn btn-sm btn-primary" title="View list campaign"><i class="fas fa-eye"></i></a>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.container-fluid -->
+<%- include('../includes/end.ejs') %> 
+
+

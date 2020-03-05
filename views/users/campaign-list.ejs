@@ -1,0 +1,34 @@
+<%- include('../includes/head.ejs') %>
+<!-- Begin Page Content -->
+<div class="container-fluid">
+	<!-- Page Heading -->
+	<h1 class="h3 mb-2 text-gray-800">User</h1>
+
+	<div class="row mt-5">
+        <div class="col-11 card ml-5 px-2">
+            <div class="col-11 p-6 d-flex flex-wrap my-4">
+                <% for (let campaign of user.Campaigns) { %>
+                    <div class="col-lg-4 col-md-6 mt-3">
+                        <div class="card">
+                            <!-- Card image -->
+                            <img class="card-img-top" src="<%= 	campaign.campaignThumbnail ? campaign.campaignThumbnail : "" %>" alt="Campaign Thumbnail">
+                            <!-- Card content -->
+                            <div class="card-body">
+                                <!-- Title -->
+                                <h4 class="card-title"><%= campaign.campaignTitle %></h4>
+                                <!-- Text -->
+                                <p class="card-text"><%= campaign.campaignShortDescription %></p>
+                                <!-- Button -->
+                                <a href="#" class="btn btn-primary">Xem chi tiết</a>
+                            
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+		
+	</div>
+</div>
+<!-- /.container-fluid -->
+<%- include('../includes/end.ejs') %>
