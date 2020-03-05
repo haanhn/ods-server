@@ -32,6 +32,8 @@ Response: campaign
 */
 router.get('/get-detail/:campaignSlug', campaignController.getCampaignDetail);
 
+router.get('/get-donors/:campaignSlug', campaignController.getDonors);
+
 //Nhung api ben duoi bat buoc phai authen
 router.use(AuthMiddleware.isAuth);
 
@@ -41,6 +43,8 @@ Param:relation(host/supporter)
 Response: list campaign
 */
 router.get('/get-by-relation/:relation', campaignController.getByRelation);
+
+router.get('/get-all-donors/:campaignSlug', campaignController.getAllDonors);
 
 router.post('/create', campaignController.createCampaign);
 
