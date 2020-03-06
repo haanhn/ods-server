@@ -1,4 +1,5 @@
 const slug = require('slug');
+const randomstring = require('randomstring');
 
 const Models = require('../models');
 const categoryService = require('../services/categoriesService');
@@ -93,11 +94,16 @@ exports.create = async (req) => {
     const reqTitle = req.body.campaign.campaignTitle;
     const reqCategory = req.body.campaign.category;
     const reqShortDescription = req.body.campaign.campaignShortDescription;
+    const random = randomstring.generate({
+        length: 6,
+        charset: 'numeric'
+    });
+
     if (!reqSlug) {
         console.log('tao moi');
         const campaign = await Models.Campaign.create({
             campaignTitle: reqTitle,
-            campaignSlug: slug(reqTitle),
+            campaignSlug: slug(reqTitle) + '-' + random,
             campaignShortDescription: reqShortDescription,
             categoryId: reqCategory
         });
@@ -112,7 +118,7 @@ exports.create = async (req) => {
         const campaign = await this.findBySlug(reqSlug);
         if (campaign != null) {
             campaign.campaignTitle = reqTitle;
-            campaign.campaignSlug = slug(reqTitle);
+            campaign.campaignSlug = slug(reqTitle) + '-' + random;
             campaign.categoryID = reqCategory;
             campaign.campaignShortDescription = reqShortDescription;
             await campaign.save();
@@ -186,52 +192,6 @@ exports.createStep5 = async (req, res, next) => {
         }
         return false;
     }
-}
-
-exports.getDonorsByStatus = async (req, status) => {
-    const campaignSLug = req.params.campaignSlug;
-    const campaign = await this.findBySlug(campaignSLug);
-    if (!campaign) {
-        return false;
-    }
-    return  await Models.Donation.findAll({
-        where: {
-            campaignId: campaign.id,
-            donationStatus: status
-        },
-        include: [
-            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ] }
-        ]
-    })
-}
-
-exports.getAllDonors = async (req) => {
-    const campaignSlug = req.params.campaignSlug;
-    const reqUserId = req.jwtDecoded.data.id;
-    const campaign = await this.findBySlug(campaignSlug);
-    //ko tim thay campaign return 1
-    if (!campaign) {
-        return 1;
-    }
-    const checkCampaign = await Models.UserCampaign.findOne({
-        where: {
-            campaignId: campaign.id,
-            userId: reqUserId,
-            relation: 'host'
-        }
-    });
-    //tim thay campaign nhung ko phai host return 2
-    console.log(checkCampaign);
-    if (!checkCampaign) {
-        return 2;
-    }
-
-    //tim thay campaign va la host return campaign donor
-    return await Models.Donation.findAll({
-        where: {
-            campaignId: campaign.id
-        }
-    })
 }
 
 

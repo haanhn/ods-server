@@ -25,7 +25,6 @@ exports.create = (req, res, next) => {
 
 exports.store = async (req, res, next) => {
   const categoryTitle = req.body.categoryTitle;
-  const categoryIcon = req.body.categoryIcon;
   const categorySlug = slug(categoryTitle);
   let status = req.body.status;
   if (!status) {
@@ -42,7 +41,6 @@ exports.store = async (req, res, next) => {
       category = await Category.create({
         categoryTitle: categoryTitle,
         categorySlug: categorySlug,
-        categoryIcon: categoryIcon,
         status: status
       });
       req.flash('success', 'Category được tạo thành công.');
@@ -75,66 +73,50 @@ exports.edit = async (req, res, next) => {
   }
 };
 
-exports.update = (req, res, next) => {
+exports.update = async (req, res, next) => {
+  const reqSlug = req.params.categorySlug;
   const categoryId = req.body.categoryId;
   const categoryTitle = req.body.categoryTitle;
-  const categoryIcon = req.body.categoryIcon;
   const categorySlug = slug(categoryTitle);
   let status = req.body.status;
   if (!status) {
     status = 'disable';
+  } else {
+    status = 'enable';
   }
-
-  // Category.findByPk(categoryId)
-  //     .then(category => {
-  //         if (!category) {
-  //             req.flash('error', 'Category không tồn tại.');
-  //             res.redirect('/admin/categories');
-  //         }
-  //         category.categoryTitle = categoryTitle;
-  //         category.categoryIcon = categoryIcon;
-  //         category.categorySlug = categorySlug;
-  //         category.status = status;
-  //         return category.save();
-  //     })
-  //     //todo check duplicate before update
-  //     .then(result => {
-  //         req.flash('success', 'Category được update thành công.');
-  //         res.redirect('/admin/categories');
-  //     })
-  //     .catch(err => console.log(err));
+  const category = await Category.findOne({
+    where: {
+      categorySlug: reqSlug
+    }
+  });
+  if (!category) {
+    req.flash('error', 'Category không tồn tại.');
+    res.redirect('/admin/categories/edit/' + reqSlug);
+  } else {
+    category.categoryTitle = categoryTitle;
+    category.categorySlug = categorySlug;
+    category.status = status;
+    await category.save();
+    req.flash('success', 'Category update thành công.');
+    res.redirect('/admin/categories');
+  }
 };
 
-exports.delete = (req, res, next) => {
-  const categoryId = req.body.categoryId;
-  Category.findByPk(categoryId)
-    .then(category => {
-      if (!category) {
-        const error = new Error('Could not find category.');
-        error.statusCode = 404;
-        throw error;
-      }
-      return category.destroy();
-    })
-    .then(result => {
-      res.status(200).json({
-        message: 'Category deleted'
-      });
-    })
-    .catch(err => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
-};
+exports.delete = async (req, res, next) => {
+  const categorySlug = req.params.categorySlug;
+  console.log(categorySlug);
+  const category = await Category.findOne({
+    where: {
+      categorySlug: categorySlug
+    }
+  });
 
-exports.getOpenCategories = async (req, res, next) => {
-  try {
-    const categories = await findCategoriesByStatus();
-    res.status(200).json(categories);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Server Error' });
+  if(!category) {
+    req.flash('error', 'Category không tồn tại.');
+    res.redirect('/admin/categories');
+  } else {
+    await category.destroy();
+    req.flash('success', 'Category được xóa thành công.');
+    res.redirect('/admin/categories');
   }
 };

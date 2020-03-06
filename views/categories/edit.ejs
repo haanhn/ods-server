@@ -9,7 +9,7 @@
         <div class="row mt-5">
             <div class="col-md-8 offset-md-2">
                 <div class="card">
-                    <form action="/admin/categories" method="POST">
+                    <form action="/admin/categories/edit/<%= category.categorySlug %>" method="POST">
                         <div class="card-body">
                             <h4 class="card-title">Edit category</h4>
                             <input type="hidden" name="categoryId" value="<%= category.id %>">
@@ -17,12 +17,6 @@
                                 <label for="categoryTitle" class="col-sm-3 text-right control-label col-form-label">Category Title</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="categoryTitle" name="categoryTitle" value="<%= category.categoryTitle %> ">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="categoryIcon" class="col-sm-3 text-right control-label col-form-label">Category Icon</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="categoryIcon" name="categoryIcon" value="<%= category.categoryIcon %>">
                                 </div>
                             </div>
                             <div class="form-group row">

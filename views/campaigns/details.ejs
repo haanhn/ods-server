@@ -30,7 +30,7 @@
 					
 					<div class="row mt-2">
 						<% 
-							if (campaign.campaignStatus != 'setting') {
+							if (campaign.campaignStatus == 'setting') {
 						%>
 						<form action="/admin/campaigns/action/approve" method="post">
 							<input type="hidden" name="campaignSlug" value="<%= campaign.campaignSlug %>">
