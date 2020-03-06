@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('cash', 'paypal', 'stripe', 'transfer'),
             defaultValue: 'transfer'
         },
+        anonymous: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 0
+        },
         donationStatus: {
             type: DataTypes.ENUM('pending', 'reject' ,'done'),
             defaultValue: 'pending'

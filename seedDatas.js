@@ -32,14 +32,14 @@ const seedUsers = [
     }
 ];
 const seedCategories = [
-    {
-        categoryTitle: 'Mới nhất',
-        categorySlug: slug('Mới nhất').toLocaleLowerCase()
-    },
-    {
-        categoryTitle: 'Nổi bật',
-        categorySlug: slug('Nổi bật').toLocaleLowerCase()
-    },
+    // {
+    //     categoryTitle: 'Mới nhất',
+    //     categorySlug: slug('Mới nhất').toLocaleLowerCase()
+    // },
+    // {
+    //     categoryTitle: 'Nổi bật',
+    //     categorySlug: slug('Nổi bật').toLocaleLowerCase()
+    // },
     {
         categoryTitle: 'Giáo dục',
         categorySlug: slug('Giáo dục').toLocaleLowerCase()
