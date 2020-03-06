@@ -29,6 +29,6 @@ router.use('/comments', commentRoutes);
 
 router.use('/uploads', uploadRoutes);
 
-router.use('/donation', donationRoutes);
+router.use('/donations', donationRoutes);
 
 module.exports = router;
