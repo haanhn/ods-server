@@ -7,6 +7,9 @@ const seedRoles = [
     },
     {
         roleName: 'user'
+    },
+    {
+        roleName: 'guest'
     }
 ];
 const seedUsers = [
@@ -19,6 +22,11 @@ const seedUsers = [
         email: 'haanhx701@gmail.com',
         password: bcrypt.hashSync('12345678', 10),
         fullname: 'Nguyễn Thị Hà Anh'
+    },
+    {
+        email: 'thatntnntha1997@gmail.com',
+        password: bcrypt.hashSync('12345678', 10),
+        fullname: 'Nguyễn Thị Hà Anh 2'
     },
     {
         email: 'honghax701@gmail.com',
