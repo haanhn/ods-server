@@ -18,6 +18,18 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             defaultValue: 0
         },
+        trackingCode: {
+            type: DataTypes.STRING,
+            allowNull:false,
+        },
+        outsideDonor: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        donationMessage: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
         donationStatus: {
             type: DataTypes.ENUM('pending', 'reject' ,'done'),
             defaultValue: 'pending'

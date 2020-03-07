@@ -3,6 +3,7 @@ const randomstring = require('randomstring');
 const { Op } = require('sequelize');
 
 const User = require('../models').User;
+const Role = require('../models').Role;
 const {sendResetPasswordMail} = require('./mailService')
 
 const findUser = async (body) => {
@@ -11,6 +12,13 @@ const findUser = async (body) => {
     })
 };
 
+const getRole = async (roleName) => {
+    return await Role.findOne({
+        where: {
+            roleName: roleName
+        }
+    });
+}
 
 const register = async (body) => {
     const checkUser = await findUser(body);
@@ -93,4 +101,4 @@ const newPassword = async (body) => {
     }
 }
 
-module.exports = { findUser, register, signIn, isLogging, resetPassword, newPassword }
+module.exports = { findUser, register, signIn, isLogging, resetPassword, newPassword, getRole }

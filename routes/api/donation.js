@@ -11,7 +11,7 @@ Response: donation list gồm donation và donor
 */
 router.get('/get-by-campaign/:campaignSlug', donationController.getAllByCampaign);
 
-// router.post('/create', donationController.create);
+router.post('/create', donationController.create);
 
 //Nhung api ben duoi bat buoc phai authen
 router.use(AuthMiddleware.isAuth);

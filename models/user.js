@@ -56,6 +56,10 @@ module.exports = (sequelize, DataTypes) => {
         status: {
             type: DataTypes.ENUM('not verified', 'verified'),
             defaultValue: 'not verified'
+        },
+        isMember: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 1
         }
     }, {
         tableName: 'ods_users'
