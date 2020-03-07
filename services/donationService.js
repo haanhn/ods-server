@@ -63,7 +63,7 @@ exports.createAsMember = async (req) => {
     const method = req.body.donation.method;
     const amount = req.body.donation.amount;
     const message = req.body.donation.message;
-    const anonymous = req.body.donation.anonymous === null ? 0 : 1;
+    const anonymous = req.body.donation.anonymous ? 1 : 0;
     const campaignId = req.body.campaignId;
     const trackingCode = randomstring.generate({
         length: 12,
