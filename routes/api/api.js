@@ -10,6 +10,7 @@ const bankAccountRoutes = require('./bankAccount');
 const commentRoutes = require('./comment');
 const uploadRoutes = require('./upload');
 const donationRoutes = require('./donation');
+const postRoutes = require('./post');
 
 const router = express.Router();
 
@@ -30,5 +31,7 @@ router.use('/comments', commentRoutes);
 router.use('/uploads', uploadRoutes);
 
 router.use('/donations', donationRoutes);
+
+router.use('/posts', postRoutes);
 
 module.exports = router;

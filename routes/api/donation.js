@@ -18,6 +18,8 @@ router.use(AuthMiddleware.isAuth);
 
 router.get('/host/get-by-campaign/:campaignSlug', donationController.hostGetAll);
 
+router.post('/host/update-donation-status/:action', donationController.hostUpdateDonationStatus);
+
 // router.get('/host/:donationId', donationController.hostShow);
 
 // router.post('/host/create', donationController.hostCreate);

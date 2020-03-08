@@ -74,3 +74,21 @@ exports.create = async (req, res, next) => {
         res.status(500).json({ error: 'Server Error' });
     }
 }
+
+exports.hostUpdateDonationStatus = async (req, res, next) => {
+    const action = req.params.action;
+    try {
+        if (action != 'reject' && action != 'approve') {
+            return res.status(400).json({ success: 'false', message: 'action does not allowed. Please send approve or reject.' });
+        }
+        const result = await donationService.hostUpdateStatusDonation(req);
+        console.log(result);
+        if (result != false) {
+            return res.status(200).json({ success: 'true', message: 'Update donation status successfully.', result });
+        }
+        return res.status(400).json({ success: 'false', message: 'Cannot find this donation.' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}

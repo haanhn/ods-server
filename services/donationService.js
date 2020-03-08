@@ -54,7 +54,10 @@ exports.hostGetAll = async (req) => {
     return await Models.Donation.findAll({
         where: {
             campaignId: campaign.id
-        }
+        },
+        include: [
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ] }
+        ]
     })
 }
 
@@ -151,11 +154,22 @@ exports.sendMail = async (donation) => {
         await mailService.sendToDonorDonateCashEmail(donation, user, campaign);
         await mailService.sendToHostDonateEmail(donation, user, campaign);
     } else if (donation.donationMethod === 'banking') {
-        console.log(donation);
-        console.log(user);
-        console.log(campaign);
-        console.log(bankAccount);
         await mailService.sendToDonorDonateBankingEmail(donation, user, campaign, bankAccount);
         await mailService.sendToHostDonateEmail(donation, user, campaign);
     }
+}
+
+exports.hostUpdateStatusDonation = async (req) => {
+    const action = req.params.action;
+    const donationId = req.body.donationId;
+    const donation = await Models.Donation.findOne({ 
+        where: {
+            id: donationId
+        }
+    })
+    if(donation) {
+        action === 'approve' ? donation.donationStatus = 'done' : donation.donationStatus = 'reject'
+        return await donation.save();
+    }
+    return false;
 }
