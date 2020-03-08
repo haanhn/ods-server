@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 
+const templateMails = require('../templateMails/donationMailTempalte');
+
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
         api_key: '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'
@@ -34,43 +36,46 @@ const sendResetPasswordMail = async (user) => {
     }
 }
 
-const sendToDonorDonateCashEmail = async (donation, user, campaign) => {
+const sendToDonorDonateCashEmail = async (mail) => {
     try {
+        const html = templateMails.sendToDonorDonateCashEmail(mail);
         await transporter.sendMail({
-            to: user.email,
+            to: mail.donor.email,
             from: 'admin@loveus.com',
-            subject: 'Xác nhận quyên góp chiến dịch' + campaign.campaignTitle,
-            html: '<p>Cam on '+ user.fullname +'</p><p>Cam on ban da quyen gop cho chien dich ' + campaign.campaignTitle  +'</p><p>So tien: '+ donation.donationAmount +'</p><p>Code xac nhan: '+ donation.trackingCode +'</p><p>Ban vui long chuyen tien den ' + campaign.Users[0].fullname + ' o dia chi: '+ campaign.Users[0].address + ' - ' + campaign.Users[0].region +'</p>'
+            subject: 'Xác nhận quyên góp chiến dịch' + mail.campaignTitle,
+            html: html
         })
     } catch (error) {
         console.log(error);
     }
 }
 
-const sendToHostDonateEmail = async (donation, user, campaign) => {
-    let method = 'chuyen khoan ngan hang';
-    if (donation.donationMethod === 'cash') {
-        method = 'chuyen tien mat'
+const sendToHostDonateEmail = async (mail) => {
+    let method = 'Chuyển khoản ngân hàng';
+    if (mail.donation.donationMethod === 'cash') {
+        method = 'Chuyển tiền mặt'
     }
+    const html = templateMails.sendToHostDonateEmail(mail, method);
     try {
         await transporter.sendMail({
-            to: campaign.Users[0].email,
+            to: mail.host.email,
             from: 'admin@loveus.com',
-            subject: 'Xác nhận quyên góp chiến dịch' + campaign.campaignTitle,
-            html: '<p>Chien dich ' + campaign.campaignTitle + ' vua duoc ' + user.fullname + ' quyen gop voi so tien la ' + donation.donationAmount + ' bang phuong thuc ' + method + '</p><p>Code xac nhan:' + donation.trackingCode + ' </p>'
+            subject: 'Xác nhận quyên góp chiến dịch' + mail.campaignTitle,
+            html: html
         })
     } catch (error) {
         console.log(error);
     }
 }
 
-const sendToDonorDonateBankingEmail = async (donation, user, campaign, bankAccount) => {
+const sendToDonorDonateBankingEmail = async (mail) => {
     try {
+        const html = templateMails.sendToDonorDonateBankingEmail(mail);
         await transporter.sendMail({
-            to: user.email,
+            to: mail.donor.email,
             from: 'admin@loveus.com',
-            subject: 'Xác nhận quyên góp chiến dịch' + campaign.campaignTitle,
-            html: '<p>Cam on '+ user.fullname +'</p><p>Cam on ban da quyen gop cho chien dich ' + campaign.campaignTitle  +'</p><p>So tien: '+ donation.donationAmount +'</p><p>Code xac nhan: '+ donation.trackingCode +'</p><p>Ban vui long chuyen tien den tai khoan: </p><p>Ten chu tai khoan: ' + bankAccount.accountName + '</p><p>So tai khoan: '+ bankAccount.accountNumber + '</p><p>Ten ngan hang : ' + bankAccount.bankName + ' </p>'
+            subject: 'Xác nhận quyên góp chiến dịch' + mail.campaignTitle,
+            html: html
         })
     } catch (error) {
         console.log(error);

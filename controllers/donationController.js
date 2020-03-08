@@ -44,7 +44,7 @@ exports.create = async (req, res, next) => {
             } else {
                 const donation = await donationService.createAsGuest(req);
                 if (donation) {
-                        await donationService.sendMail(donation);
+                    await donationService.sendMail(donation);
                     
                     // const test = await donationService.sendMail(donation);
                     return res.status(201).json({ success: 'true', message: "Donation created successfully", donation });
@@ -61,7 +61,7 @@ exports.create = async (req, res, next) => {
                 const donation = await donationService.createAsMember(req);
 
                 if (donation) {
-                        await donationService.sendMail(donation);
+                    await donationService.sendMail(donation);
                     
                     return res.status(201).json({ success: 'true', message: "Donation created successfully", donation });
                 } else {
@@ -82,11 +82,34 @@ exports.hostUpdateDonationStatus = async (req, res, next) => {
             return res.status(400).json({ success: 'false', message: 'action does not allowed. Please send approve or reject.' });
         }
         const result = await donationService.hostUpdateStatusDonation(req);
-        console.log(result);
-        if (result != false) {
-            return res.status(200).json({ success: 'true', message: 'Update donation status successfully.', result });
+        if (result === 1) {
+            return res.status(400).json({ success: 'false', message: 'Cannot find this donation.' });
         }
-        return res.status(400).json({ success: 'false', message: 'Cannot find this donation.' });
+        if (result === 2) {
+            return res.status(400).json({ success: 'false', message: 'You are not a host of this campaign.' });
+        }
+        return res.status(200).json({ success: 'true', message: 'Update donation status successfully.', result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.hostUpdateDonationStatusViaEmail = async (req, res, next) => {
+    const action = req.params.action;
+    try {
+        if (action != 'reject' && action != 'approve') {
+            return res.status(400).json({ success: 'false', message: 'action does not allowed. Please send approve or reject.' });
+        }
+        const result = await donationService.hostUpdateStatusDonation(req);
+        if (result === 1) {
+            return res.status(400).json({ success: 'false', message: 'Cannot find this donation.' });
+        }
+        if (result === 2) {
+            return res.status(400).json({ success: 'false', message: 'You are not a host of this campaign.' });
+        }
+        return res.status(200).json({ success: 'true', message: 'Update donation status successfully.' });
+        //sau nay co url cua fe thi se redirect ve trang chu
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });

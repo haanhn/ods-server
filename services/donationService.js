@@ -150,26 +150,62 @@ exports.sendMail = async (donation) => {
             userId: campaign.Users[0].id
         }
     }) 
+    const mail = {
+        campaignTitle: campaign.campaignTitle,
+        donor: {
+            email: user.email,
+            name: user.fullname
+        },
+        donation: {
+            id: donation.id,
+            amount: donation.donationAmount,
+            method: donation.donationMethod,
+            trackingCode: donation.trackingCode
+        },
+        host: {
+            id: campaign.Users[0].id,
+            email: campaign.Users[0].email,
+            name: campaign.Users[0].fullname,
+            address: campaign.Users[0].address,
+            region: campaign.Users[0].region,
+            accountName: bankAccount.accountName,
+            accountNumber: bankAccount.accountNumber,
+            bankName: bankAccount.bankName,
+        }
+    }
+    // return mail;
+    await mailService.sendToHostDonateEmail(mail);
     if (donation.donationMethod === 'cash') {
-        await mailService.sendToDonorDonateCashEmail(donation, user, campaign);
-        await mailService.sendToHostDonateEmail(donation, user, campaign);
+        await mailService.sendToDonorDonateCashEmail(mail);
     } else if (donation.donationMethod === 'banking') {
-        await mailService.sendToDonorDonateBankingEmail(donation, user, campaign, bankAccount);
-        await mailService.sendToHostDonateEmail(donation, user, campaign);
+        console.log('gui mail banking roi ne');
+        await mailService.sendToDonorDonateBankingEmail(mail);
     }
 }
 
 exports.hostUpdateStatusDonation = async (req) => {
     const action = req.params.action;
     const donationId = req.body.donationId;
+    const userId = req.body.userId;
+    
     const donation = await Models.Donation.findOne({ 
         where: {
             id: donationId
         }
     })
-    if(donation) {
-        action === 'approve' ? donation.donationStatus = 'done' : donation.donationStatus = 'reject'
-        return await donation.save();
+    if (!donation) {
+        return 1;
     }
-    return false;
+    const checkHost = await Models.UserCampaign.findOne({
+        where: {
+            campaignId: donation.campaignId,
+            userId: userId,
+            relation: 'host'
+        }
+    });
+    if(!checkHost) {
+        return 2;
+    }
+    action === 'approve' ? donation.donationStatus = 'done' : donation.donationStatus = 'reject'
+    return await donation.save();
 }

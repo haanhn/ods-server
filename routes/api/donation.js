@@ -13,6 +13,9 @@ router.get('/get-by-campaign/:campaignSlug', donationController.getAllByCampaign
 
 router.post('/create', donationController.create);
 
+router.post('/host/update-donation-status-via-email/:action', donationController.hostUpdateDonationStatusViaEmail);
+
+
 //Nhung api ben duoi bat buoc phai authen
 router.use(AuthMiddleware.isAuth);
 
