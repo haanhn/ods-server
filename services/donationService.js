@@ -150,6 +150,8 @@ exports.sendMail = async (donation) => {
             userId: campaign.Users[0].id
         }
     }) 
+    const regex = /\B(?=(\d{3})+(?!\d))/g;
+    const amountFormated = donation.donationAmount.replace(regex, '.');
     const mail = {
         campaignTitle: campaign.campaignTitle,
         donor: {
@@ -158,7 +160,7 @@ exports.sendMail = async (donation) => {
         },
         donation: {
             id: donation.id,
-            amount: donation.donationAmount,
+            amount: amountFormated,
             method: donation.donationMethod,
             trackingCode: donation.trackingCode
         },

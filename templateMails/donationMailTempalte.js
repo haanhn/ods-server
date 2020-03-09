@@ -15,7 +15,7 @@ exports.sendToDonorDonateBankingEmail = (mail) => {
     return html = `<p><b><i>Kính gửi: ` + mail.donor.name + `</i></b></p>
     <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
     <p>cảm ơn bạn đã quyên góp cho chiến dịch: <b><i style='text-transform: uppercase;'>`+ mail.campaignTitle +`.</i></b> </p>
-    <p>Số tiền: <b>`+ mail.donation.amount + `vnđ</b></p>
+    <p>Số tiền: <b>`+ mail.donation.amount + ` vnđ</b></p>
     <p>Phương thức chuyển tiền: <b>Chuyển khoản ngân hàng</b></p>
     <p>Mã xác nhận: <b>`+ mail.donation.trackingCode +`</b></p>
     <p>Bạn vui lòng chuyển tiền đến quản lý chiến dịch với thông tin sau:</p>
@@ -30,9 +30,9 @@ exports.sendToHostDonateEmail = (mail, method) => {
     <p>Chiến dịch: <b><i style="text-transform: uppercase;">`+ mail.campaignTitle + `</i></b> vừa nhận được quyên góp với thông tin như sau:</p>
     <p>   - Tên: <b>`+ mail.donor.name +`</b></p>
     <p>   - Email: <b>`+ mail.donor.email +`</b></p>
-    <p>   - Số tiền : <b>`+ mail.donation.amount +`</b></p>
+    <p>   - Số tiền : <b>`+ mail.donation.amount +` vnđ</b></p>
     <p>   - Phương thức chuyển tiền: <b>`+ method +`</b></p>
-    <p>   - Mã xác nhận : <b>`+ mail.donation.method +`</b></p>
+    <p>   - Mã xác nhận : <b>`+ mail.donation.trackingCode +`</b></p>
     <p>
         <i>Khi nhận được tiền mong bạn vui lòng cập nhật trạng thái trên hệ thống hoặc click vào đây <form action="http://localhost:5000/api/donations/host/update-donation-status-via-email/approve" method="post">
                 <input type="hidden" name="donationId" value="`+ mail.donation.id +`">

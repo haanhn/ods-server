@@ -1,5 +1,6 @@
 const slug = require('slug');
 const randomstring = require('randomstring');
+const sequelize = require('sequelize');
 
 const Models = require('../models');
 const categoryService = require('../services/categoriesService');
@@ -11,16 +12,21 @@ exports.findBySlug = async (slug) => {
 
 //lay tat ca campaign
 exports.getAll = async () => {
-    return await Models.Campaign.findAll({
+    let campaigns = await Models.Campaign.findAll({
         include: [
             { model: Models.Category, attributes: [ 'categoryTitle' ] },
-            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } },
         ]
     });
+    for (let campaign of campaigns){
+        const raise = await this.getRaise(campaign.id);
+        campaign.dataValues.raise = raise[0].dataValues;
+    }
+    return campaigns;
 }
 
 exports.getAllByStatus = async (status) => {
-    return await Models.Campaign.findAll({
+    let campaigns = await Models.Campaign.findAll({
         where: {
             campaignStatus: status
         },
@@ -29,6 +35,12 @@ exports.getAllByStatus = async (status) => {
             { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
         ]
     });
+
+    for (let campaign of campaigns){
+        const raise = await this.getRaise(campaign.id);
+        campaign.dataValues.raise = raise[0].dataValues;
+    }
+    return campaigns;
 }
 
 //lay tat ca campaign theo category
@@ -38,20 +50,30 @@ exports.getAllByCategory = async (req) => {
     if (!category) {
         return false;
     }
-    return await category.getCampaigns({ where: { campaignStatus: 'public' } });
+    let campaigns = await category.getCampaigns({ where: { campaignStatus: 'public' } });
+    for (let campaign of campaigns){
+        const raise = await this.getRaise(campaign.id);
+        campaign.dataValues.raise = raise[0].dataValues;
+    }
+    return campaigns;
 }
 
 //lay so luong nhat dinh (amount) campaign moi nhat
 exports.getNewest = async (req) => {
     const count = Number(req.params.amount);
     console.log(count);
-    return await Models.Campaign.findAll({
+    let campaigns = await Models.Campaign.findAll({
         where: { campaignStatus: 'public' },
         order:[
             ["createdAt","DESC"]
         ],
         limit: count
     })
+    for (let campaign of campaigns){
+        const raise = await this.getRaise(campaign.id);
+        campaign.dataValues.raise = raise[0].dataValues;
+    }
+    return campaigns;
 }
 
 //lay tat ca nhung campaign ma minh lam host hoac supporter
@@ -194,5 +216,14 @@ exports.createStep5 = async (req, res, next) => {
     }
 }
 
-
-
+exports.getRaise = async (campaignId) => {
+    return await Models.Donation.findAll({
+        where: {
+            campaignId: campaignId,
+            donationStatus: 'done'
+        },
+        attributes: [
+            [sequelize.fn('sum', sequelize.col('donationAmount')), 'total_amount'],
+        ]
+    })
+}
