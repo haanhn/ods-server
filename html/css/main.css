@@ -1,0 +1,14 @@
+.btn-action {
+    cursor: pointer;
+    color: white;
+    background-color: #3cc88f;
+    border-color: #3cc88f;
+    padding: 5px 15px;
+}
+
+.btn-action:hover {
+    color: white;
+    background-color: #111111;
+    border-color: #111111;
+    transition: all 1s ease;
+}
