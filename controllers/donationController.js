@@ -44,7 +44,7 @@ exports.create = async (req, res, next) => {
             } else {
                 const donation = await donationService.createAsGuest(req);
                 if (donation) {
-                    await donationService.sendMail(donation);
+                    await donationService.sendDonateMail(donation);
                     
                     // const test = await donationService.sendMail(donation);
                     return res.status(201).json({ success: 'true', message: "Donation created successfully", donation });
@@ -61,7 +61,7 @@ exports.create = async (req, res, next) => {
                 const donation = await donationService.createAsMember(req);
 
                 if (donation) {
-                    await donationService.sendMail(donation);
+                    await donationService.sendDonateMail(donation);
                     
                     return res.status(201).json({ success: 'true', message: "Donation created successfully", donation });
                 } else {

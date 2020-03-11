@@ -82,4 +82,18 @@ const sendToDonorDonateBankingEmail = async (mail) => {
     }
 }
 
-module.exports = { sendOTPMail, sendResetPasswordMail, sendToDonorDonateCashEmail, sendToHostDonateEmail, sendToDonorDonateBankingEmail }
+const sendUpdateStatusDonationMail = async (mail) => {
+    try {
+        const html = templateMails.sendUpdateStatusDonationMail(mail);
+        await transporter.sendMail({
+            to: mail.donor.email,
+            from: 'admin@loveus.com',
+            subject: 'Xác nhận quyên góp chiến dịch' + mail.campaignTitle,
+            html: html
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports = { sendOTPMail, sendResetPasswordMail, sendToDonorDonateCashEmail, sendToHostDonateEmail, sendToDonorDonateBankingEmail, sendUpdateStatusDonationMail }

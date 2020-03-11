@@ -135,7 +135,7 @@ exports.createAsGuest = async (req) => {
     })
 }
 
-exports.sendMail = async (donation) => {
+exports.sendDonateMail = async (donation) => {
     const user = await Models.User.findByPk(donation.userId);
     const campaign = await Models.Campaign.findOne({
         where: {
@@ -151,7 +151,8 @@ exports.sendMail = async (donation) => {
         }
     }) 
     const regex = /\B(?=(\d{3})+(?!\d))/g;
-    const amountFormated = donation.donationAmount.replace(regex, '.');
+    let amountFormated = donation.donationAmount + '';
+    amountFormated =amountFormated.replace(regex, '.');
     const mail = {
         campaignTitle: campaign.campaignTitle,
         donor: {
@@ -209,5 +210,36 @@ exports.hostUpdateStatusDonation = async (req) => {
         return 2;
     }
     action === 'approve' ? donation.donationStatus = 'done' : donation.donationStatus = 'reject'
+    await this.sendUpdateStatusDonationMail(donation);
     return await donation.save();
 }
+
+exports.sendUpdateStatusDonationMail = async (donation) => {
+    const donor = await Models.User.findByPk(donation.userId);
+    const campaign = await Models.Campaign.findByPk(donation.campaignId);
+    let status;
+    if (donation.donationStatus === 'done') {
+        status = 'Xác nhận thành công' ;
+    } else if (donation.donationStatus === 'reject') {
+        status = 'Đã bị vô hiệu vì thông tin chuyển tiền không chính xác';
+    }
+    const regex = /\B(?=(\d{3})+(?!\d))/g;
+    let amountFormated = donation.donationAmount + '';
+    amountFormated =amountFormated.replace(regex, '.');
+    const mail = {
+        campaignTitle: campaign.campaignTitle,
+        donor: {
+            email: donor.email,
+            name: donor.fullname
+        },
+        donation: {
+            id: donation.id,
+            amount: amountFormated,
+            method: donation.donationMethod,
+            trackingCode: donation.trackingCode
+        },
+        status
+    }
+    await mailService.sendUpdateStatusDonationMail(mail);
+}
+

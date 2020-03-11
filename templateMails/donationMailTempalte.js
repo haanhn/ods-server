@@ -43,3 +43,12 @@ exports.sendToHostDonateEmail = (mail, method) => {
         </i>
     </p>`
 }
+
+exports.sendUpdateStatusDonationMail = (mail) => {
+    return html = `<p><b><i>Kính gửi: ` + mail.donor.name + `</i></b></p>
+    <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
+    <p>cảm ơn bạn đã quyên góp cho chiến dịch: <b><i style='text-transform: uppercase;'>`+ mail.campaignTitle +`.</i></b> </p>
+    <p>Số tiền quyên góp: <b>`+ mail.donation.amount + `vnđ</b></p>
+    <p>Mã xác nhận: <b>`+ mail.donation.trackingCode +`</b></p>
+    <p>`+ mail.status +`</p>`
+}
