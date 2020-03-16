@@ -13,6 +13,12 @@ router.get('/get-by-campaign/:campaignSlug', donationController.getAllByCampaign
 
 router.post('/create', donationController.create);
 
+router.post('/paypal', donationController.createPayment);
+
+router.get('/paypal/success', donationController.executePayment);
+
+// router.get('/paypal/cancel', donationController.cancelPayment);
+
 router.post('/host/update-donation-status-via-email/:action', donationController.hostUpdateDonationStatusViaEmail);
 
 

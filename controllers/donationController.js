@@ -115,3 +115,25 @@ exports.hostUpdateDonationStatusViaEmail = async (req, res, next) => {
         res.status(500).json({ error: 'Server Error' });
     }
 }
+
+exports.createPayment = async (req, res, next) => {
+    try {
+        await donationService.createPayment(req, res);
+        // console.log(url);
+        // return res.redirect(url);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.executePayment = async (req, res, next) => {
+    try {
+        await donationService.executePayment(req, res);
+        // console.log(url);
+        // return res.redirect(url);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}

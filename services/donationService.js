@@ -1,8 +1,23 @@
+const paypal = require('paypal-rest-sdk');
 const randomstring = require('randomstring');
+const env = require('dotenv').config();
 
 const mailService = require('./mailService');
 const Models = require('../models');
 const { getRole } = require('./authenticateService');
+
+
+// paypal.configure({
+//     'mode': process.env.PAYPAL_MODE || 'sandbox',
+//     'client_id': process.env.PAYPAL_CLIENT_ID || 'client id',
+//     'client_secret': process.env.PAYPAL_CLIENT_SECRET || 'client secret'
+// });
+paypal.configure({
+    'mode': 'sandbox',
+    'client_id': 'Ab-IWjL5PsL2EWGI3iUgxtT5gl6FWdk0ijtiFBiavuV8UQPoLGQlCBzcaVcp0FA0Pl-OlmO9XCKx5EdM',
+    'client_secret': 'EGSiD9wqRqfswTMxCLz_sycy2dR9cAguVLugo38FgOINE4vyPb-ba6wNUqEAwtj_8fbVc4GcAINkxRGy'
+});
+
 
 exports.getAllByCampaignAndStatus = async (req, status) => {
     const campaignSlug = req.params.campaignSlug;
@@ -243,3 +258,70 @@ exports.sendUpdateStatusDonationMail = async (donation) => {
     await mailService.sendUpdateStatusDonationMail(mail);
 }
 
+const create_payment_json = async (req) => {
+    const amount = parseFloat(req.body.amount);
+    console.log(amount);
+    return payment_json = {
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls": {
+            "return_url": "http://localhost:5000/api/donations/paypal/success?amount=" + amount,
+            "cancel_url": "http://localhost:5000/api/donations/paypal/cancel"
+        },
+        "transactions": [{
+            "amount": {
+                "currency": "USD",
+                "total": amount,
+            },
+            "description": req.body.message || ""
+        }]
+    }
+};
+
+exports.createPayment = async (req, res) => {
+    const payment_json = await create_payment_json(req);
+    // console.log(payment_json);
+    paypal.payment.create(payment_json, function (error, payment) {
+        if (error) {
+            throw error;
+        } else {
+            for (let i = 0; i < payment.links.length; i++){
+                if (payment.links[i].rel === 'approval_url') {
+                    // window.open(payment.links[i].href, '_blank');
+                    res.redirect( payment.links[i].href);
+                }
+            }
+        }
+    });
+}
+
+const execute_payment_json = async (req) => {
+    const payerId = req.query.PayerID;
+    const amount = req.query.amount;
+    console.log(req.query);
+    return payment_json = { 
+        "payer_id": payerId,
+        "transactions": [{
+            "amount": {
+                "currency": "USD",
+                "total": amount
+            }
+        }]
+    }
+};
+
+exports.executePayment = async (req) => {
+    const paymentId = req.query.paymentId;
+    const payment_json = await execute_payment_json(req);
+    paypal.payment.execute(paymentId, payment_json, function (error, payment) {
+        if (error) {
+            console.log(error.response);
+            throw error;
+        } else {
+            console.log(JSON.stringify(payment));
+            
+        }
+    });
+}
