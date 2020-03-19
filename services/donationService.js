@@ -1,21 +1,17 @@
 const paypal = require('paypal-rest-sdk');
 const randomstring = require('randomstring');
 const env = require('dotenv').config();
+const slug = require('slug');
 
 const mailService = require('./mailService');
 const Models = require('../models');
 const { getRole } = require('./authenticateService');
 
 
-// paypal.configure({
-//     'mode': process.env.PAYPAL_MODE || 'sandbox',
-//     'client_id': process.env.PAYPAL_CLIENT_ID || 'client id',
-//     'client_secret': process.env.PAYPAL_CLIENT_SECRET || 'client secret'
-// });
 paypal.configure({
-    'mode': 'sandbox',
-    'client_id': 'Ab-IWjL5PsL2EWGI3iUgxtT5gl6FWdk0ijtiFBiavuV8UQPoLGQlCBzcaVcp0FA0Pl-OlmO9XCKx5EdM',
-    'client_secret': 'EGSiD9wqRqfswTMxCLz_sycy2dR9cAguVLugo38FgOINE4vyPb-ba6wNUqEAwtj_8fbVc4GcAINkxRGy'
+    'mode': process.env.PAYPAL_MODE || 'sandbox',
+    'client_id': process.env.PAYPAL_CLIENT_ID || 'client id',
+    'client_secret': process.env.PAYPAL_CLIENT_SECRET || 'client secret'
 });
 
 
@@ -259,23 +255,41 @@ exports.sendUpdateStatusDonationMail = async (donation) => {
 }
 
 const create_payment_json = async (req) => {
-    const amount = parseFloat(req.body.amount);
-    console.log(amount);
+    const amount = parseFloat(req.body.amount) + 1.5;
+    const userId = req.body.userId || "";
+    const campaign = await Models.Campaign.findByPk(req.body.campaignId);
+    const message = req.body.message || "";
+    const fullname = slug(req.body.fullname);
+    console.log(fullname);
     return payment_json = {
         "intent": "sale",
         "payer": {
             "payment_method": "paypal"
         },
         "redirect_urls": {
-            "return_url": "http://localhost:5000/api/donations/paypal/success?amount=" + amount,
+            "return_url": "http://localhost:5000/api/donations/paypal/success?amount=" + amount + '&userId=' + userId + '&campaignId=' + campaign.id + '&fullname=' + fullname ,
             "cancel_url": "http://localhost:5000/api/donations/paypal/cancel"
         },
         "transactions": [{
-            "amount": {
-                "currency": "USD",
-                "total": amount,
+            "item_list": {
+                "items": [
+                    {
+                        "name": campaign.campaignTitle,
+                        "quantity": "1",
+                        "price": req.body.amount,
+                        "currency": "USD"
+                    },
+                ]
             },
-            "description": req.body.message || ""
+            "amount": {
+                "total": amount,
+                "currency": "USD",
+                "details": {
+                    "subtotal": req.body.amount,
+                    "handling_fee": "1.5"
+                }
+            },
+            "description": message
         }]
     }
 };
@@ -287,6 +301,7 @@ exports.createPayment = async (req, res) => {
         if (error) {
             throw error;
         } else {
+            console.log(payment);
             for (let i = 0; i < payment.links.length; i++){
                 if (payment.links[i].rel === 'approval_url') {
                     // window.open(payment.links[i].href, '_blank');
@@ -312,16 +327,54 @@ const execute_payment_json = async (req) => {
     }
 };
 
-exports.executePayment = async (req) => {
+exports.executePayment = async (req, res) => {
     const paymentId = req.query.paymentId;
     const payment_json = await execute_payment_json(req);
-    paypal.payment.execute(paymentId, payment_json, function (error, payment) {
+    const userId = req.query.userId;
+    const campaignId = req.query.campaignId;
+    const fullname = req.query.fullname;
+    let user;
+    const trackingCode = randomstring.generate({
+        length: 12,
+        charset: 'numeric'
+    });
+    // console.log(req.query);
+    paypal.payment.execute(paymentId, payment_json, async (error, payment) => {
         if (error) {
             console.log(error.response);
-            throw error;
+            return false;
         } else {
             console.log(JSON.stringify(payment));
-            
+            if (userId) {
+                user = await Models.findByPk(userId);
+            } else {
+                user = await Models.User.findOne({
+                    where: {
+                        email: payment.payer.payer_info.email
+                    }
+                });
+                if (!user) {
+                    user = await Models.User.create({
+                        email: payment.payer.payer_info.email,
+                        password: '123456',
+                        fullname: fullname.replace(/-/g, " "),
+                        isMember: 0,
+                    })
+                }
+            }
+            const donation = await Models.Donation.create({
+                userId: user.id,
+                campaignId: campaignId,
+                donationAmount: payment.transactions[0].amount.details.subtotal * 23000,
+                donationMethod: "paypal",
+                trackingCode: trackingCode,
+                donationStatus: 'done',
+                donationMessage: payment.transactions[0].description
+            })
+            await this.sendDonateMail(donation);
+            // const campaign = await Models.Campaign.findByPk(campaignId);
+            // return true;
         }
+        res.redirect('http://localhost:5000/api/campaign/get-detail/Giai-cuu-dua-hau-giup-ba-con-nong-dan-447425');
     });
 }

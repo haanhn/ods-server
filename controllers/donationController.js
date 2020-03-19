@@ -130,8 +130,9 @@ exports.createPayment = async (req, res, next) => {
 exports.executePayment = async (req, res, next) => {
     try {
         await donationService.executePayment(req, res);
-        // console.log(url);
-        // return res.redirect(url);
+        // if ( result) {
+        //     res.redirect('http://localhost:5000/api/campaign/get-detail/Giai-cuu-dua-hau-giup-ba-con-nong-dan-447425');
+        // }
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
