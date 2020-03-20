@@ -299,13 +299,16 @@ exports.createPayment = async (req, res) => {
     // console.log(payment_json);
     paypal.payment.create(payment_json, function (error, payment) {
         if (error) {
+            console.log('error paypal');
+            console.log(error);
             throw error;
         } else {
             console.log(payment);
             for (let i = 0; i < payment.links.length; i++){
                 if (payment.links[i].rel === 'approval_url') {
                     // window.open(payment.links[i].href, '_blank');
-                    res.redirect( payment.links[i].href);
+                    // res.redirect( payment.links[i].href);
+                    res.status(200).json({ url: payment.links[i].href })
                 }
             }
         }
@@ -346,7 +349,11 @@ exports.executePayment = async (req, res) => {
         } else {
             console.log(JSON.stringify(payment));
             if (userId) {
-                user = await Models.findByPk(userId);
+                user = await Models.User.findOne({
+                    where: {
+                        id: userId
+                    }
+                });
             } else {
                 user = await Models.User.findOne({
                     where: {
@@ -375,6 +382,11 @@ exports.executePayment = async (req, res) => {
             // const campaign = await Models.Campaign.findByPk(campaignId);
             // return true;
         }
-        res.redirect('http://localhost:5000/api/campaign/get-detail/Giai-cuu-dua-hau-giup-ba-con-nong-dan-447425');
+        const campaign = await Models.Campaign.findOne({
+            where: {
+                id: campaignId
+            }
+        });
+        res.redirect('http://localhost:3000/campaigns/' + campaign.campaignSlug);
     });
 }
