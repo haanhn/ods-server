@@ -349,6 +349,7 @@ exports.executePayment = async (req, res) => {
         } else {
             console.log(JSON.stringify(payment));
             if (userId) {
+                // user = await Models.findByPk(userId);
                 user = await Models.User.findOne({
                     where: {
                         id: userId

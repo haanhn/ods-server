@@ -20,7 +20,7 @@ exports.getAll = async () => {
     });
     for (let campaign of campaigns){
         const raise = await this.getRaise(campaign.id);
-        campaign.dataValues.raise = raise[0].dataValues;
+        campaign.dataValues.raise = raise;
     }
     return campaigns;
 }
@@ -38,7 +38,7 @@ exports.getAllByStatus = async (status) => {
 
     for (let campaign of campaigns){
         const raise = await this.getRaise(campaign.id);
-        campaign.dataValues.raise = raise[0].dataValues;
+        campaign.dataValues.raise = raise;
     }
     return campaigns;
 }
@@ -53,7 +53,7 @@ exports.getAllByCategory = async (req) => {
     let campaigns = await category.getCampaigns({ where: { campaignStatus: 'public' } });
     for (let campaign of campaigns){
         const raise = await this.getRaise(campaign.id);
-        campaign.dataValues.raise = raise[0].dataValues;
+        campaign.dataValues.raise = raise;
     }
     return campaigns;
 }
@@ -71,7 +71,7 @@ exports.getNewest = async (req) => {
     })
     for (let campaign of campaigns){
         const raise = await this.getRaise(campaign.id);
-        campaign.dataValues.raise = raise[0].dataValues;
+        campaign.dataValues.raise = raise;
     }
     return campaigns;
 }
@@ -217,13 +217,20 @@ exports.createStep5 = async (req, res, next) => {
 }
 
 exports.getRaise = async (campaignId) => {
-    return await Models.Donation.findAll({
+    return await Models.Donation.sum('donationAmount', {
         where: {
             campaignId: campaignId,
             donationStatus: 'done'
-        },
-        attributes: [
-            [sequelize.fn('sum', sequelize.col('donationAmount')), 'total_amount'],
-        ]
-    })
+        }
+    });
+}
+
+exports.getCountDonationsByCampaignId = async (campaignId, donationStatus) => {
+    const status = donationStatus ? donationStatus : 'done';
+    return await Models.Donation.count({
+        where: {
+            campaignId: campaignId,
+            donationStatus: status
+        }
+    });
 }

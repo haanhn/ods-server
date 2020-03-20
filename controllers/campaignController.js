@@ -6,8 +6,9 @@ exports.getCampaignDetail = async (req, res, next) => {
         const campaignSlug = req.params.campaignSlug;
         const campaign = await campaignService.getCampaignDetail(campaignSlug);
         if (campaign) {
-            const raise = await campaignService.getRaise(campaign.id);
-            return res.status(200).json({ success: 'true', message: 'get detail of campaign successfully', campaign, raise});
+            const raised = await campaignService.getRaise(campaign.id);
+            const countDonations = await campaignService.getCountDonationsByCampaignId(campaign.id);
+            return res.status(200).json({ success: 'true', message: 'get detail of campaign successfully', campaign, raised, countDonations});
         } 
         return res.status(404).json({ success: 'false', message: 'cannot find this campaign.' });
     } catch (error) {
