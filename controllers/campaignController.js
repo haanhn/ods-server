@@ -126,3 +126,38 @@ exports.createCampaignStep5 = async (req, res, next) => {
         res.status(500).json({ error: 'Server Error' });
     }
 }
+
+exports.update = async (req, res, next) => {
+    try {
+        let validator = await campaignValidator.updateCampaign(req);
+        if (validator !== null) {
+            res.status(400).send({ message: validator });
+        } else {
+            const result = await campaignService.update(req);
+            if (result === -1) {
+                return res.status(400).json({ success: 'false', message: 'cannot find this campaign'})
+            } else if (result === 0) {
+                return res.status(400).json({ success: 'false', message: 'campaign has been closed, cannot update'})
+            }
+            return res.status(200).json({ success: 'true', message: "Campaign has been updated successfully", result });
+        } 
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.updateStatus = async (req, res, next) => {
+    try {
+        const result = await campaignService.updateStatus(req);
+        if (result === -1) {
+            return res.status(400).json({ success: 'false', message: 'Only close this campaign'})
+        } else if (result === 0) {
+            return res.status(400).json({ success: 'false', message: 'cannot find this campaign'})
+        }
+        return res.status(200).json({ success: 'true', message: "Campaign has been updated successfully", result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}

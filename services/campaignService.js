@@ -234,3 +234,53 @@ exports.getCountDonationsByCampaignId = async (campaignId, donationStatus) => {
         }
     });
 }
+
+exports.update = async (req) => {
+    const campaignId = req.body.campaign.id;
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: campaignId
+        }
+    });
+    if (!campaign) {
+        return -1;
+    }
+    if (campaign.campaignStatus === 'close') {
+        return 0;
+    }
+    const random = randomstring.generate({
+        length: 6,
+        charset: 'numeric'
+    });
+    campaign.campaignTitle = req.body.campaign.campaignTitle;
+    campaign.campaignSlug = slug(req.body.campaign.campaignTitle) + '-' + random,
+    campaign.categoryId = req.body.campaign.categoryId;
+    campaign.campaignShortDescription = req.body.campaign.campaignShortDescription;
+    campaign.campaignDescription = req.body.campaign.campaignDescription;
+    campaign.campaignThumbnail = req.body.campaign.campaignThumbnail;
+    campaign.campaignAddress = req.body.campaign.campaignAddress;
+    campaign.campaignRegion = req.body.campaign.campaignRegion;
+    campaign.campaignEndDate = req.body.campaign.campaignEndDate;
+    campaign.campaignGoal = req.body.campaign.campaignGoal;
+    return campaign.save();
+}
+
+exports.updateStatus = async (req) => {
+    const campaignId = req.body.campaignId;
+    const status = req.body.status;
+    if (status != 'close') {
+        return -1;
+    }
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: campaignId
+        }
+    });
+    if (!campaign) {
+        return 0;
+    }
+    campaign.campaignStatus = 'close';
+    return campaign.save();
+}
+
+const sendCloseMail = async (campaignId) => {}

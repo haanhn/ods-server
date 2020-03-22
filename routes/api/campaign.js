@@ -50,5 +50,9 @@ router.post('/create-step3', campaignController.createCampaignStep3);
 
 router.post('/create-step5', campaignController.createCampaignStep5);
 
+router.post('/update', campaignController.update);
+
+router.post('/update/status', campaignController.updateStatus);
+
 
 module.exports = router;
