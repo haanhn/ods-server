@@ -4,7 +4,6 @@ exports.getAll = async (req, res, next) => {
     try {
         const result = await campaignReviewService.getAll(req);
         if (result) {
-            console.log(result[0].content);
             return res.status(200).json({ success: 'true', result});
         }
         return res.status(400).json({ success: 'fail', message: 'Cannot find this campaign'})
@@ -57,7 +56,7 @@ exports.create = async (req, res, next) => {
 
 exports.destroy = async (req, res, next) => {
     try {
-        const result = await expenseService.destroy(req);
+        const result = await campaignReviewService.destroy(req);
         if (result != false) {
             return res.status(200).json({ success: 'true', message: "Review deleted successfully", result });
         } else {

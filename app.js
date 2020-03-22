@@ -60,6 +60,9 @@ models.sequelize
     .sync()
     .then(() => {
         console.log('Nice! Database looks fine');
+        // models.Role.bulkCreate(seedRoles);
+        // models.User.bulkCreate(seedUsers);
+        // models.Category.bulkCreate(seedCategories);
     })
     .catch(err => {
         console.log(err, "Something went wrong with the Database Update!")

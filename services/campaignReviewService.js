@@ -34,7 +34,17 @@ exports.checkAllow = async (req) => {
         }
     })
     if (donation) {
-        return 1;
+        let userReviewStatus = 1;
+        const review = await Models.CampaignReview.findOne({
+            where: {
+                userId: user.id,
+                campaignId: campaign.id
+            }
+        });
+        if (review) {
+            userReviewStatus = 2;
+        }
+        return userReviewStatus;
     }
     return -1;
 
