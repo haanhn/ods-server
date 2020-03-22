@@ -5,6 +5,18 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.UUID,
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
+        },
+        title: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        cost: {
+            type: DataTypes.DOUBLE,
+            allowNull: false
+        },
+        description: {
+            type: DataTypes.STRING,
+            allowNull: true
         }
     }, {
         tableName: 'ods_expenses'
@@ -12,7 +24,6 @@ module.exports = (sequelize, DataTypes) => {
 
     Expense.associate = function(models) {
         Expense.belongsTo(models.Campaign, { foreignKey: 'campaignId' });
-        Expense.hasMany(models.ExpenseDetail, { foreignKey: 'expenseId' });
     };
 
     return Expense;

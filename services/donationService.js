@@ -255,7 +255,9 @@ exports.sendUpdateStatusDonationMail = async (donation) => {
 }
 
 const create_payment_json = async (req) => {
-    const amount = parseFloat(req.body.amount) + 1.5;
+    const reqAmount = Math.ceil(parseInt(req.body.amount) / 23000);
+    const amount = reqAmount + 1.5;
+    console.log(amount);
     const userId = req.body.userId || "";
     const campaign = await Models.Campaign.findByPk(req.body.campaignId);
     const message = req.body.message || "";
@@ -267,7 +269,7 @@ const create_payment_json = async (req) => {
             "payment_method": "paypal"
         },
         "redirect_urls": {
-            "return_url": "http://localhost:5000/api/donations/paypal/success?amount=" + amount + '&userId=' + userId + '&campaignId=' + campaign.id + '&fullname=' + fullname ,
+            "return_url": "http://localhost:5000/api/donations/paypal/success?amount=" + req.body.amount + '&userId=' + userId + '&campaignId=' + campaign.id + '&fullname=' + fullname ,
             "cancel_url": "http://localhost:5000/api/donations/paypal/cancel"
         },
         "transactions": [{
@@ -276,7 +278,7 @@ const create_payment_json = async (req) => {
                     {
                         "name": campaign.campaignTitle,
                         "quantity": "1",
-                        "price": req.body.amount,
+                        "price": reqAmount,
                         "currency": "USD"
                     },
                 ]
@@ -285,7 +287,7 @@ const create_payment_json = async (req) => {
                 "total": amount,
                 "currency": "USD",
                 "details": {
-                    "subtotal": req.body.amount,
+                    "subtotal": reqAmount,
                     "handling_fee": "1.5"
                 }
             },
@@ -317,7 +319,8 @@ exports.createPayment = async (req, res) => {
 
 const execute_payment_json = async (req) => {
     const payerId = req.query.PayerID;
-    const amount = req.query.amount;
+    const reqAmount = Math.ceil(parseInt(req.query.amount) / 23000);
+    const amount = reqAmount + 1.5;
     console.log(req.query);
     return payment_json = { 
         "payer_id": payerId,
@@ -373,7 +376,7 @@ exports.executePayment = async (req, res) => {
             const donation = await Models.Donation.create({
                 userId: user.id,
                 campaignId: campaignId,
-                donationAmount: payment.transactions[0].amount.details.subtotal * 23000,
+                donationAmount: req.query.amount,
                 donationMethod: "paypal",
                 trackingCode: trackingCode,
                 donationStatus: 'done',
