@@ -96,4 +96,28 @@ const sendUpdateStatusDonationMail = async (mail) => {
     }
 }
 
-module.exports = { sendOTPMail, sendResetPasswordMail, sendToDonorDonateCashEmail, sendToHostDonateEmail, sendToDonorDonateBankingEmail, sendUpdateStatusDonationMail }
+const sendUpdatePostMail = async (listEmail, title, slug) => {
+    try {
+        const html = templateMails.sendUpdatePostMail(title, slug);
+        for (let i = 0; i < listEmail.length; i++) {
+            await transporter.sendMail({
+                to: listEmail[i],
+                from: 'admin@loveus.com',
+                subject: 'Cập nhật thông tin chiến dịch' + title,
+                html: html
+            })
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports = { 
+    sendOTPMail, 
+    sendResetPasswordMail, 
+    sendToDonorDonateCashEmail, 
+    sendToHostDonateEmail, 
+    sendToDonorDonateBankingEmail, 
+    sendUpdateStatusDonationMail,
+    sendUpdatePostMail, 
+}

@@ -49,6 +49,10 @@ module.exports = (sequelize, DataTypes) => {
         campaignStatus: {
             type: DataTypes.ENUM('setting', 'waiting', 'public', 'block', 'close'),
             defaultValue: 'setting'
+        },
+        autoClose: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
         }
     }, {
         tableName: 'ods_campaigns'

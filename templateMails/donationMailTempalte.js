@@ -52,3 +52,10 @@ exports.sendUpdateStatusDonationMail = (mail) => {
     <p>Mã xác nhận: <b>`+ mail.donation.trackingCode +`</b></p>
     <p>`+ mail.status +`</p>`
 }
+
+exports.sendUpdatePostMail = (title, slug) => {
+    return html = `<p><b><i>Xin chào</i></b></p>
+    <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
+    <p>Chiến dịch bạn đang theo dõi: <b><i style='text-transform: uppercase;'>`+ title +`.</i></b> đã được cập nhật thông tin.</p>
+    Vui lòng click vào <a href='http://localhost:5000/api/posts/get-all-post/` + slug + `' target='_blank'><u>đây</u> để xem chi tiết</a>` 
+}

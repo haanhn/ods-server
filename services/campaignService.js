@@ -101,7 +101,7 @@ exports.getCampaignDetail = async (slug) => {
     return await Models.Campaign.findOne({ 
         where: { 
             campaignSlug: slug,
-            campaignStatus: 'public'
+            campaignStatus: ['public', 'close']
         },
         include: [
             { model: Models.Category, attributes: [ 'categoryTitle' ] },
@@ -179,6 +179,7 @@ exports.createCampaignStep3 = async (req, res, next) => {
     const reqCity = req.body.campaign.campaignRegion;
     const reqGoal = req.body.campaign.campaignGoal;
     const reqEndDate = req.body.campaign.campaignEndDate;
+    const autoClose = req.body.campaign.autoClose ? 'true' : 'false';
 
     if (!reqSlug) {
         return false;
@@ -189,6 +190,7 @@ exports.createCampaignStep3 = async (req, res, next) => {
             campaign.campaignRegion = reqCity;
             campaign.campaignGoal = reqGoal;
             campaign.campaignEndDate = reqEndDate;
+            campaign.autoClose = autoClose;
 
             await campaign.save();
             return campaign;
@@ -234,3 +236,49 @@ exports.getCountDonationsByCampaignId = async (campaignId, donationStatus) => {
         }
     });
 }
+
+exports.update = async (req) => {
+    const campaignId = req.body.campaign.id;
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: campaignId
+        }
+    });
+    if (!campaign) {
+        return -1;
+    }
+    if (campaign.campaignStatus === 'close') {
+        return 0;
+    }
+    campaign.campaignTitle = req.body.campaign.campaignTitle;
+    campaign.categoryId = req.body.campaign.categoryId;
+    campaign.campaignShortDescription = req.body.campaign.campaignShortDescription;
+    campaign.campaignDescription = req.body.campaign.campaignDescription;
+    campaign.campaignThumbnail = req.body.campaign.campaignThumbnail;
+    campaign.campaignAddress = req.body.campaign.campaignAddress;
+    campaign.campaignRegion = req.body.campaign.campaignRegion;
+    campaign.campaignEndDate = req.body.campaign.campaignEndDate;
+    campaign.campaignGoal = req.body.campaign.campaignGoal;
+    campaign.autoClose = req.body.campaign.autoClose ? 'true' : 'false'
+    return campaign.save();
+}
+
+exports.updateStatus = async (req) => {
+    const campaignId = req.body.campaignId;
+    const status = req.body.status;
+    if (status != 'close') {
+        return -1;
+    }
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: campaignId
+        }
+    });
+    if (!campaign) {
+        return 0;
+    }
+    campaign.campaignStatus = 'close';
+    return campaign.save();
+}
+
+const sendCloseMail = async (campaignId) => {}
