@@ -60,6 +60,7 @@ exports.create = async (req) => {
     const campaignId = req.body.campaignId;
     const title = req.body.post.postTitle;
     const content = req.body.post.postContent;
+    let status = req.body.post.postStatus;
     const reqUserId = req.jwtDecoded.data.id;
 
     const campaign = await Models.Campaign.findByPk(campaignId);
@@ -74,7 +75,7 @@ exports.create = async (req) => {
     const post = await Models.Post.create({
         postTitle: title,
         postContent: content,
-        postStatus: 'enable',
+        postStatus: status,
         campaignId: campaign.id
     })
     await sendUpdatePostMail(campaignId);
