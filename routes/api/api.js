@@ -12,6 +12,7 @@ const uploadRoutes = require('./upload');
 const donationRoutes = require('./donation');
 const postRoutes = require('./post');
 const expense = require('./expense');
+const follow = require('./follow');
 
 const router = express.Router();
 
@@ -36,5 +37,7 @@ router.use('/donations', donationRoutes);
 router.use('/posts', postRoutes);
 
 router.use('/expenses', expense);
+
+router.use('/follows', follow);
 
 module.exports = router;

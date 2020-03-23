@@ -6,6 +6,7 @@ const slug = require('slug');
 const mailService = require('./mailService');
 const Models = require('../models');
 const { getRole } = require('./authenticateService');
+const followService = require('./followService');
 
 
 paypal.configure({
@@ -83,6 +84,10 @@ exports.createAsMember = async (req) => {
         length: 12,
         charset: 'numeric'
     });
+    const noti = req.body.noti;
+    if (noti) {
+        await followService.follow(req);
+    }
     return await Models.Donation.create({
         userId: userId,
         campaignId: campaignId,
@@ -107,7 +112,6 @@ exports.createAsGuest = async (req) => {
         length: 12,
         charset: 'numeric'
     });
-    const role = await getRole('guest');
     let userId;
     const checkUser = await Models.User.findOne({
         where: {
@@ -122,18 +126,14 @@ exports.createAsGuest = async (req) => {
             email: email,
             password: '123456',
             fullname: fullname,
-            roleId: role.id,
+            isMember: 0,
         });
         userId = user.id
     }
-
-    const campaign = await Models.Campaign.findOne({
-        where: {
-            id: campaignId
-        }
-    })
-
-    
+    const noti = req.body.noti;
+    if (noti) {
+        await followService.follow(req);
+    }
     return await Models.Donation.create({
         userId: userId,
         campaignId: campaignId,

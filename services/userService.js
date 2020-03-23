@@ -13,3 +13,9 @@ exports.updateUserAddress = async (req) => {
     user.region = req.body.region;
     return await user.save();
 }
+
+exports.updatePaypalAccount = async (req) => {
+    const user = await this.findByEmail(req);
+    user.paypal = req.body.paypal;
+    return await user.save();
+}

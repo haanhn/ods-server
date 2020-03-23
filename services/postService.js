@@ -1,4 +1,6 @@
 const Models = require('../models');
+const followService = require('./followService');
+const mailService = require('./mailService');
 
 exports.checkHost = async (campaignId, userId) => {
     return await Models.UserCampaign.findOne({
@@ -69,12 +71,14 @@ exports.create = async (req) => {
     if (!checkHost) {
         return 2;
     }
-    return await Models.Post.create({
+    const post = await Models.Post.create({
         postTitle: title,
         postContent: content,
         postStatus: 'enable',
         campaignId: campaign.id
     })
+    await sendUpdatePostMail(campaignId);
+    return post;
 }
 
 exports.update = async (req) => {
@@ -92,4 +96,24 @@ exports.update = async (req) => {
             id: postId
         }
     })
+}
+
+const sendUpdatePostMail = async (campaignId) => {
+    const listFollowers = await followService.getListFollowers(campaignId);
+    let listEmail = [];
+    for (let follower of listFollowers) {
+        const user = await Models.User.findOne({
+            where: {
+                id: follower
+            }
+        })
+        listEmail.push(user.email);
+    }
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: campaignId
+        }
+    })
+
+    await mailService.sendUpdatePostMail(listEmail, campaign.campaignTitle, campaign.campaignSlug);
 }
