@@ -7,6 +7,7 @@ const mailService = require('./mailService');
 const Models = require('../models');
 const { getRole } = require('./authenticateService');
 const followService = require('./followService');
+const campaignService = require('./campaignService');
 
 
 paypal.configure({
@@ -88,6 +89,17 @@ exports.createAsMember = async (req) => {
     if (noti) {
         await followService.follow(req);
     }
+
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: campaignId
+        }
+    });
+
+    if (campaign.campaignStatus != 'public') {
+        return false;
+    }
+
     return await Models.Donation.create({
         userId: userId,
         campaignId: campaignId,
@@ -112,6 +124,22 @@ exports.createAsGuest = async (req) => {
         length: 12,
         charset: 'numeric'
     });
+
+    const noti = req.body.noti;
+    if (noti) {
+        await followService.follow(req);
+    }
+
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: campaignId
+        }
+    });
+
+    if (campaign.campaignStatus != 'public') {
+        return false;
+    }
+
     let userId;
     const checkUser = await Models.User.findOne({
         where: {
@@ -130,10 +158,7 @@ exports.createAsGuest = async (req) => {
         });
         userId = user.id
     }
-    const noti = req.body.noti;
-    if (noti) {
-        await followService.follow(req);
-    }
+
     return await Models.Donation.create({
         userId: userId,
         campaignId: campaignId,
@@ -197,6 +222,24 @@ exports.sendDonateMail = async (donation) => {
     }
 }
 
+const closeCampaign = async (campaign) => {
+    if (campaign.autoClose) {
+        const raise = await campaignService.getRaise(campaign.id);
+        if (raise >= campaign.campaignGoal) {
+            const waitingDonations = await Models.Donation.findAll({
+                where: {
+                    campaignId: campaign.id,
+                    donationStatus: 'pending'
+                }
+            })
+            if (waitingDonations.length === 0) {
+                campaign.campaignStatus = 'close';
+                await campaign.save();
+            }
+        }
+    }
+}
+
 exports.hostUpdateStatusDonation = async (req) => {
     const action = req.params.action;
     const donationId = req.body.donationId;
@@ -222,7 +265,15 @@ exports.hostUpdateStatusDonation = async (req) => {
     }
     action === 'approve' ? donation.donationStatus = 'done' : donation.donationStatus = 'reject'
     await this.sendUpdateStatusDonationMail(donation);
-    return await donation.save();
+    await donation.save();
+
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: donation.campaignId
+        }
+    })
+    await closeCampaign(campaign);
+    return donation;
 }
 
 exports.sendUpdateStatusDonationMail = async (donation) => {
@@ -252,6 +303,12 @@ exports.sendUpdateStatusDonationMail = async (donation) => {
         status
     }
     await mailService.sendUpdateStatusDonationMail(mail);
+}
+
+exports.sendCloseMail = async (campaign) => {
+    if (campaign.autoClose) {
+        
+    }
 }
 
 const create_payment_json = async (req) => {
@@ -391,6 +448,7 @@ exports.executePayment = async (req, res) => {
                 id: campaignId
             }
         });
+        await closeCampaign(campaign);
         res.redirect('http://localhost:3000/campaigns/' + campaign.campaignSlug);
     });
 }

@@ -35,6 +35,7 @@ exports.follow = async (req) => {
     let userId = req.body.userId;
     const campaignId = req.body.campaignId;
     const email = req.body.email;
+    const name = req.body.name || 'follower';
     if (!userId && !email) {
         return -1;
     }
@@ -46,7 +47,7 @@ exports.follow = async (req) => {
             user = await Models.User.create({
                 email: email,
                 password: '123456',
-                fullname: 'follower',
+                fullname: name,
                 isMember: 0
             })
         }
