@@ -11,7 +11,7 @@ router.get('/overall/:campaignSlug', campaignReviewController.getOverall);
 
 router.use(AuthMiddleware.isAuth);
 
-router.get('/check-allow/:campaignSlug', campaignReviewController.checkAllow);
+router.post('/check-allow/:campaignSlug', campaignReviewController.checkAllow);
 
 router.post('/', campaignReviewController.create);
 
