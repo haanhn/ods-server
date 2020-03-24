@@ -1,9 +1,135 @@
 const slug = require('slug');
 const randomstring = require('randomstring');
 const sequelize = require('sequelize');
+const cron = require('node-cron');
 
 const Models = require('../models');
 const categoryService = require('../services/categoriesService');
+const mailService = require('./mailService');
+const followService = require('./followService');
+
+
+// cron.schedule('10 * * * * *', async () => {
+//     const campaigns = await Models.Campaign.findAll({
+//         where: {
+//             campaignStatus: 'public',
+//             autoClose: 1,
+//         }
+//     })
+//     const listEmail = [];
+//     for (let campaign of campaigns){
+//         if (calculateDate(campaign) === 1) {
+//             const host = await this.getHost(campaign.id);
+//             const listFollowers = await followService.getListFollowers(campaign.id);
+//             const listFollowerEmails = [];
+//             for (let i = 0; i < listFollowers.length; i++) {
+//                 const followerEmail = await Models.User.findOne({ 
+//                     where: {
+//                         id: listFollowers[i]
+//                     },
+//                     attributes: [ 'email']
+//                 })
+//                 listFollowerEmails.push(followerEmail.email);
+//             }
+//             listEmail.push({'host' : host.email, 'campaign': campaign, "followers": listFollowerEmails});
+//             console.log('aaaaaaaa');
+//         }
+//     }
+//     await mailService.sendNotiToHostAndFollowerMail(listEmail);
+// })
+//chay moi ngay vao 00:05 am
+//kiem tra campaign con 3 ngay la ket thuc thi gui mail bao cho host
+cron.schedule('5 0 * * *', async () => {
+    const campaigns = await Models.Campaign.findAll({
+        where: {
+            campaignStatus: 'public',
+            autoClose: 1,
+        }
+    })
+    const listEmail = [];
+    for (let campaign of campaigns){
+        if (calculateDate(campaign) === 3) {
+            const host = await this.getHost(campaign.id);
+            listEmail.push({'host' : host.email, 'campaign': campaign});
+            console.log('aaaaaaaa');
+        }
+    }
+    await mailService.sendNotiEndDateMail(listEmail, 3);
+})
+
+//kiem tra campaign con 1 ngay la ket thuc thi gui mail bao cho host va follower
+cron.schedule('5 0 * * *', async () => {
+    const campaigns = await Models.Campaign.findAll({
+        where: {
+            campaignStatus: 'public',
+            autoClose: 1,
+        }
+    })
+    const listEmail = [];
+    for (let campaign of campaigns){
+        if (calculateDate(campaign) === 1) {
+            const host = await this.getHost(campaign.id);
+            const listFollowers = await followService.getListFollowers(campaign.id);
+            listEmail.push({'host' : host.email, 'campaign': campaign, "followers": listFollowers});
+            console.log('aaaaaaaa');
+        }
+    }
+    await mailService.sendNotiEndDateMail(listEmail, 1);
+})
+//kiem tra den ngay ket thuc thi close chien dich
+cron.schedule('5 0 * * *', async () => {
+    const campaigns = await Models.Campaign.findAll({
+        where: {
+            campaignStatus: 'public',
+            autoClose: 1,
+        }
+    })
+    const listEmail = [];
+    for (let campaign of campaigns){
+        if (calculateDate(campaign) < 1) {
+            campaign.campaignStatus = 'close';
+            await campaign.save();
+            const host = await this.getHost(campaign.id);
+            const listFollowers = await followService.getListFollowers(campaign.id);
+            listEmail.push({'host' : host.email, 'campaign': campaign, "followers": listFollowers});
+            console.log('aaaaaaaa');
+        }
+    }
+    await mailService.sendNotiEndDateMail(listEmail, 0);
+});
+
+const calculateDate = (campaign) => {
+    const currentDatetime = new Date();
+    const date = currentDatetime.getDate();
+    const month = currentDatetime.getMonth();
+    const year = currentDatetime.getFullYear();
+    let currentDateString ='';
+    if (month.length === 2) {
+        currentDateString = year + '-' + (month + 1) + '-' + date;
+    } else {
+        currentDateString = year + '-0' + (month + 1) + '-' + date;
+    }
+
+    const currentDate = new Date(currentDateString);
+    const endDate = new Date(campaign.campaignEndDate);
+    const one_day = 1000 * 60 * 60 * 24 
+    return (Math.ceil((endDate - currentDate) / one_day) + 1);
+}
+
+exports.getHost = async (campaignId) => {
+    const userCampaign = await Models.UserCampaign.findOne({
+        where: {
+            campaignId: campaignId,
+            relation: 'host'
+        }
+    });
+    return await Models.User.findOne({
+        where: {
+            id: userCampaign.userId
+        },
+        attributes: [ 'email', 'fullname']
+    })
+}
 
 //tim api theo slug
 exports.findBySlug = async (slug) => {
@@ -280,5 +406,3 @@ exports.updateStatus = async (req) => {
     campaign.campaignStatus = 'close';
     return campaign.save();
 }
-
-const sendCloseMail = async (campaignId) => {}

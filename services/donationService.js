@@ -5,7 +5,6 @@ const slug = require('slug');
 
 const mailService = require('./mailService');
 const Models = require('../models');
-const { getRole } = require('./authenticateService');
 const followService = require('./followService');
 const campaignService = require('./campaignService');
 
@@ -235,6 +234,7 @@ const closeCampaign = async (campaign) => {
             if (waitingDonations.length === 0) {
                 campaign.campaignStatus = 'close';
                 await campaign.save();
+                await sendCloseMail(campaign);
             }
         }
     }
@@ -305,10 +305,27 @@ exports.sendUpdateStatusDonationMail = async (donation) => {
     await mailService.sendUpdateStatusDonationMail(mail);
 }
 
-exports.sendCloseMail = async (campaign) => {
-    if (campaign.autoClose) {
-        
+const sendCloseMail = async (campaign) => {
+    const listFollowers = await followService.getListFollowers(campaign.id);
+    let listEmail = [];
+    for (let follower of listFollowers) {
+        const user = await Models.User.findOne({
+            where: {
+                id: follower
+            }
+        })
+        listEmail.push(user.email);
     }
+    const host = await campaignService.getHost(campaign.id);
+    const raise = await campaignService.getRaise(campaign.id);
+    const percent = raise / campaign.campaignGoal * 100;
+    const regex = /\B(?=(\d{3})+(?!\d))/g;
+    let raiseFormated = raise + ''
+    raiseFormated = raiseFormated.replace(regex, '.');
+    let goalFormated = campaign.campaignGoal + '';
+    goalFormated = goalFormated.replace(regex, '.');
+
+    await mailService.sendCloseMail(listEmail, host, campaign.campaignTitle, raiseFormated, goalFormated, percent);
 }
 
 const create_payment_json = async (req) => {
