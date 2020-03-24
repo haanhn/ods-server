@@ -5,7 +5,7 @@ const templateMails = require('../templateMails/donationMailTempalte');
 
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
-        api_key: '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'
+        api_key: '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'
     }
 }))
 
