@@ -39,12 +39,14 @@ exports.create = async (req) => {
 }
 
 exports.update = async (req) => {
-    const expenseId = req.params.expenseId;
+    const expenseId = req.body.expense.id;
     const title = req.body.expense.title;
     const cost = req.body.expense.cost;
     const description = req.body.expense.description || '';
     const expense = await Models.Expense.findOne({
-        id: expenseId
+        where: {
+            id: expenseId
+        }
     })
     if (!expense) {
         return false;

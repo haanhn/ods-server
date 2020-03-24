@@ -26,7 +26,10 @@ exports.getAll = async (req) => {
         where: {
             campaignId: campaign.id,
             postStatus: 'enable'
-        }
+        },
+        order: [
+            ['createdAt', 'DESC']
+        ]
     })
 }
 
