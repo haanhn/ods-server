@@ -25,6 +25,8 @@ router.post('/host/update-donation-status-via-email/:action', donationController
 //Nhung api ben duoi bat buoc phai authen
 router.use(AuthMiddleware.isAuth);
 
+router.get('/', donationController.getAllByUser);
+
 router.get('/host/get-by-campaign/:campaignSlug', donationController.hostGetAll);
 
 router.post('/host/update-donation-status/:action', donationController.hostUpdateDonationStatus);

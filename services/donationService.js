@@ -37,6 +37,19 @@ exports.getAllByCampaignAndStatus = async (req, status) => {
     })
 }
 
+exports.getAllByUser = async (req) => {
+    const userId = req.jwtDecoded.data.id;
+    console.log(userId);
+    return await Models.Donation.findAll({
+        where: {
+            userId: userId
+        },
+        include: [
+            { model: Models.Campaign, attributes: [ 'id','campaignTitle' ]}
+        ]
+    })
+}
+
 exports.hostGetAll = async (req) => {
     const campaignSlug = req.params.campaignSlug;
     const reqUserId = req.jwtDecoded.data.id;
