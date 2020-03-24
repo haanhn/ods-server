@@ -141,7 +141,7 @@ const sendNotiEndDateMail = async (listEmail, days) => {
         if (days != 0) {
             for (let i = 0; i < listEmail.length; i++) {
                 await transporter.sendMail({
-                    to: listEmail[i].email,
+                    to: listEmail[i].host,
                     from: 'admin@loveus.com',
                     subject: 'Cập nhật thông tin chiến dịch ' + listEmail[i].campaign.campaignTitle,
                     html: 'Chien dich con' + days + 'ngay la ket thuc'
@@ -161,7 +161,7 @@ const sendNotiEndDateMail = async (listEmail, days) => {
         } else {
             for (let i = 0; i < listEmail.length; i++) {
                 await transporter.sendMail({
-                    to: listEmail[i].email,
+                    to: listEmail[i].host,
                     from: 'admin@loveus.com',
                     subject: 'Cập nhật thông tin chiến dịch ' + listEmail[i].campaign.campaignTitle,
                     html: 'Chien dich da ket thuc'
