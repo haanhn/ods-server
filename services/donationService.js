@@ -225,13 +225,7 @@ exports.sendDonateMail = async (donation) => {
         }
     }
     // return mail;
-    await mailService.sendToHostDonateEmail(mail);
-    if (donation.donationMethod === 'cash') {
-        await mailService.sendToDonorDonateCashEmail(mail);
-    } else if (donation.donationMethod === 'banking') {
-        console.log('gui mail banking roi ne');
-        await mailService.sendToDonorDonateBankingEmail(mail);
-    }
+    await mailService.confirmDonate(mail);
 }
 
 const closeCampaign = async (campaign) => {
@@ -315,7 +309,7 @@ exports.sendUpdateStatusDonationMail = async (donation) => {
         },
         status
     }
-    await mailService.sendUpdateStatusDonationMail(mail);
+    await mailService.updateStatusDonation(mail);
 }
 
 const sendCloseMail = async (campaign) => {

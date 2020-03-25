@@ -1,4 +1,4 @@
-exports.sendToDonorDonateCashEmail = (mail) => {
+exports.confirmDonateByCash = (mail) => {
     return html = `<p><b><i>Kính gửi: ` + mail.donor.name + `</i></b></p>
     <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
     <p>cảm ơn bạn đã quyên góp cho chiến dịch: <b><i style='text-transform: uppercase;'>`+ mail.campaignTitle +`.</i></b> </p>
@@ -11,7 +11,7 @@ exports.sendToDonorDonateCashEmail = (mail) => {
     <p>   - Thành phố : <b>`+ mail.host.region +`</b></p>`
 }
 
-exports.sendToDonorDonateBankingEmail = (mail) => {
+exports.confirmDonateByBanking = (mail) => {
     return html = `<p><b><i>Kính gửi: ` + mail.donor.name + `</i></b></p>
     <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
     <p>cảm ơn bạn đã quyên góp cho chiến dịch: <b><i style='text-transform: uppercase;'>`+ mail.campaignTitle +`.</i></b> </p>
@@ -24,7 +24,7 @@ exports.sendToDonorDonateBankingEmail = (mail) => {
     <p>   - Tên ngân hàng : <b>`+ mail.host.bankName +`</b></p>`
 }
 
-exports.sendToHostDonateEmail = (mail, method) => {
+exports.confirmDonateForHost = (mail, method) => {
     return html = `<p><b><i>Kính gửi: `+ mail.host.name +`</i></b></p>
     <p>Lời đầu tiên <b style="color: #3cc88f;">LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
     <p>Chiến dịch: <b><i style="text-transform: uppercase;">`+ mail.campaignTitle + `</i></b> vừa nhận được quyên góp với thông tin như sau:</p>
@@ -44,7 +44,7 @@ exports.sendToHostDonateEmail = (mail, method) => {
     </p>`
 }
 
-exports.sendUpdateStatusDonationMail = (mail) => {
+exports.updateStatusDonation = (mail) => {
     return html = `<p><b><i>Kính gửi: ` + mail.donor.name + `</i></b></p>
     <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
     <p>cảm ơn bạn đã quyên góp cho chiến dịch: <b><i style='text-transform: uppercase;'>`+ mail.campaignTitle +`.</i></b> </p>
@@ -53,7 +53,7 @@ exports.sendUpdateStatusDonationMail = (mail) => {
     <p>`+ mail.status +`</p>`
 }
 
-exports.sendUpdatePostMail = (title, slug) => {
+exports.updatePost = (title, slug) => {
     return html = `<p><b><i>Xin chào</i></b></p>
     <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
     <p>Chiến dịch bạn đang theo dõi: <b><i style='text-transform: uppercase;'>`+ title +`.</i></b> đã được cập nhật thông tin.</p>

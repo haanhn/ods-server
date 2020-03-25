@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport(sendgridTransport({
 }))
 
 
-const sendOTPMail = async (otp) => {
+const sendOTP = async (otp) => {
     try {
         await transporter.sendMail({
             to: otp.email,
@@ -23,7 +23,7 @@ const sendOTPMail = async (otp) => {
     }
 }
 
-const sendResetPasswordMail = async (user) => {
+const resetToken = async (user) => {
     try {
         await transporter.sendMail({
             to: user.email,
@@ -36,41 +36,38 @@ const sendResetPasswordMail = async (user) => {
     }
 }
 
-const sendToDonorDonateCashEmail = async (mail) => {
+const confirmDonate = async (mail) => {
     try {
-        const html = templateMails.sendToDonorDonateCashEmail(mail);
+        let method = 'Chuyển khoản ngân hàng';
+        let mailForHost = templateMails.confirmDonateForHost(mail), method;
+        let mailForDonator = '';
+        if (mail.donation.donationMethod === 'cash') {
+            method = 'Chuyển tiền mặt'
+            mailForDonator = templateMails.confirmDonateByCash(mail);
+        } else {
+            mailForDonator = templateMails.confirmDonateByBanking(mail);
+        }
         await transporter.sendMail({
             to: mail.donor.email,
             from: 'admin@loveus.com',
             subject: 'Xác nhận quyên góp chiến dịch ' + mail.campaignTitle,
-            html: html
-        })
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const sendToHostDonateEmail = async (mail) => {
-    let method = 'Chuyển khoản ngân hàng';
-    if (mail.donation.donationMethod === 'cash') {
-        method = 'Chuyển tiền mặt'
-    }
-    const html = templateMails.sendToHostDonateEmail(mail, method);
-    try {
+            html: mailForDonator
+        });
         await transporter.sendMail({
             to: mail.host.email,
             from: 'admin@loveus.com',
             subject: 'Xác nhận quyên góp chiến dịch ' + mail.campaignTitle,
-            html: html
+            html: mailForHost
         })
     } catch (error) {
         console.log(error);
     }
 }
 
-const sendToDonorDonateBankingEmail = async (mail) => {
+
+const updateStatusDonation = async (mail) => {
     try {
-        const html = templateMails.sendToDonorDonateBankingEmail(mail);
+        const html = templateMails.updateStatusDonation(mail);
         await transporter.sendMail({
             to: mail.donor.email,
             from: 'admin@loveus.com',
@@ -82,23 +79,9 @@ const sendToDonorDonateBankingEmail = async (mail) => {
     }
 }
 
-const sendUpdateStatusDonationMail = async (mail) => {
+const updatePost = async (listEmail, title, slug) => {
     try {
-        const html = templateMails.sendUpdateStatusDonationMail(mail);
-        await transporter.sendMail({
-            to: mail.donor.email,
-            from: 'admin@loveus.com',
-            subject: 'Xác nhận quyên góp chiến dịch ' + mail.campaignTitle,
-            html: html
-        })
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const sendUpdatePostMail = async (listEmail, title, slug) => {
-    try {
-        const html = templateMails.sendUpdatePostMail(title, slug);
+        const html = templateMails.updatePost(title, slug);
         for (let i = 0; i < listEmail.length; i++) {
             await transporter.sendMail({
                 to: listEmail[i],
@@ -183,12 +166,10 @@ const sendNotiEndDateMail = async (listEmail, days) => {
 }
 
 module.exports = { 
-    sendOTPMail, 
-    sendResetPasswordMail, 
-    sendToDonorDonateCashEmail, 
-    sendToHostDonateEmail, 
-    sendToDonorDonateBankingEmail, 
-    sendUpdateStatusDonationMail,
+    sendOTP, 
+    resetToken, 
+    confirmDonate, 
+    updateStatusDonation,
     sendUpdatePostMail, 
     sendCloseMail,
     sendNotiEndDateMail
