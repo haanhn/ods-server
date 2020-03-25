@@ -6,9 +6,13 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             defaultValue: DataTypes.UUIDV4
         },
+        point: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         content: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         }
     }, {
         tableName: 'ods_campaign_reviews'
