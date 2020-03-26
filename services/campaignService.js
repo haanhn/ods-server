@@ -7,95 +7,84 @@ const Models = require('../models');
 const categoryService = require('../services/categoriesService');
 const mailService = require('./mailService');
 const followService = require('./followService');
+const donationService = require('./donationService');
 
 
-// cron.schedule('10 * * * * *', async () => {
-//     const campaigns = await Models.Campaign.findAll({
-//         where: {
-//             campaignStatus: 'public',
-//             autoClose: 1,
-//         }
-//     })
-//     const listEmail = [];
-//     for (let campaign of campaigns){
-//         if (calculateDate(campaign) === 1) {
-//             const host = await this.getHost(campaign.id);
-//             const listFollowers = await followService.getListFollowers(campaign.id);
-//             const listFollowerEmails = [];
-//             for (let i = 0; i < listFollowers.length; i++) {
-//                 const followerEmail = await Models.User.findOne({ 
-//                     where: {
-//                         id: listFollowers[i]
-//                     },
-//                     attributes: [ 'email']
-//                 })
-//                 listFollowerEmails.push(followerEmail.email);
-//             }
-//             listEmail.push({'host' : host.email, 'campaign': campaign, "followers": listFollowerEmails});
-//             console.log('aaaaaaaa');
-//         }
-//     }
-//     await mailService.sendNotiToHostAndFollowerMail(listEmail);
-// })
+cron.schedule('10 * * * * *', async () => {
+    console.log('job chay');
+    const campaigns = await Models.Campaign.findAll({
+        where: {
+            campaignStatus: 'public',
+            autoClose: 1,
+        }
+    })
+    for (let campaign of campaigns){
+        console.log(calculateDate(campaign));
+        let countDays = -1;
+        if (calculateDate(campaign) === 1) {
+            countDays = 1;
+        } else  if (calculateDate(campaign) === 3) {
+            countDays = 3
+        } else if (calculateDate(campaign) <= 0) {
+            email = await getMail(campaign, 0)
+            countDays = 0
+        }
+        if (countDays != -1) {
+            const email = await getMail(campaign, countDays);
+            await mailService.notiEndDate(email);
+        }
+    }
+})
+
+const getMail = async (campaign, countDays) => {
+    const email = {};
+    const host = await this.getHost(campaign.id);
+    const listFollowers = await followService.getListFollowers(campaign.id);
+    const listFollowerEmails = [];
+    for (let i = 0; i < listFollowers.length; i++) {
+        const followerEmail = await Models.User.findOne({ 
+            where: {
+                id: listFollowers[i]
+            },
+            attributes: [ 'email']
+        })
+        listFollowerEmails.push(followerEmail.email);
+    }
+    console.log(countDays);
+    email.host = host.email;
+    email.campaign = campaign;
+    email.followers = listFollowerEmails;
+    email.countDays = countDays;
+    // email.push({'host': host.email, 'campaign': campaign, 'followers': listFollowerEmails, "countDays": countDays});
+    return email;
+}
 //chay moi ngay vao 00:05 am
 //kiem tra campaign con 3 ngay la ket thuc thi gui mail bao cho host
-cron.schedule('5 0 * * *', async () => {
-    const campaigns = await Models.Campaign.findAll({
-        where: {
-            campaignStatus: 'public',
-            autoClose: 1,
-        }
-    })
-    const listEmail = [];
-    for (let campaign of campaigns){
-        if (calculateDate(campaign) === 3) {
-            const host = await this.getHost(campaign.id);
-            listEmail.push({'host' : host.email, 'campaign': campaign});
-            console.log('aaaaaaaa');
-        }
-    }
-    await mailService.sendNotiEndDateMail(listEmail, 3);
-})
-
-//kiem tra campaign con 1 ngay la ket thuc thi gui mail bao cho host va follower
-cron.schedule('5 0 * * *', async () => {
-    const campaigns = await Models.Campaign.findAll({
-        where: {
-            campaignStatus: 'public',
-            autoClose: 1,
-        }
-    })
-    const listEmail = [];
-    for (let campaign of campaigns){
-        if (calculateDate(campaign) === 1) {
-            const host = await this.getHost(campaign.id);
-            const listFollowers = await followService.getListFollowers(campaign.id);
-            listEmail.push({'host' : host.email, 'campaign': campaign, "followers": listFollowers});
-            console.log('aaaaaaaa');
-        }
-    }
-    await mailService.sendNotiEndDateMail(listEmail, 1);
-})
 //kiem tra den ngay ket thuc thi close chien dich
 cron.schedule('5 0 * * *', async () => {
+    console.log('job chay');
     const campaigns = await Models.Campaign.findAll({
         where: {
             campaignStatus: 'public',
             autoClose: 1,
         }
     })
-    const listEmail = [];
     for (let campaign of campaigns){
-        if (calculateDate(campaign) < 1) {
-            campaign.campaignStatus = 'close';
-            await campaign.save();
-            const host = await this.getHost(campaign.id);
-            const listFollowers = await followService.getListFollowers(campaign.id);
-            listEmail.push({'host' : host.email, 'campaign': campaign, "followers": listFollowers});
-            console.log('aaaaaaaa');
+        console.log(calculateDate(campaign));
+        let countDays = -1;
+        if (calculateDate(campaign) === 1) {
+            countDays = 1;
+        } else  if (calculateDate(campaign) === 3) {
+            countDays = 3
+        } else if (calculateDate(campaign) <= 0) {
+            email = await getMail(campaign, 0)
+            countDays = 0
+        }
+        if (countDays != -1) {
+            const email = await getMail(campaign, countDays);
+            await mailService.notiEndDate(email);
         }
     }
-    await mailService.sendNotiEndDateMail(listEmail, 0);
 });
 
 const calculateDate = (campaign) => {
@@ -113,7 +102,7 @@ const calculateDate = (campaign) => {
     const currentDate = new Date(currentDateString);
     const endDate = new Date(campaign.campaignEndDate);
     const one_day = 1000 * 60 * 60 * 24 
-    return (Math.ceil((endDate - currentDate) / one_day) + 1);
+    return (Math.ceil((endDate - currentDate) / one_day));
 }
 
 exports.getHost = async (campaignId) => {
@@ -404,5 +393,6 @@ exports.updateStatus = async (req) => {
         return 0;
     }
     campaign.campaignStatus = 'close';
+    await donationService.sendCloseMail(campaign);
     return campaign.save();
 }

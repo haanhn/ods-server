@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 
 const User = require('../models').User;
 const Role = require('../models').Role;
-const {sendResetPasswordMail} = require('./mailService')
+const {resetToken} = require('./mailService')
 
 const findUser = async (body) => {
     return await User.findOne({
@@ -69,7 +69,7 @@ const resetPassword = async (body) => {
         user.resetToken = resetToken;
         user.resetTokenExpiration = Date.now() + 180000;
         await user.save();
-        await sendResetPasswordMail(user);
+        await resetToken(user);
         return true;
     }
 }
