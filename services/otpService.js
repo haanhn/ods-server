@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 
 const User = require('../models').User;
 const OTP = require('../models').OTP;
-const {sendOTPMail} = require('./mailService')
+const {sendOTP} = require('./mailService')
 
 const findOTP = async (body) => {
     return await OTP.findOne({
@@ -26,13 +26,13 @@ const createRegisterOTP = async (body) => {
             email: body.user.email,
             expirate: Date.now() + 180000
         });
-        await sendOTPMail(otp);
+        await sendOTP(otp);
     } else {
         checkOtp.update({
             otpToken: otpToken,
             expirate: Date.now() + 180000
         })
-        await sendOTPMail(checkOtp);
+        await sendOTP(checkOtp);
     }
     return true; 
 }
