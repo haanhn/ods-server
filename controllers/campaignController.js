@@ -1,4 +1,5 @@
 const campaignService = require('../services/campaignService');
+const followService = require('../services/followService');
 const campaignValidator = require('../validators/campaignValidator');
 
 exports.getCampaignDetail = async (req, res, next) => {
@@ -8,8 +9,12 @@ exports.getCampaignDetail = async (req, res, next) => {
         if (campaign) {
             const raised = await campaignService.getRaise(campaign.id);
             const countDonations = await campaignService.getCountDonationsByCampaignId(campaign.id);
-            return res.status(200).json({ success: 'true', message: 'get detail of campaign successfully', campaign, raised, countDonations});
-        } 
+            const countFollowers = await followService.getCountFollowersByCampaignId(campaign.id);
+            return res.status(200).json({
+                success: 'true', message: 'get detail of campaign successfully',
+                campaign, raised, countDonations, countFollowers
+            });
+        }
         return res.status(404).json({ success: 'false', message: 'cannot find this campaign.' });
     } catch (error) {
         console.log(error);
@@ -22,8 +27,8 @@ exports.getAllByCategory = async (req, res, next) => {
         const campaigns = await campaignService.getAllByCategory(req);
         if (campaigns === false) {
             return res.status(400).json({ success: 'false', message: 'This category does not exist' });
-        } 
-        return res.status(200).json({ success: 'true', campaigns});
+        }
+        return res.status(200).json({ success: 'true', campaigns });
         // if (!campaigns)
     } catch (error) {
         console.log(error);
@@ -44,7 +49,7 @@ exports.getNewest = async (req, res, next) => {
 exports.getAll = async (req, res, next) => {
     try {
         const campaigns = await campaignService.getAll();
-        return res.status(200).json({ success: 'true',campaigns });
+        return res.status(200).json({ success: 'true', campaigns });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
@@ -54,7 +59,7 @@ exports.getAll = async (req, res, next) => {
 exports.getByRelation = async (req, res, next) => {
     try {
         const campaigns = await campaignService.getByRelation(req);
-        return res.status(200).json({campaigns});
+        return res.status(200).json({ campaigns });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
@@ -71,9 +76,9 @@ exports.createCampaign = async (req, res, next) => {
             if (campaign != false) {
                 return res.status(201).json({ message: "success", campaign });
             } else {
-                return res.status(400).json({ message: 'fail'})
+                return res.status(400).json({ message: 'fail' })
             }
-        } 
+        }
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
@@ -86,7 +91,7 @@ exports.createCampaignStep2 = async (req, res, next) => {
         if (campaign != false) {
             return res.status(200).json({ message: "success", campaign });
         } else {
-            return res.status(400).json({ message: 'fail'})
+            return res.status(400).json({ message: 'fail' })
         }
     } catch (error) {
         console.log(error);
@@ -104,9 +109,9 @@ exports.createCampaignStep3 = async (req, res, next) => {
             if (campaign != false) {
                 return res.status(200).json({ message: "success", campaign });
             } else {
-                return res.status(400).json({ message: 'fail'})
+                return res.status(400).json({ message: 'fail' })
             }
-        } 
+        }
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
@@ -119,7 +124,7 @@ exports.createCampaignStep5 = async (req, res, next) => {
         if (campaign != false) {
             return res.status(200).json({ message: "success", campaign });
         } else {
-            return res.status(400).json({ message: 'fail'})
+            return res.status(400).json({ message: 'fail' })
         }
     } catch (error) {
         console.log(error);
@@ -135,12 +140,12 @@ exports.update = async (req, res, next) => {
         } else {
             const result = await campaignService.update(req);
             if (result === -1) {
-                return res.status(400).json({ success: 'false', message: 'cannot find this campaign'})
+                return res.status(400).json({ success: 'false', message: 'cannot find this campaign' })
             } else if (result === 0) {
-                return res.status(400).json({ success: 'false', message: 'campaign has been closed, cannot update'})
+                return res.status(400).json({ success: 'false', message: 'campaign has been closed, cannot update' })
             }
             return res.status(200).json({ success: 'true', message: "Campaign has been updated successfully", result });
-        } 
+        }
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
@@ -151,9 +156,9 @@ exports.updateStatus = async (req, res, next) => {
     try {
         const result = await campaignService.updateStatus(req);
         if (result === -1) {
-            return res.status(400).json({ success: 'false', message: 'Only close this campaign'})
+            return res.status(400).json({ success: 'false', message: 'Only close this campaign' })
         } else if (result === 0) {
-            return res.status(400).json({ success: 'false', message: 'cannot find this campaign'})
+            return res.status(400).json({ success: 'false', message: 'cannot find this campaign' })
         }
         return res.status(200).json({ success: 'true', message: "Campaign has been updated successfully", result });
     } catch (error) {

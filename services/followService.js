@@ -13,7 +13,7 @@ const check = async (campaignId, userId) => {
 exports.checkFollowing = async (req) => {
     const reqUser = req.jwtDecoded.data;
     const campaignId = req.params.campaignId;
-    return await check(campaignId, reqUser);
+    return await check(campaignId, reqUser.id);
 }
 
 exports.getListFollowers = async (campaignId) => {
@@ -66,4 +66,13 @@ exports.follow = async (req) => {
 
 exports.unFollow = async (req) => {
 
+}
+
+exports.getCountFollowersByCampaignId = async (campaignId) => {
+    return await Models.UserCampaign.count({
+        where: {
+            campaignId: campaignId,
+            relation: 'follower'
+        }
+    });
 }
