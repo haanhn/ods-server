@@ -34,7 +34,7 @@ exports.createCampaignStep3Validator = async (req) => {
 exports.updateCampaign = async (req) => {
     req.check('campaign.campaignTitle', 'title is required.').not().isEmpty();
     req.check('campaign.categoryId', 'category is required.').not().isEmpty();
-    req.check('campaign.campaignThumbnail', 'Thumbnail is required.').not().isEmpty();
+    // req.check('campaign.campaignThumbnail', 'Thumbnail is required.').not().isEmpty();
     req.check('campaign.campaignAddress', 'Address is required.').not().isEmpty();
     req.check('campaign.campaignRegion', 'City is required.').not().isEmpty();
     req.check('campaign.campaignGoal', 'Goal is required.').not().isEmpty();

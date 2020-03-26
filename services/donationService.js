@@ -44,6 +44,9 @@ exports.getAllByUser = async (req) => {
         where: {
             userId: userId
         },
+        order: [
+            ['createdAt', 'DESC']
+        ],
         include: [
             { model: Models.Campaign, attributes: [ 'id','campaignTitle' ]}
         ]
