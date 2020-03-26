@@ -241,7 +241,7 @@ const closeCampaign = async (campaign) => {
             if (waitingDonations.length === 0) {
                 campaign.campaignStatus = 'close';
                 await campaign.save();
-                await sendCloseMail(campaign);
+                await this.sendCloseMail(campaign);
             }
         }
     }
@@ -312,7 +312,7 @@ exports.sendUpdateStatusDonationMail = async (donation) => {
     await mailService.updateStatusDonation(mail);
 }
 
-const sendCloseMail = async (campaign) => {
+exports.sendCloseMail = async (campaign) => {
     const listFollowers = await followService.getListFollowers(campaign.id);
     let listEmail = [];
     for (let follower of listFollowers) {

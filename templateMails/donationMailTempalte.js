@@ -24,6 +24,15 @@ exports.confirmDonateByBanking = (mail) => {
     <p>   - Tên ngân hàng : <b>`+ mail.host.bankName +`</b></p>`
 }
 
+exports.confirmDonateByPaypal = (mail) => {
+    return html = `<p><b><i>Kính gửi: ` + mail.donor.name + `</i></b></p>
+    <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
+    <p>cảm ơn bạn đã quyên góp cho chiến dịch: <b><i style='text-transform: uppercase;'>`+ mail.campaignTitle +`.</i></b> </p>
+    <p>Số tiền: <b>`+ mail.donation.amount + ` vnđ</b></p>
+    <p>Phương thức chuyển tiền: <b>Thanh toán paypal</b></p>
+    <p>Mã xác nhận: <b>`+ mail.donation.trackingCode +`</b></p>`
+}
+
 exports.confirmDonateForHost = (mail, method) => {
     return html = `<p><b><i>Kính gửi: `+ mail.host.name +`</i></b></p>
     <p>Lời đầu tiên <b style="color: #3cc88f;">LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
@@ -42,6 +51,18 @@ exports.confirmDonateForHost = (mail, method) => {
             để xác nhận đã nhận tiền.
         </i>
     </p>`
+}
+
+exports.confirmDonatePaypalForHost = (mail, method) => {
+    return html = `<p><b><i>Kính gửi: `+ mail.host.name +`</i></b></p>
+    <p>Lời đầu tiên <b style="color: #3cc88f;">LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
+    <p>Chiến dịch: <b><i style="text-transform: uppercase;">`+ mail.campaignTitle + `</i></b> vừa nhận được quyên góp với thông tin như sau:</p>
+    <p>   - Tên: <b>`+ mail.donor.name +`</b></p>
+    <p>   - Email: <b>`+ mail.donor.email +`</b></p>
+    <p>   - Số tiền : <b>`+ mail.donation.amount +` vnđ</b></p>
+    <p>   - Phương thức chuyển tiền: <b>`+ method +`</b></p>
+    <p>   - Mã xác nhận : <b>`+ mail.donation.trackingCode +`</b></p>
+    <p><i>Hãy liên hệ với ban quản lý website để yêu cầu nhận số tiền trên.</i></p>`
 }
 
 exports.updateStatusDonation = (mail) => {

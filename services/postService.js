@@ -119,5 +119,5 @@ const sendUpdatePostMail = async (campaignId) => {
         }
     })
 
-    await mailService.sendUpdatePostMail(listEmail, campaign.campaignTitle, campaign.campaignSlug);
+    await mailService.updatePost(listEmail, campaign.campaignTitle, campaign.campaignSlug);
 }

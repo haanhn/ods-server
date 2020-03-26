@@ -39,13 +39,17 @@ const resetToken = async (user) => {
 const confirmDonate = async (mail) => {
     try {
         let method = 'Chuyển khoản ngân hàng';
-        let mailForHost = templateMails.confirmDonateForHost(mail), method;
+        let mailForHost = templateMails.confirmDonateForHost(mail, method);
         let mailForDonator = '';
         if (mail.donation.donationMethod === 'cash') {
             method = 'Chuyển tiền mặt'
             mailForDonator = templateMails.confirmDonateByCash(mail);
-        } else {
+        } else if (mail.donation.donationMethod === 'banking') {
             mailForDonator = templateMails.confirmDonateByBanking(mail);
+        } else {
+            method = 'Thanh toán Paypal'
+            mailForDonator = templateMails.confirmDonateByPaypal(mail);
+            mailForHost = templateMails.confirmDonatePaypalForHost(mail, method);
         }
         await transporter.sendMail({
             to: mail.donor.email,
@@ -81,6 +85,7 @@ const updateStatusDonation = async (mail) => {
 
 const updatePost = async (listEmail, title, slug) => {
     try {
+        console.log('aaaaaaaaaaaaaaa');
         const html = templateMails.updatePost(title, slug);
         for (let i = 0; i < listEmail.length; i++) {
             await transporter.sendMail({
@@ -118,46 +123,43 @@ const sendCloseMail = async (listEmail, host, title, raise, goal, percent) => {
     }
 }
 
-const sendNotiEndDateMail = async (listEmail, days) => {
+const notiEndDate = async (email) => {
     try {
+        console.log(email);
         // const html = templateMails.sendUpdatePostMail(title, slug);
-        if (days != 0) {
-            for (let i = 0; i < listEmail.length; i++) {
-                await transporter.sendMail({
-                    to: listEmail[i].host,
-                    from: 'admin@loveus.com',
-                    subject: 'Cập nhật thông tin chiến dịch ' + listEmail[i].campaign.campaignTitle,
-                    html: 'Chien dich con' + days + 'ngay la ket thuc'
-                })
-                if (days === 1) {
-                    for (let j = 0; j < listEmail[i].followers.length; j++) {
-                        await transporter.sendMail({
-                            to: listEmail[i].followers[j],
-                            from: 'admin@loveus.com',
-                            subject: 'Cập nhật thông tin chiến dịch ' + listEmail[i].campaign.campaignTitle,
-                            html: 'Chien dich con 1 ngay la ket thuc'
-                        })
-                        
-                    }
-                }
-            }
-        } else {
-            for (let i = 0; i < listEmail.length; i++) {
-                await transporter.sendMail({
-                    to: listEmail[i].host,
-                    from: 'admin@loveus.com',
-                    subject: 'Cập nhật thông tin chiến dịch ' + listEmail[i].campaign.campaignTitle,
-                    html: 'Chien dich da ket thuc'
-                })
-                for (let j = 0; j < listEmail[i].followers.length; j++) {
+        if (email.countDays != 0) {
+            await transporter.sendMail({
+                to: email.host,
+                from: 'admin@loveus.com',
+                subject: 'Cập nhật thông tin chiến dịch ' + email.campaign.campaignTitle,
+                html: 'Chien dich con ' + email.countDays + ' ngay la ket thuc'
+            })
+            if (email.countDays === 1) {
+                for (let j = 0; j < email.followers.length; j++) {
                     await transporter.sendMail({
-                        to: listEmail[i].followers[j],
+                        to: email.followers[j],
                         from: 'admin@loveus.com',
-                        subject: 'Cập nhật thông tin chiến dịch ' + listEmail[i].campaign.campaignTitle,
-                        html: 'Chien dich da ket thuc'
+                        subject: 'Cập nhật thông tin chiến dịch ' + email.campaign.campaignTitle,
+                        html: 'Chien dich con 1 ngay la ket thuc'
                     })
                     
                 }
+            }
+        } else {
+            await transporter.sendMail({
+                to: email.host,
+                from: 'admin@loveus.com',
+                subject: 'Cập nhật thông tin chiến dịch ' + email.campaign.campaignTitle,
+                html: 'Chien dich da ket thuc'
+            })
+            for (let j = 0; j < email.followers.length; j++) {
+                await transporter.sendMail({
+                    to: email.followers[j],
+                    from: 'admin@loveus.com',
+                    subject: 'Cập nhật thông tin chiến dịch ' + email.campaign.campaignTitle,
+                    html: 'Chien dich da ket thuc'
+                })
+                
             }
         }
     } catch (error) {
@@ -170,7 +172,7 @@ module.exports = {
     resetToken, 
     confirmDonate, 
     updateStatusDonation,
-    sendUpdatePostMail, 
+    updatePost, 
     sendCloseMail,
-    sendNotiEndDateMail
+    notiEndDate
 }
