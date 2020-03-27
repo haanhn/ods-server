@@ -5,7 +5,7 @@ const check = async (campaignId, userId) => {
         where: {
             userId: userId,
             campaignId: campaignId,
-            relation: 'follower'
+            relation: ['follower', 'host']
         }
     })
 }
@@ -72,7 +72,7 @@ exports.getCountFollowersByCampaignId = async (campaignId) => {
     return await Models.UserCampaign.count({
         where: {
             campaignId: campaignId,
-            relation: 'follower'
+            relation: ['follower', 'host']
         }
     });
 }

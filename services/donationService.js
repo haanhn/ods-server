@@ -483,7 +483,7 @@ exports.executePayment = async (req, res) => {
 //host create outside donation
 exports.hostCreate = async (req) => {
     const userId = req.jwtDecoded.data.id;
-    const name = req.body.name;
+    const name = req.body.donation.name;
     const amount = req.body.donation.amount;
     const message = req.body.donation.message;
     const anonymous = req.body.donation.anonymous ? 1 : 0;
