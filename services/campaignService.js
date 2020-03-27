@@ -116,7 +116,7 @@ exports.getHost = async (campaignId) => {
         where: {
             id: userCampaign.userId
         },
-        attributes: [ 'email', 'fullname']
+        attributes: [ 'id', 'email', 'fullname']
     })
 }
 

@@ -33,7 +33,7 @@ router.post('/host/update-donation-status/:action', donationController.hostUpdat
 
 // router.get('/host/:donationId', donationController.hostShow);
 
-// router.post('/host/create', donationController.hostCreate);
+router.post('/host/create', donationController.hostCreate);
 
 // router.patch('/host/update', donationController.hostUpdate);
 

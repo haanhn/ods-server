@@ -26,3 +26,9 @@ exports.createDonationAsMemberValidator = async (req) => {
     
     return raiseErr(req);
 }
+
+exports.hostCreateDonationValidator = async (req) => {
+    req.check('donation.amount', 'donation amount is required').not().isEmpty();
+    req.check('campaignId', 'campaign id is required').not().isEmpty();
+    return raiseErr(req);
+}

@@ -479,3 +479,45 @@ exports.executePayment = async (req, res) => {
         res.redirect('http://localhost:3000/campaigns/' + campaign.campaignSlug);
     });
 }
+
+//host create outside donation
+exports.hostCreate = async (req) => {
+    const userId = req.jwtDecoded.data.id;
+    const name = req.body.name;
+    const amount = req.body.donation.amount;
+    const message = req.body.donation.message;
+    const anonymous = req.body.donation.anonymous ? 1 : 0;
+    const campaignId = req.body.campaignId;
+    const trackingCode = randomstring.generate({
+        length: 12,
+        charset: 'numeric'
+    });
+
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: campaignId
+        }
+    });
+
+    if (campaign.campaignStatus != 'public') {
+        return -1;
+    }
+
+    const host = await campaignService.getHost(campaign.id);
+    if (host.id != userId) {
+        return 0;
+    }
+
+    return await Models.Donation.create({
+        userId: userId,
+        campaignId: campaignId,
+        donationAmount: amount,
+        donationMethod: 'outside',
+        trackingCode: trackingCode,
+        outsideDonor: name,
+        anonymous: anonymous,
+        donationStatus: 'done',
+        donationMessage: message
+    })
+
+}

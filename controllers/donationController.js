@@ -149,3 +149,24 @@ exports.executePayment = async (req, res, next) => {
     }
 }
 
+//host tao outside donation
+exports.hostCreate = async (req, res, next) => {
+    try {
+        let validator = await donationValidator.hostCreateDonationValidator(req);
+        if (validator !== null) {
+            res.status(400).send({ message: validator });
+        } else {
+            const result = await donationService.hostCreate(req);
+            if (result === -1) {
+                return res.status(400).json({ success: 'false', message: "campaign has been closed" });
+            } else if (result === 0) {
+                return res.status(400).json({ success: 'false', message: "You are not a host of this campaign" });
+            } else {
+                return res.status(201).json({ success: 'true', message: "Donation created successfully", result });
+            }
+        } 
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}

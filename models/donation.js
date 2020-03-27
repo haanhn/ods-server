@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         donationMethod: {
-            type: DataTypes.ENUM('cash', 'paypal', 'stripe', 'banking'),
+            type: DataTypes.ENUM('cash', 'paypal', 'stripe', 'banking', 'outside'),
             defaultValue: 'banking'
         },
         anonymous: {
