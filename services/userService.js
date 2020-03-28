@@ -1,6 +1,7 @@
 const User = require('../models').User;
 const Campaign = require('../models').Campaign;
 const campaignService = require('../services/campaignService');
+const donationService = require('../services/donationService');
 
 exports.findByEmail = async (req) => {
     const email = req.jwtDecoded.data.email;
@@ -32,10 +33,17 @@ exports.updatePaypalAccount = async (req) => {
 
 exports.getStats = async (req) => {
     const campaigns = await campaignService.getAllByUser(req);
+    const donations = await donationService.getAllByUser(req);
     let countRaised  = 0;
+    let countDonating = 0;
     for (let campaign of campaigns) {
-        console.log(campaign.raise);
-        // countRaised += campaign.raise
+        countRaised += await campaignService.getRaise(campaign.id);
     }
-    return campaigns;
+    for (let donation of donations) {
+        countDonating += donation.donationAmount;
+    }
+    const result = {};
+    result.countRaised = countRaised;
+    result.countDonating = countDonating;
+    return result;
 }

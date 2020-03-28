@@ -214,7 +214,7 @@ exports.getAllByUser = async (req) => {
         })
         if (campaign) {
             const raise = await this.getRaise(campaign.id);
-            campaign.dataValues.raise = raise + '';
+            campaign.dataValues.raise = raise;
             campaigns.push(campaign);
         }
     }
