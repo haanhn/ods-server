@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.get('/get-user/:id', userController.getUserById);
 
+router.get('/get-stats/:userId', userController.getStats);
+
 router.use(AuthMiddleware.isAuth);
 
 router.post('/', userController.getUserByEmail);

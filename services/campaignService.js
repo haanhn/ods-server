@@ -1,6 +1,6 @@
 const slug = require('slug');
 const randomstring = require('randomstring');
-const sequelize = require('sequelize');
+const { Op } = require('sequelize');
 const cron = require('node-cron');
 
 const Models = require('../models');
@@ -193,18 +193,30 @@ exports.getNewest = async (req) => {
 
 exports.getAllByUser = async (req) => {
     const userId = req.params.userId;
-    let campaigns = await Models.User.findOne({
+    let campaignIds = await Models.UserCampaign.findAll({
         where: {
-            id: userId
+            userId: userId,
+            relation: 'host'
         },
-        attributes: [ 'id'],
-        include: [
-            { model: Models.Campaign, through: { where: { relation: 'host' } } }
-        ]
+        attributes: [ 'campaignId']
     });
-    for (let i = 0; i < campaigns.Campaigns.length; i++) {
-        const raise = await this.getRaise(campaigns.Campaigns[i].id);
-        campaigns.Campaigns[i].dataValues.raise = raise;
+    let campaigns = [];
+    for(let i = 0; i < campaignIds.length; i++) {
+        let campaign = await Models.Campaign.findOne({
+            where: { 
+                id: campaignIds[i].campaignId,
+                [Op.or]: [
+                    { campaignStatus: 'public' },
+                    { campaignStatus: 'close' }
+                ]
+            },
+            attributes: [ 'id', 'campaignTitle', 'campaignSlug', 'campaignThumbnail' ]
+        })
+        if (campaign) {
+            const raise = await this.getRaise(campaign.id);
+            campaign.dataValues.raise = raise + '';
+            campaigns.push(campaign);
+        }
     }
     return campaigns;
 }

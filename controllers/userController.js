@@ -51,3 +51,13 @@ exports.getUserById = async (req, res, next) => {
         res.status(500).json({ error: 'Server Error' });
     }
 }
+
+exports.getStats = async (req, res, next) => {
+    try {
+        const result = await userService.getStats(req);
+        return res.status(200).json({ success: "true", result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    } 
+}

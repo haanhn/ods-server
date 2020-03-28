@@ -29,3 +29,13 @@ exports.updatePaypalAccount = async (req) => {
     user.paypal = req.body.paypal;
     return await user.save();
 }
+
+exports.getStats = async (req) => {
+    const campaigns = await campaignService.getAllByUser(req);
+    let countRaised  = 0;
+    for (let campaign of campaigns) {
+        console.log(campaign.raise);
+        // countRaised += campaign.raise
+    }
+    return campaigns;
+}
