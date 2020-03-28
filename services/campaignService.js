@@ -210,7 +210,10 @@ exports.getAllByUser = async (req) => {
                     { campaignStatus: 'close' }
                 ]
             },
-            attributes: [ 'id', 'campaignTitle', 'campaignSlug', 'campaignThumbnail' ]
+            attributes: [ 'id', 'campaignTitle', 'campaignSlug', 'campaignThumbnail', 'campaignGoal' ],
+            include: [
+                { model: Models.Category, attributes: [ 'categoryTitle' ] }
+            ]
         })
         if (campaign) {
             const raise = await this.getRaise(campaign.id);
