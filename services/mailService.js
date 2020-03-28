@@ -38,13 +38,14 @@ const resetToken = async (user) => {
 
 const confirmDonate = async (mail) => {
     try {
+        console.log(mail);
         let method = 'Chuyển khoản ngân hàng';
         let mailForHost = templateMails.confirmDonateForHost(mail, method);
         let mailForDonator = '';
-        if (mail.donation.donationMethod === 'cash') {
+        if (mail.donation.method === 'cash') {
             method = 'Chuyển tiền mặt'
             mailForDonator = templateMails.confirmDonateByCash(mail);
-        } else if (mail.donation.donationMethod === 'banking') {
+        } else if (mail.donation.method === 'banking') {
             mailForDonator = templateMails.confirmDonateByBanking(mail);
         } else {
             method = 'Thanh toán Paypal'
