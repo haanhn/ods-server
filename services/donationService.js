@@ -38,19 +38,37 @@ exports.getAllByCampaignAndStatus = async (req, status) => {
 }
 
 exports.getAllByUser = async (req) => {
-    const userId = req.jwtDecoded.data.id;
-    console.log(userId);
-    return await Models.Donation.findAll({
-        where: {
-            userId: userId
-        },
-        order: [
-            ['createdAt', 'DESC']
-        ],
-        include: [
-            { model: Models.Campaign, attributes: [ 'id','campaignTitle' ]}
-        ]
-    })
+    let userId = '';
+    if(req.jwtDecoded){
+        userId = req.jwtDecoded.data.id
+        return await Models.Donation.findAll({
+            where: {
+                userId: userId
+            },
+            order: [
+                ['createdAt', 'DESC']
+            ],
+            include: [
+                { model: Models.Campaign, attributes: [ 'id','campaignTitle', 'campaignSlug', 'campaignThumbnail' ]}
+            ]
+        })
+    } else {
+        userId = req.params.userId;
+        return await Models.Donation.findAll({
+            where: {
+                userId: userId,
+                donationStatus: 'done',
+                anonymous: 0
+            },
+            order: [
+                ['createdAt', 'DESC']
+            ],
+            include: [
+                { model: Models.Campaign, attributes: [ 'id','campaignTitle', 'campaignSlug', 'campaignThumbnail' ]}
+            ]
+        })
+    }
+    
 }
 
 exports.hostGetAll = async (req) => {

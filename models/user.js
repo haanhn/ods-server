@@ -70,7 +70,6 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = function(models) {
-        User.belongsTo(models.Role, { foreignKey: 'roleId' });
         User.hasMany(models.Comment, { foreignKey: 'userId' });
         User.hasMany(models.Donation, { foreignKey: 'userId' });
         User.hasMany(models.CampaignReview, { foreignKey: 'userId' });

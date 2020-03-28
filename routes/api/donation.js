@@ -11,6 +11,8 @@ Response: donation list gồm donation và donor
 */
 router.get('/get-by-campaign/:campaignSlug', donationController.getAllByCampaign);
 
+router.get('/get-by-user/:userId', donationController.getAllByUser);
+
 router.post('/create', donationController.create);
 
 router.post('/paypal', donationController.createPayment);

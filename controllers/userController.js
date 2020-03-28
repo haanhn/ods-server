@@ -1,7 +1,7 @@
 const userService = require('../services/userService');
 const userValidator = require('../validators/userValidator');
 
-exports.getUser = async (req, res, next) => {
+exports.getUserByEmail = async (req, res, next) => {
     const user = await userService.findByEmail(req);
     if (user) {
         return res.status(201).json({ success: "true", user });
@@ -36,6 +36,16 @@ exports.updatePaypal = async (req, res, next) => {
         } else {
             return res.status(400).json({ success: 'false', message: 'fail in update user address'});
         }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.getUserById = async (req, res, next) => {
+    try {
+        const user = await userService.findById(req);
+        return res.status(200).json({ success: "true", user });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });

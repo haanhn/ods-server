@@ -11,6 +11,9 @@ Response: campaigns list
 */
 router.get('/get-all', campaignController.getAll);
 
+// router.get('/get-by-user/:userId', campaignController.getByUser);
+router.get('/get-by-user/:userId', campaignController.getByUser);
+
 /*
 Lay tat ca campaign theo category da public
 Param:category slug

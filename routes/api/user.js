@@ -5,14 +5,15 @@ const userController = require('../../controllers/userController');
 
 const router = express.Router();
 
+router.get('/get-user/:id', userController.getUserById);
+
 router.use(AuthMiddleware.isAuth);
 
-router.post('/', userController.getUser);
+router.post('/', userController.getUserByEmail);
 
 router.post('/update-address', userController.updateAddress);
 
 router.post('/update-paypal', userController.updatePaypal);
 
-// router.post('/create-step3', campaignController.createCampaignStep3);
 
 module.exports = router;

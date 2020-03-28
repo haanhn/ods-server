@@ -10,31 +10,31 @@ const followService = require('./followService');
 const donationService = require('./donationService');
 
 
-cron.schedule('10 * * * * *', async () => {
-    console.log('job chay');
-    const campaigns = await Models.Campaign.findAll({
-        where: {
-            campaignStatus: 'public',
-            autoClose: 1,
-        }
-    })
-    for (let campaign of campaigns){
-        console.log(calculateDate(campaign));
-        let countDays = -1;
-        if (calculateDate(campaign) === 1) {
-            countDays = 1;
-        } else  if (calculateDate(campaign) === 3) {
-            countDays = 3
-        } else if (calculateDate(campaign) <= 0) {
-            email = await getMail(campaign, 0)
-            countDays = 0
-        }
-        if (countDays != -1) {
-            const email = await getMail(campaign, countDays);
-            await mailService.notiEndDate(email);
-        }
-    }
-})
+// cron.schedule('10 * * * * *', async () => {
+//     console.log('job chay');
+//     const campaigns = await Models.Campaign.findAll({
+//         where: {
+//             campaignStatus: 'public',
+//             autoClose: 1,
+//         }
+//     })
+//     for (let campaign of campaigns){
+//         console.log(calculateDate(campaign));
+//         let countDays = -1;
+//         if (calculateDate(campaign) === 1) {
+//             countDays = 1;
+//         } else  if (calculateDate(campaign) === 3) {
+//             countDays = 3
+//         } else if (calculateDate(campaign) <= 0) {
+//             email = await getMail(campaign, 0)
+//             countDays = 0
+//         }
+//         if (countDays != -1) {
+//             const email = await getMail(campaign, countDays);
+//             await mailService.notiEndDate(email);
+//         }
+//     }
+// })
 
 const getMail = async (campaign, countDays) => {
     const email = {};
@@ -187,6 +187,24 @@ exports.getNewest = async (req) => {
     for (let campaign of campaigns){
         const raise = await this.getRaise(campaign.id);
         campaign.dataValues.raise = raise;
+    }
+    return campaigns;
+}
+
+exports.getAllByUser = async (req) => {
+    const userId = req.params.userId;
+    let campaigns = await Models.User.findOne({
+        where: {
+            id: userId
+        },
+        attributes: [ 'id'],
+        include: [
+            { model: Models.Campaign, through: { where: { relation: 'host' } } }
+        ]
+    });
+    for (let i = 0; i < campaigns.Campaigns.length; i++) {
+        const raise = await this.getRaise(campaigns.Campaigns[i].id);
+        campaigns.Campaigns[i].dataValues.raise = raise;
     }
     return campaigns;
 }
