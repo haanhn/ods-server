@@ -64,6 +64,10 @@ module.exports = (sequelize, DataTypes) => {
         isMember: {
             type: DataTypes.BOOLEAN,
             defaultValue: 1
+        },
+        ratingPoint: {
+            type: DataTypes.DOUBLE,
+            defaultValue: '0'
         }
     }, {
         tableName: 'ods_users'

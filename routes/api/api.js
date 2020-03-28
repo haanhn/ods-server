@@ -14,6 +14,8 @@ const postRoutes = require('./post');
 const expense = require('./expense');
 const campaignReview = require('./campaignReview');
 const follow = require('./follow');
+const hostReview = require('./hostReview');
+
 
 const router = express.Router();
 
@@ -42,5 +44,8 @@ router.use('/expenses', expense);
 router.use('/campaignReviews', campaignReview);
 
 router.use('/follows', follow);
+
+router.use('/hostReviews', hostReview);
+
 
 module.exports = router;
