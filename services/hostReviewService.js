@@ -67,7 +67,7 @@ exports.checkAllow = async (req) => {
             }
         });
         if (review) {
-            hostReviewStatus = 0;
+            hostReviewStatus = 2;
         }
         return hostReviewStatus;
     }

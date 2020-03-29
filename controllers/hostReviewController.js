@@ -31,8 +31,8 @@ exports.checkAllow = async (req, res, next) => {
         const result = await hostReviewService.checkAllow(req);
             if (result === -1) {
                 return res.status(200).json({ success: 'true', message: 'you are dont have any donation for campaign of this host', result})
-            } else if (result === 0) {
-                return res.status(200).json({ success: 'true', message: 'you were has been already reviewed this host', result });
+            } else if (result === 2) {
+                return res.status(200).json({ success: 'true', message: 'you has a review to this host', result });
             } else {
                 return res.status(200).json({ success: 'true', message: 'you can review this host', result });
             }
