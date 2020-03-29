@@ -52,11 +52,10 @@ exports.update = async (req) => {
     const fullname = req.body.user.fullname;
     const address = req.body.user.address;
     const region = req.body.user.region;
-    const gender = req.body.user.gender ? 1 : 0;
     const bio = req.body.user.bio;
     const userId = req.jwtDecoded.data.id;
 
-    const user = await Models.User.findOne({
+    const user = await User.findOne({
         where: {
             id: userId
         }
@@ -64,7 +63,6 @@ exports.update = async (req) => {
     user.fullname = fullname;
     user.address = address;
     user.region = region;
-    user.gender = gender;
     user.bio = bio;
     return user.save();
 }
@@ -72,7 +70,7 @@ exports.update = async (req) => {
 exports.updateAvatar = async (req) => {
     const userId = req.jwtDecoded.data.id;
     const avatarUrl = req.body.avatar;
-    const user = await Models.User.findOne({
+    const user = await User.findOne({
         where: {
             id: userId
         }

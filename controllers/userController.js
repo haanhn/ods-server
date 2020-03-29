@@ -64,13 +64,13 @@ exports.getStats = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        let validator = await userValidator.updateProfileValidator(req);
-        if (validator !== null) {
-            res.status(400).send({ success: 'false', message: validator });
-        } else {
+        // let validator = await userValidator.updateProfileValidator(req);
+        // if (validator !== null) {
+        //     res.status(400).send({ success: 'false', message: validator });
+        // } else {
             const result = await userService.update(req);
             return res.status(201).json({ success: "true", message: "user's profile has been updated successfully", result });
-        }
+        // }
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
