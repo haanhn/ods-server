@@ -13,6 +13,10 @@ router.use(AuthMiddleware.isAuth);
 
 router.post('/', userController.getUserByEmail);
 
+router.post('/update-avatar', userController.updateAvatar);
+
+router.post('/update', userController.update);
+
 router.post('/update-address', userController.updateAddress);
 
 router.post('/update-paypal', userController.updatePaypal);

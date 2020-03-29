@@ -61,3 +61,28 @@ exports.getStats = async (req, res, next) => {
         res.status(500).json({ error: 'Server Error' });
     } 
 }
+
+exports.update = async (req, res, next) => {
+    try {
+        let validator = await userValidator.updateProfileValidator(req);
+        if (validator !== null) {
+            res.status(400).send({ success: 'false', message: validator });
+        } else {
+            const result = await userService.update(req);
+            return res.status(201).json({ success: "true", message: "user's profile has been updated successfully", result });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.updateAvatar = async (req, res, next) => {
+    try {
+        const result = await userService.updateAvatar(req);
+        return res.status(201).json({ success: "true", message: "user's avatar has been updated successfully", result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
