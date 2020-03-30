@@ -5,7 +5,11 @@ const followController = require('../../controllers/followController');
 
 const router = express.Router();
 
+router.get('/count/:campaignId', followController.countFollowers);
+
 router.post('/', followController.follow);
+
+router.post('/unfollow', followController.unFollow);
 
 // router.post('/unfollow', followController.unFollow);
 

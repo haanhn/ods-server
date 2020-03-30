@@ -90,6 +90,7 @@ exports.getOverall = async (req) => {
                 break;
         }
     }
+    result.campaignRatingPoint = campaign.campaignRatingPoint;
     result.totalReviews = reviews.length;
     result.count1 = count1;
     result.count2 = count2;

@@ -67,7 +67,19 @@ exports.follow = async (req) => {
 }
 
 exports.unFollow = async (req) => {
-
+    const userId = req.body.userId;
+    const campaignId = req.body.campaignId;
+    const follower = await Models.UserCampaign.findOne({
+        where: {
+            campaignId: campaignId,
+            userId: userId,
+            relation: 'follower'
+        }
+    });
+    if (follower) {
+        return await follower.destroy();
+    }
+    return true;
 }
 
 exports.getCountFollowersByCampaignId = async (campaignId) => {
