@@ -6,11 +6,16 @@ const User = require('../models').User;
 const Role = require('../models').Role;
 const {resetToken} = require('./mailService')
 
-const findUser = async (body) => {
+const findUserByRole = async (body, role) => {
+    console.log(role);
+    const guestRole = await getRole(role);
     return await User.findOne({
-        where: { email: body.user.email}
+        where: {
+            email: body.user.email,
+            roleId: guestRole.id
+        }
     })
-};
+}
 
 const getRole = async (roleName) => {
     return await Role.findOne({
@@ -21,21 +26,32 @@ const getRole = async (roleName) => {
 }
 
 const register = async (body) => {
-    const checkUser = await findUser(body);
-    if (checkUser == null) {
+    const checkMember = await findUserByRole(body, 'member');
+    if (checkMember == null) {
+        const checkGuest = await findUserByRole(body, 'guest');
+        console.log(checkGuest);
+        const memberRole = await getRole('member');
         const hash = bcrypt.hashSync(body.user.password, 10);
-        await User.create({
+        if (checkGuest) {
+            checkGuest.fullname = body.user.fullname;
+            checkGuest.password = hash;
+            roleId: memberRole.id
+            await checkGuest.save();
+        } else {
+            await User.create({
                 email: body.user.email,
                 password: hash,
-                fullname: body.user.fullname
-        });
+                fullname: body.user.fullname,
+                roleId: memberRole.id
+            });
+        }
         return true;
     }
     return false;
 }
 
 const signIn = async (req) => {
-    const user = await findUser(req.body);
+    const user = await findUserByRole(req.body, 'member');
     if (user == null) {
         return false;
     } else {
@@ -61,7 +77,7 @@ const resetPassword = async (body) => {
         length: 6,
         charset: 'numeric'
     });
-    const user = await findUser(body);
+    const user = await findUserByRole(body, 'member');
     if (!user) {
         console.log('ko tim thay');
         return false;
@@ -101,4 +117,4 @@ const newPassword = async (body) => {
     }
 }
 
-module.exports = { findUser, register, signIn, isLogging, resetPassword, newPassword, getRole }
+module.exports = { findUserByRole, register, signIn, isLogging, resetPassword, newPassword, getRole }

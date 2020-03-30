@@ -1,0 +1,43 @@
+<%- include('../includes/head.ejs') %>
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800">Roles</h1>
+
+  <div class="row mt-5">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <form action="/admin/roles/create" method="POST">
+          <div class="card-body">
+            <h4 class="card-title">Create role</h4>
+            <div class="form-group row">
+              <label
+                for="role"
+                class="col-sm-3 text-right control-label col-form-label"
+                >Role</label
+              >
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="role"
+                  name="roleName"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="border-top">
+            <div class="card-body">
+              <button type="submit" class="btn btn-primary">
+                Add role
+              </button>
+              <a href="/admin/roles" class="btn btn-secondary">Cancel</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.container-fluid -->
+<%- include('../includes/end.ejs') %>

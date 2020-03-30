@@ -7,6 +7,7 @@ const mailService = require('./mailService');
 const Models = require('../models');
 const followService = require('./followService');
 const campaignService = require('./campaignService');
+const authenticateService = require('./authenticateService');
 
 
 paypal.configure({
@@ -157,6 +158,7 @@ exports.createAsGuest = async (req) => {
         length: 12,
         charset: 'numeric'
     });
+    const guestRole = await authenticateService.getRole('guest');
 
     const noti = req.body.noti;
     if (noti) {
@@ -187,7 +189,7 @@ exports.createAsGuest = async (req) => {
             email: email,
             password: '123456',
             fullname: fullname,
-            isMember: 0,
+            roleId: guestRole.id,
         });
         userId = user.id
     }
@@ -446,6 +448,7 @@ exports.executePayment = async (req, res) => {
         length: 12,
         charset: 'numeric'
     });
+    const guestRole = await authenticateService.getRole('guest');
     // console.log(req.query);
     paypal.payment.execute(paymentId, payment_json, async (error, payment) => {
         if (error) {
@@ -471,7 +474,7 @@ exports.executePayment = async (req, res) => {
                         email: payment.payer.payer_info.email,
                         password: '123456',
                         fullname: fullname.replace(/-/g, " "),
-                        isMember: 0,
+                        roleId: guestRole.id
                     })
                 }
             }

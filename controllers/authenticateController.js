@@ -1,4 +1,4 @@
-const { findUser, register, signIn, isLogging, resetPassword, newPassword } = require('../services/authenticateService');
+const { findUserByRole, register, signIn, isLogging, resetPassword, newPassword } = require('../services/authenticateService');
 const { createRegisterOTP, checkOTP } = require('../services/otpService');
 const { registerValidator, getOTPValidator, loginValidator, newPasswordValidatior } = require('../validators/authenticateValidator');
 const jwtHelper = require('../helper/jwt.helper');
@@ -14,7 +14,7 @@ exports.getOTP = async (req, res, next) => {
         if (validator !== null) {
             res.status(400).send({ message: validator });
         } else {
-            const user = await findUser(req.body);
+            const user = await findUserByRole(req.body, 'member');
             if (user !== null) {
                 res.status(400).json({ message: 'Email has been already used' });
             } else {
@@ -72,7 +72,7 @@ exports.login = async (req, res, next) => {
             } else {
                 //dung username va password
                 //khoi tao token
-                const user = await findUser(req.body);
+                const user = await findUserByRole(req.body, 'member');
                 const accessToken = await jwtHelper.generateToken(user, accessTokenSecret, accessTokenLife);
                 const userInfo = {
                     id: user.id,

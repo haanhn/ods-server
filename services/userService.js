@@ -1,5 +1,6 @@
 const User = require('../models').User;
 const Campaign = require('../models').Campaign;
+const BankAccount = require('../models').BankAccount;
 const campaignService = require('../services/campaignService');
 const donationService = require('../services/donationService');
 
@@ -60,6 +61,15 @@ exports.update = async (req) => {
             id: userId
         }
     })
+    const bankAccount = await BankAccount.findOne({
+        where: {
+            userId: user.id
+        }
+    })
+    if (bankAccount) {
+        bankAccount.accountName = fullname;
+        bankAccount.save();
+    }
     user.fullname = fullname;
     user.address = address;
     user.region = region;

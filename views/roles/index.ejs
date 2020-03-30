@@ -1,0 +1,49 @@
+<%- include('../includes/head.ejs') %> 
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-2 text-gray-800">Roles</h1>
+        <a href="/admin/roles/create" class="btn btn-success btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-plus"></i>
+            </span>
+            <span class="text">Add Role</span>
+        </a>
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4 mt-5">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Roles</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Role</th>
+                            <th class="text-center text-danger"><i class="fa fa-bolt"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (let role of roles) { %> 
+                            <tr>
+                                <td class="text-center"><%= role.id %></td>
+                                <td class="text-center"><%= role.roleName %></td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                    <a href="/admin/roles/edit/<%= role.id %>" class="btn btn-sm btn-success" title="Edit role"><i class="fa fa-edit"></i></a>
+                                    <a href="/admin/roles/delete/<%= role.id %>" class="btn btn-sm btn-danger ml-2" title="Delete role"><i class="fa fa-trash"></i></a>
+                                </div></td>
+                            </tr>
+                        <% }  %> 
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <!-- /.container-fluid -->
+    <%- include('../includes/end.ejs') %> 

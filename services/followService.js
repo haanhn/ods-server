@@ -1,4 +1,5 @@
 const Models = require('../models');
+const authenticateService = require('../services/authenticateService');
 
 const check = async (campaignId, userId) => {
     return result = await Models.UserCampaign.findOne({
@@ -36,6 +37,7 @@ exports.follow = async (req) => {
     const campaignId = req.body.campaignId;
     const email = req.body.email;
     const name = req.body.name || 'follower';
+    const guestRole = await authenticateService.getRole('guest');
     if (!userId && !email) {
         return -1;
     }
@@ -48,7 +50,7 @@ exports.follow = async (req) => {
                 email: email,
                 password: '123456',
                 fullname: name,
-                isMember: 0
+                roleId: guestRole.id
             })
         }
         userId = user.id;

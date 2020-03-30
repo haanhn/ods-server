@@ -61,10 +61,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('not verified', 'verified'),
             defaultValue: 'not verified'
         },
-        isMember: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: 1
-        },
         ratingPoint: {
             type: DataTypes.DOUBLE,
             defaultValue: '0'
@@ -74,6 +70,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = function(models) {
+        User.belongsTo(models.Role, { foreignKey: 'roleId' });
         User.hasMany(models.Comment, { foreignKey: 'userId' });
         User.hasMany(models.Donation, { foreignKey: 'userId' });
         User.hasMany(models.CampaignReview, { foreignKey: 'userId' });

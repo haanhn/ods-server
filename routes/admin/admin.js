@@ -3,6 +3,7 @@ const express = require('express');
 const campaignRoutes = require('./campaign');
 const userRoutes = require('./user');
 const categoryRoutes = require('./category');
+const roleRoutes = require('./role');
 
 const router = express.Router();
 
@@ -21,5 +22,8 @@ router.use('/campaigns', campaignRoutes);
 
 //user routes
 router.use('/users', userRoutes);
+
+//role routes
+router.use('/roles', roleRoutes);
 
 module.exports = router;

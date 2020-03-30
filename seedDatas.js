@@ -6,7 +6,7 @@ const seedRoles = [
         roleName: 'admin'
     },
     {
-        roleName: 'user'
+        roleName: 'member'
     },
     {
         roleName: 'guest'
