@@ -6,6 +6,7 @@ exports.index = async (req, res, next) => {
         res.render('roles/index', {
         pageTitle: 'Admin - Roles',
         path: '/admin/roles',
+        admin: req.user,
         roles: roles
         });
     } catch (error) {
@@ -16,6 +17,7 @@ exports.index = async (req, res, next) => {
 exports.create = (req, res, next) => {
     res.render('roles/create', {
         pageTitle: 'Admin - Create Roles ',
+        admin: req.user,
         path: '/admin/roles'
     });
 };
@@ -53,6 +55,7 @@ exports.edit = async (req, res, next) => {
       res.render('roles/edit', {
         pageTitle: 'Admin - Edit Role ',
         path: '/admin/roles',
+        admin: req.user,
         role: role
       });
     }

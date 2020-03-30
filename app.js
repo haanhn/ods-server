@@ -21,6 +21,7 @@ const models = require('./models');
 
 //import seed datas
 const { seedRoles, seedUsers, seedCategories } = require('./seedDatas');
+const seedAdmin = require('./seedAdmin');
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -59,6 +60,7 @@ models.sequelize
     // .sync({ force: true })
     .sync()
     .then(() => {
+        seedAdmin.createAdmin();
         console.log('Nice! Database looks fine');
         // models.Role.bulkCreate(seedRoles);
         // models.User.bulkCreate(seedUsers);

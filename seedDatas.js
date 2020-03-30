@@ -1,5 +1,8 @@
 const bcrypt = require('bcryptjs');
 const slug = require('slug');
+const dotenv=require('dotenv');
+
+const Models = require('./models');
 
 const seedRoles = [
     {
@@ -12,6 +15,7 @@ const seedRoles = [
         roleName: 'guest'
     }
 ];
+
 const seedUsers = [
     {
         email: 'adminods@gmail.com',

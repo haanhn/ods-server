@@ -6,6 +6,7 @@ exports.index = async (req, res, next) => {
         res.render('users/index', {
             pageTitle: 'Admin - Users',
             path: '/admin/users',
+            admin: req.user,
             users: users
         });
     } catch (error) {
@@ -27,6 +28,7 @@ exports.show = async (req, res, next) => {
         res.render('users/details', {
             pageTitle: 'Admin - Users',
             path: '/admin/users',
+            admin: req.user,
             user: user
         });
     } catch (error) {
@@ -53,6 +55,7 @@ exports.showAllCampaignHosted = async (req, res, next) => {
         res.render('users/campaign-list', {
             pageTitle: 'Admin - Users',
             path: '/admin/users',
+            admin: req.user,
             user: user
         });
     } catch (error) {

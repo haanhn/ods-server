@@ -8,6 +8,7 @@ exports.index = async (req, res, next) => {
             pageTitle: 'Admin - Campaigns',
             path: '/admin/campaigns',
             campaigns: campaigns,
+            admin: req.user,
             status: null
         });
     } catch (error) {
@@ -22,6 +23,7 @@ exports.getByStatus = async (req, res, next) => {
         pageTitle: 'Admin - Campaigns',
         path: '/admin/campaigns',
         campaigns: campaigns,
+        admin: req.user,
         status: status
     });
 };
@@ -40,6 +42,7 @@ exports.show = async (req, res, next) => {
     res.render('campaigns/details', {
         pageTitle: 'Admin - Campaigns',
         path: '/admin/campaigns',
+        admin: req.user,
         campaign: campaign,
     })
 }

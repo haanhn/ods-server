@@ -9,7 +9,8 @@ exports.index = async (req, res, next) => {
     res.render('categories/index', {
       pageTitle: 'Admin - Categories',
       path: '/admin/categories',
-      categories: categories
+      categories: categories,
+      admin: req.user
     });
   } catch (error) {
     console.log(error);
@@ -19,7 +20,8 @@ exports.index = async (req, res, next) => {
 exports.create = (req, res, next) => {
   res.render('categories/create', {
     pageTitle: 'Admin - Create Categories ',
-    path: '/admin/categories'
+    path: '/admin/categories', 
+    admin: req.user
   });
 };
 
@@ -65,6 +67,7 @@ exports.edit = async (req, res, next) => {
       res.render('categories/edit', {
         pageTitle: 'Admin - Edit Categories ',
         path: '/admin/categories',
+        admin: req.user,
         category: category
       });
     }
