@@ -31,12 +31,9 @@ exports.getListFollowers = async (campaignId) => {
     return listFollowers;
 }
 
-exports.follow = async (req) => {
+exports.follow = async (userId, campaignId, email, name) => {
     let user;
-    let userId = req.body.userId;
-    const campaignId = req.body.campaignId;
-    const email = req.body.email;
-    const name = req.body.name || 'follower';
+   
     const guestRole = await authenticateService.getRole('guest');
     if (!userId && !email) {
         return -1;

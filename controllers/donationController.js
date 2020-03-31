@@ -134,9 +134,9 @@ exports.createPayment = async (req, res, next) => {
 
 exports.paymentReturn = async (req, res, next) => {
     try {
-        const vnp_params = await donationService.paymentReturn(req);
-        if (vnp_params) {
-            res.status(200).json(vnp_params);
+        const result = await donationService.paymentReturn(req);
+        if (result) {
+            res.redirect(result);
         }
         
     } catch (error) {

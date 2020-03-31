@@ -365,19 +365,15 @@ exports.sendCloseMail = async (campaign) => {
 }
 
 exports.createPayment = async (req) => {
-    let userId = '';
-    if (req.jwtDecoded){
-        userId = req.jwtDecoded.data.id
-    }
     const campaignId = req.body.campaignId || '';
-    const fullName = req.body.fullName || '';
+    const fullname = req.body.fullname || '';
     const email = req.body.email || '';
+    const message = req.body.message || '';
+    const anonymous = req.body.anonymous;
+    const noti = req.body.noti;
 
-    let data = {};
-    data.userId = userId;
-    data.fullName = fullName;
-    data.email = email;
-    data.campaignId = campaignId;
+    console.log(typeof(email));
+    console.log(typeof('cuongnv230796@gmail.com'));
 
     const ipAddr =  req.headers['x-forwarded-for'] ||
                     req.connection.remoteAddress ||
@@ -396,7 +392,14 @@ exports.createPayment = async (req) => {
     const amount = req.body.amount;
     const bankCode = req.body.bankCode;
 
-    const orderInfo = req.body.orderDescription;
+    let orderInfo= '';
+    if (req.jwtDecoded) {
+        orderInfo = req.jwtDecoded.data.id + "/" + campaignId + "/" + message + "/" + anonymous + "/" + noti;
+    } else {
+        orderInfo = email + "/" + fullname + "/" + campaignId + "/" + message + "/" + anonymous + "/" + noti;
+
+    }
+    // const orderInfo = email + '/' + fullname;
     const orderType = '250006';
     var locale = 'vn'
     const currencyCode = 'VND';
@@ -405,7 +408,6 @@ exports.createPayment = async (req) => {
     vnp_Params['vnp_Version'] = '2';
     vnp_Params['vnp_Command'] = 'pay';
     vnp_Params['vnp_TmnCode'] = tmnCode;
-    // vnp_Params['vnp_Merchant'] = ''
     vnp_Params['vnp_CurrCode'] = currencyCode;
     vnp_Params['vnp_Locale'] = locale;
     vnp_Params['vnp_TxnRef'] = orderId;
@@ -428,19 +430,12 @@ exports.createPayment = async (req) => {
 
     vnp_Params['vnp_SecureHashType'] = 'SHA256';
     vnp_Params['vnp_SecureHash'] = secureHash;
-
-    vnp_Params['user_id'] = userId;
-    vnp_Params['campaign_id'] = campaignId;
-    vnp_Params['full_name'] = fullName;
-    vnp_Params['email'] = email;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: true });
-    console.log(vnpUrl);
     return vnpUrl;
 }
 
 exports.paymentReturn = async (req) => {
     let vnp_Params = req.query;
-    console.log(vnp_Params);
     const secureHash = vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
@@ -455,9 +450,11 @@ exports.paymentReturn = async (req) => {
     const sha256 = require('sha256');
 
     const checkSum = sha256(signData);
-console.log(vnp_Params);
+    console.log(vnp_Params);
     if(secureHash === checkSum) {
-        return vnp_Params;
+        const url = this.executePayment(vnp_Params);
+        console.log(vnp_Params);
+        return url;
     }
     return false;
 
@@ -465,67 +462,78 @@ console.log(vnp_Params);
 
 
 exports.executePayment = async (vnp_Params) => {
-    // const paymentId = req.query.paymentId;
-    // const payment_json = await execute_payment_json(req);
-    // const userId = req.query.userId;
-    // const campaignId = req.query.campaignId;
-    // const fullname = req.query.fullname;
-    // let user;
-    // const trackingCode = randomstring.generate({
-    //     length: 12,
-    //     charset: 'numeric'
-    // });
-    // const guestRole = await authenticateService.getRole('guest');
-    // // console.log(req.query);
-    // paypal.payment.execute(paymentId, payment_json, async (error, payment) => {
-    //     if (error) {
-    //         console.log(error.response);
-    //         return false;
-    //     } else {
-    //         console.log(JSON.stringify(payment));
-    //         if (userId) {
-    //             // user = await Models.findByPk(userId);
-    //             user = await Models.User.findOne({
-    //                 where: {
-    //                     id: userId
-    //                 }
-    //             });
-    //         } else {
-    //             user = await Models.User.findOne({
-    //                 where: {
-    //                     email: payment.payer.payer_info.email
-    //                 }
-    //             });
-    //             if (!user) {
-    //                 user = await Models.User.create({
-    //                     email: payment.payer.payer_info.email,
-    //                     password: '123456',
-    //                     fullname: fullname.replace(/-/g, " "),
-    //                     roleId: guestRole.id
-    //                 })
-    //             }
-    //         }
-    //         const donation = await Models.Donation.create({
-    //             userId: user.id,
-    //             campaignId: campaignId,
-    //             donationAmount: req.query.amount,
-    //             donationMethod: "paypal",
-    //             trackingCode: trackingCode,
-    //             donationStatus: 'done',
-    //             donationMessage: payment.transactions[0].description
-    //         })
-    //         await this.sendDonateMail(donation);
-    //         // const campaign = await Models.Campaign.findByPk(campaignId);
-    //         // return true;
-    //     }
-    //     const campaign = await Models.Campaign.findOne({
-    //         where: {
-    //             id: campaignId
-    //         }
-    //     });
-    //     await closeCampaign(campaign);
-    //     res.redirect('http://localhost:3000/campaigns/' + campaign.campaignSlug);
-    // });
+    let userId;
+    let email;
+    let fullname
+    let campaignId;
+    let message;
+    let anonymous;
+    let noti;
+    let user;
+    let data = vnp_Params.vnp_OrderInfo.split('/');
+    if (data.length === 5) {
+        userId = data[0];
+        campaignId = data[1];
+        message = data[2];
+        anonymous = data[3] === 'true' ? true : false;
+        noti = data[4] === 'true' ? true : false;;
+    } else {
+      email = data[0];
+      fullname = data[1];
+      campaignId = data[2];
+      message = data[3];
+      anonymous = data[4] === 'true' ? true : false;;
+      noti = data[5] === 'true' ? true : false;;
+
+    }
+    console.log('====================' + typeof(noti));
+    console.log('====================' + typeof(anonymous));
+    const guestRole = await authenticateService.getRole('guest');
+    if (noti) {
+        await followService.follow(userId, campaignId, email, fullname);
+    }
+
+    if (userId) {
+        user = await Models.User.findOne({
+            where: {
+                id: userId
+            }
+        });
+    } else {
+        user = await Models.User.findOne({
+            where: {
+                email: email
+            }
+        });
+        if (!user) {
+            user = await Models.User.create({
+                email: email,
+                password: '123456',
+                fullname: fullname,
+                roleId: guestRole.id
+            })
+        }
+    }
+    const donation = await Models.Donation.create({
+        userId: user.id,
+        campaignId: campaignId,
+        donationAmount: vnp_Params.vnp_Amount / 100,
+        donationMethod: "vnpay",
+        trackingCode: vnp_Params.vnp_TransactionNo,
+        donationStatus: 'done',
+        donationMessage: message,
+        anonymous: anonymous
+    })
+    await this.sendDonateMail(donation);
+
+    
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            id: campaignId
+        }
+    });
+    await closeCampaign(campaign);
+    return 'http://localhost:3000/campaigns/' + campaign.campaignSlug;
 }
 
 

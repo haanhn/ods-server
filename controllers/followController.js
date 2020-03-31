@@ -2,7 +2,11 @@ const followService = require('../services/followService');
 
 exports.follow = async (req, res, next) => {
     try {
-        const result = await followService.follow(req);
+        let userId = req.body.userId;
+        const campaignId = req.body.campaignId;
+        const email = req.body.email;
+        const name = req.body.name || 'follower';
+        const result = await followService.follow(userId, campaignId, email, name);
         if (result === -1) {
             return res.status(400).json({ success: 'fail', message: 'Input atleast one of email or user id' });
         }
