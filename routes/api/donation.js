@@ -13,11 +13,16 @@ router.get('/get-by-campaign/:campaignSlug', donationController.getAllByCampaign
 
 router.get('/get-by-user/:userId', donationController.getAllByUser);
 
-router.post('/create', donationController.create);
+// router.post('/create', donationController.create);
 
-router.post('/paypal', donationController.createPayment);
+// router.post('/paypal', donationController.createPayment);
 
-router.get('/paypal/success', donationController.executePayment);
+// router.get('/paypal/success', donationController.executePayment);
+
+//api vnpay payment
+router.post('/create_payment_url', donationController.createPayment);
+
+router.get('/vnpay_return', donationController.paymentReturn);
 
 // router.get('/paypal/cancel', donationController.cancelPayment);
 
