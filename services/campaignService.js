@@ -258,6 +258,24 @@ exports.getCampaignDetail = async (slug) => {
     });
 }
 
+exports.hostGetCampaignDetails = async (req) => {
+    const id = req.params.campaignId;
+    const host = await this.getHost(id);
+    console.log(host);
+    console.log(req.jwtDecoded.data.id);
+    if (host.id != req.jwtDecoded.data.id) {
+        return -1;
+    }
+    return await Models.Campaign.findOne({ 
+        where: { 
+            id: id
+        },
+        include: [
+            { model: Models.Category, attributes: [ 'categoryTitle' ] },
+        ]
+    });
+}
+
 exports.create = async (req) => {
     const user = req.jwtDecoded.data;
     const reqSlug = req.body.campaign.campaignSlug;

@@ -22,6 +22,28 @@ exports.getCampaignDetail = async (req, res, next) => {
     }
 }
 
+exports.hostGetCampaignDetails = async (req, res, next) => {
+    try {
+        const campaign = await campaignService.hostGetCampaignDetails(req);
+        if (campaign === -1) {
+            return res.status(403).json({ success: 'false', message: 'You are not authorized to view this campaign.' });
+        }
+        if (campaign) {
+            const raised = await campaignService.getRaise(campaign.id);
+            const countDonations = await campaignService.getCountDonationsByCampaignId(campaign.id);
+            const countFollowers = await followService.getCountFollowersByCampaignId(campaign.id);
+            return res.status(200).json({
+                success: 'true', message: 'get detail of campaign successfully',
+                campaign, raised, countDonations, countFollowers
+            });
+        }
+        return res.status(404).json({ success: 'false', message: 'cannot find this campaign.' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
 exports.getByUser = async (req, res, next) => {
     try {
         const campaigns = await campaignService.getAllByUser(req);
