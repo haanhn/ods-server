@@ -38,7 +38,7 @@ router.get('/get-detail/:campaignSlug', campaignController.getCampaignDetail);
 //Nhung api ben duoi bat buoc phai authen
 router.use(AuthMiddleware.isAuth);
 
-router.get('/:campaignId', campaignController.hostGetCampaignDetails);
+router.get('/:campaignSlug', campaignController.hostGetCampaignDetails);
 
 /*
 lay ra tat ca nhung campaign ma minh da host hoac supporter

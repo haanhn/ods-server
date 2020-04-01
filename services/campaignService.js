@@ -42,11 +42,11 @@ const getMail = async (campaign, countDays) => {
     const listFollowers = await followService.getListFollowers(campaign.id);
     const listFollowerEmails = [];
     for (let i = 0; i < listFollowers.length; i++) {
-        const followerEmail = await Models.User.findOne({ 
+        const followerEmail = await Models.User.findOne({
             where: {
                 id: listFollowers[i]
             },
-            attributes: [ 'email']
+            attributes: ['email']
         })
         listFollowerEmails.push(followerEmail.email);
     }
@@ -69,12 +69,12 @@ cron.schedule('5 0 * * *', async () => {
             autoClose: 1,
         }
     })
-    for (let campaign of campaigns){
+    for (let campaign of campaigns) {
         console.log(calculateDate(campaign));
         let countDays = -1;
         if (calculateDate(campaign) === 1) {
             countDays = 1;
-        } else  if (calculateDate(campaign) === 3) {
+        } else if (calculateDate(campaign) === 3) {
             countDays = 3
         } else if (calculateDate(campaign) <= 0) {
             email = await getMail(campaign, 0)
@@ -92,7 +92,7 @@ const calculateDate = (campaign) => {
     const date = currentDatetime.getDate();
     const month = currentDatetime.getMonth();
     const year = currentDatetime.getFullYear();
-    let currentDateString ='';
+    let currentDateString = '';
     if (month.length === 2) {
         currentDateString = year + '-' + (month + 1) + '-' + date;
     } else {
@@ -101,7 +101,7 @@ const calculateDate = (campaign) => {
 
     const currentDate = new Date(currentDateString);
     const endDate = new Date(campaign.campaignEndDate);
-    const one_day = 1000 * 60 * 60 * 24 
+    const one_day = 1000 * 60 * 60 * 24
     return (Math.ceil((endDate - currentDate) / one_day));
 }
 
@@ -116,7 +116,7 @@ exports.getHost = async (campaignId) => {
         where: {
             id: userCampaign.userId
         },
-        attributes: [ 'id', 'email', 'fullname']
+        attributes: ['id', 'email', 'fullname']
     })
 }
 
@@ -129,11 +129,11 @@ exports.findBySlug = async (slug) => {
 exports.getAll = async () => {
     let campaigns = await Models.Campaign.findAll({
         include: [
-            { model: Models.Category, attributes: [ 'categoryTitle' ] },
-            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } },
+            { model: Models.Category, attributes: ['categoryTitle'] },
+            { model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar'], through: { where: { relation: 'host' } } },
         ]
     });
-    for (let campaign of campaigns){
+    for (let campaign of campaigns) {
         const raise = await this.getRaise(campaign.id);
         campaign.dataValues.raise = raise;
     }
@@ -146,12 +146,12 @@ exports.getAllByStatus = async (status) => {
             campaignStatus: status
         },
         include: [
-            { model: Models.Category, attributes: [ 'categoryTitle' ] },
-            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+            { model: Models.Category, attributes: ['categoryTitle'] },
+            { model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar'], through: { where: { relation: 'host' } } }
         ]
     });
 
-    for (let campaign of campaigns){
+    for (let campaign of campaigns) {
         const raise = await this.getRaise(campaign.id);
         campaign.dataValues.raise = raise;
     }
@@ -166,7 +166,7 @@ exports.getAllByCategory = async (req) => {
         return false;
     }
     let campaigns = await category.getCampaigns({ where: { campaignStatus: 'public' } });
-    for (let campaign of campaigns){
+    for (let campaign of campaigns) {
         const raise = await this.getRaise(campaign.id);
         campaign.dataValues.raise = raise;
     }
@@ -179,12 +179,12 @@ exports.getNewest = async (req) => {
     console.log(count);
     let campaigns = await Models.Campaign.findAll({
         where: { campaignStatus: 'public' },
-        order:[
-            ["createdAt","DESC"]
+        order: [
+            ["createdAt", "DESC"]
         ],
         limit: count
     })
-    for (let campaign of campaigns){
+    for (let campaign of campaigns) {
         const raise = await this.getRaise(campaign.id);
         campaign.dataValues.raise = raise;
     }
@@ -198,21 +198,21 @@ exports.getAllByUser = async (req) => {
             userId: userId,
             relation: 'host'
         },
-        attributes: [ 'campaignId']
+        attributes: ['campaignId']
     });
     let campaigns = [];
-    for(let i = 0; i < campaignIds.length; i++) {
+    for (let i = 0; i < campaignIds.length; i++) {
         let campaign = await Models.Campaign.findOne({
-            where: { 
+            where: {
                 id: campaignIds[i].campaignId,
                 [Op.or]: [
                     { campaignStatus: 'public' },
                     { campaignStatus: 'close' }
                 ]
             },
-            attributes: [ 'id', 'campaignTitle', 'campaignSlug', 'campaignThumbnail', 'campaignGoal' ],
+            attributes: ['id', 'campaignTitle', 'campaignSlug', 'campaignThumbnail', 'campaignGoal'],
             include: [
-                { model: Models.Category, attributes: [ 'categoryTitle' ] }
+                { model: Models.Category, attributes: ['categoryTitle'] }
             ]
         })
         if (campaign) {
@@ -235,9 +235,9 @@ exports.getByRelation = async (req) => {
 
     return await Models.User.findOne({
         where: {
-            id: reqUser.id 
+            id: reqUser.id
         },
-        attributes: [ 'id','email', 'fullname', 'avatar' ],
+        attributes: ['id', 'email', 'fullname', 'avatar'],
         include: [
             { model: Models.Campaign, through: { where: { relation: relation } } }
         ]
@@ -246,34 +246,41 @@ exports.getByRelation = async (req) => {
 
 //lay ra detail cua 1 campaign + category + host theo slug
 exports.getCampaignDetail = async (slug) => {
-    return await Models.Campaign.findOne({ 
-        where: { 
+    return await Models.Campaign.findOne({
+        where: {
             campaignSlug: slug,
             campaignStatus: ['public', 'close']
         },
         include: [
-            { model: Models.Category, attributes: [ 'categoryTitle' ] },
-            { model: Models.User, attributes: [ 'id','email', 'fullname', 'avatar', 'region' ], through: { where: { relation: 'host' } } }
+            { model: Models.Category, attributes: ['categoryTitle'] },
+            { model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar', 'region'], through: { where: { relation: 'host' } } }
         ]
     });
 }
 
 exports.hostGetCampaignDetails = async (req) => {
-    const id = req.params.campaignId;
+    const slug = req.params.campaignSlug;
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            campaignSlug: slug
+        },
+        include: [
+            { model: Models.Category, attributes: ['categoryTitle'] },
+        ]
+    });
+
+    if (!campaign) {
+        return null;
+    }
+
+    const id = campaign.id;
     const host = await this.getHost(id);
     console.log(host);
     console.log(req.jwtDecoded.data.id);
     if (host.id != req.jwtDecoded.data.id) {
         return -1;
     }
-    return await Models.Campaign.findOne({ 
-        where: { 
-            id: id
-        },
-        include: [
-            { model: Models.Category, attributes: [ 'categoryTitle' ] },
-        ]
-    });
+    return campaign;
 }
 
 exports.create = async (req) => {
@@ -310,7 +317,7 @@ exports.create = async (req) => {
             campaign.categoryID = reqCategory;
             campaign.campaignShortDescription = reqShortDescription;
             await campaign.save();
-            
+
             return campaign;
         } else {
             console.log('ko tim thay slug');
@@ -372,9 +379,9 @@ exports.createStep5 = async (req, res, next) => {
     if (!campaignSlug) {
         return false;
     } else {
-        const campaign = await Models.Campaign.findOne({ 
-                where: { campaignSlug: campaignSlug } 
-            }
+        const campaign = await Models.Campaign.findOne({
+            where: { campaignSlug: campaignSlug }
+        }
         );
         if (campaign) {
             campaign.campaignStatus = 'waiting';
