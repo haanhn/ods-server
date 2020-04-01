@@ -47,8 +47,12 @@ const confirmDonate = async (mail) => {
             mailForDonator = templateMails.confirmDonateByCash(mail);
         } else if (mail.donation.method === 'banking') {
             mailForDonator = templateMails.confirmDonateByBanking(mail);
-        } else {
+        } else if (mail.donation.method === 'paypal') {
             method = 'Thanh toán Paypal'
+            mailForDonator = templateMails.confirmDonateByOnlinePayment(mail);
+            mailForHost = templateMails.confirmDonatePaypalForHost(mail, method);
+        } else {
+            method = 'Thanh toán VNPay'
             mailForDonator = templateMails.confirmDonateByPaypal(mail);
             mailForHost = templateMails.confirmDonatePaypalForHost(mail, method);
         }
