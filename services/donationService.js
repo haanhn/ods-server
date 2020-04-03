@@ -5,8 +5,9 @@ const slug = require('slug');
 const dateFormat = require('dateFormat');
 const querystring = require('qs');
 const sha256 = require('sha256');
+const axios = require("axios");
 
-
+const url = "http://apilayer.net/api/live?access_key=795ffe55cd64ba290653c2cb689bf056&currencies=vnd&source=USD&format=1";
 
 const config = require(__dirname + '/../config/vnpay.json');
 const mailService = require('./mailService');
@@ -364,14 +365,25 @@ exports.sendCloseMail = async (campaign) => {
     await mailService.sendCloseMail(listEmail, host, campaign.campaignTitle, raiseFormated, goalFormated, percent);
 }
 
+const getCurrencylayer = async url => {
+    try {
+      const response = await axios.get(url);
+      const data = response.data;
+      return data.quotes.USDVND;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 const create_payment_json = async (req) => {
-    const reqAmount = Math.ceil(parseInt(req.body.amount) / 23000);
+    const rate = await getCurrencylayer(url);
+    const reqAmount = Math.ceil(parseInt(req.body.amount) / rate);
     const amount = reqAmount + 1.5;
-    console.log(amount);
     const userId = req.body.userId || "";
     const campaign = await Models.Campaign.findByPk(req.body.campaignId);
     const message = req.body.message || "";
     const fullname = slug(req.body.fullname);
+    // const handleFee = 1.5 + (reqAmount * )
     console.log(fullname);
     return payment_json = {
         "intent": "sale",
@@ -428,8 +440,9 @@ exports.createPayment = async (req, res) => {
 }
 
 const execute_payment_json = async (req) => {
+    const rate = await getCurrencylayer(url);
     const payerId = req.query.PayerID;
-    const reqAmount = Math.ceil(parseInt(req.query.amount) / 23000);
+    const reqAmount = Math.ceil(parseInt(req.query.amount) / rate);
     const amount = reqAmount + 1.5;
     console.log(req.query);
     return payment_json = { 
