@@ -364,7 +364,150 @@ exports.sendCloseMail = async (campaign) => {
     await mailService.sendCloseMail(listEmail, host, campaign.campaignTitle, raiseFormated, goalFormated, percent);
 }
 
-exports.createPayment = async (req) => {
+const create_payment_json = async (req) => {
+    const reqAmount = Math.ceil(parseInt(req.body.amount) / 23000);
+    const amount = reqAmount + 1.5;
+    console.log(amount);
+    const userId = req.body.userId || "";
+    const campaign = await Models.Campaign.findByPk(req.body.campaignId);
+    const message = req.body.message || "";
+    const fullname = slug(req.body.fullname);
+    console.log(fullname);
+    return payment_json = {
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls": {
+            "return_url": "http://localhost:5000/api/donations/paypal/success?amount=" + req.body.amount + '&userId=' + userId + '&campaignId=' + campaign.id + '&fullname=' + fullname ,
+            "cancel_url": "http://localhost:5000/api/donations/paypal/cancel"
+        },
+        "transactions": [{
+            "item_list": {
+                "items": [
+                    {
+                        "name": campaign.campaignTitle,
+                        "quantity": "1",
+                        "price": reqAmount,
+                        "currency": "USD"
+                    },
+                ]
+            },
+            "amount": {
+                "total": amount,
+                "currency": "USD",
+                "details": {
+                    "subtotal": reqAmount,
+                    "handling_fee": "1.5"
+                }
+            },
+            "description": message
+        }]
+    }
+};
+
+exports.createPayment = async (req, res) => {
+    const payment_json = await create_payment_json(req);
+    // console.log(payment_json);
+    paypal.payment.create(payment_json, function (error, payment) {
+        if (error) {
+            console.log('error paypal');
+            console.log(error);
+            throw error;
+        } else {
+            console.log(payment);
+            for (let i = 0; i < payment.links.length; i++){
+                if (payment.links[i].rel === 'approval_url') {
+                    // window.open(payment.links[i].href, '_blank');
+                    // res.redirect( payment.links[i].href);
+                    res.status(200).json({ url: payment.links[i].href })
+                }
+            }
+        }
+    });
+}
+
+const execute_payment_json = async (req) => {
+    const payerId = req.query.PayerID;
+    const reqAmount = Math.ceil(parseInt(req.query.amount) / 23000);
+    const amount = reqAmount + 1.5;
+    console.log(req.query);
+    return payment_json = { 
+        "payer_id": payerId,
+        "transactions": [{
+            "amount": {
+                "currency": "USD",
+                "total": amount
+            }
+        }]
+    }
+};
+
+exports.executePayment = async (req, res) => {
+    const paymentId = req.query.paymentId;
+    const payment_json = await execute_payment_json(req);
+    const userId = req.query.userId;
+    const campaignId = req.query.campaignId;
+    const fullname = req.query.fullname;
+    let user;
+    const trackingCode = randomstring.generate({
+        length: 12,
+        charset: 'numeric'
+    });
+    const guestRole = await authenticateService.getRole('guest');
+    // console.log(req.query);
+    paypal.payment.execute(paymentId, payment_json, async (error, payment) => {
+        if (error) {
+            console.log(error.response);
+            return false;
+        } else {
+            console.log(JSON.stringify(payment));
+            if (userId) {
+                // user = await Models.findByPk(userId);
+                user = await Models.User.findOne({
+                    where: {
+                        id: userId
+                    }
+                });
+            } else {
+                user = await Models.User.findOne({
+                    where: {
+                        email: payment.payer.payer_info.email
+                    }
+                });
+                if (!user) {
+                    user = await Models.User.create({
+                        email: payment.payer.payer_info.email,
+                        password: '123456',
+                        fullname: fullname.replace(/-/g, " "),
+                        roleId: guestRole.id
+                    })
+                }
+            }
+            const donation = await Models.Donation.create({
+                userId: user.id,
+                campaignId: campaignId,
+                donationAmount: req.query.amount,
+                donationMethod: "paypal",
+                trackingCode: trackingCode,
+                donationStatus: 'done',
+                donationMessage: payment.transactions[0].description
+            })
+            await this.sendDonateMail(donation);
+            // const campaign = await Models.Campaign.findByPk(campaignId);
+            // return true;
+        }
+        const campaign = await Models.Campaign.findOne({
+            where: {
+                id: campaignId
+            }
+        });
+        await closeCampaign(campaign);
+        res.redirect('http://localhost:3000/campaigns/' + campaign.campaignSlug);
+    });
+}
+
+exports.createPaymentVNPay = async (req) => {
     const campaignId = req.body.campaignId || '';
     const fullname = req.body.fullname || '';
     const email = req.body.email || '';
@@ -452,7 +595,7 @@ exports.paymentReturn = async (req) => {
     const checkSum = sha256(signData);
     console.log(vnp_Params);
     if(secureHash === checkSum) {
-        const url = this.executePayment(vnp_Params);
+        const url = this.executePaymentVNPay(vnp_Params);
         console.log(vnp_Params);
         return url;
     }
@@ -461,7 +604,7 @@ exports.paymentReturn = async (req) => {
 }
 
 
-exports.executePayment = async (vnp_Params) => {
+exports.executePaymentVNPay = async (vnp_Params) => {
     let userId;
     let email;
     let fullname

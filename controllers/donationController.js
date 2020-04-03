@@ -123,7 +123,30 @@ exports.hostUpdateDonationStatusViaEmail = async (req, res, next) => {
 
 exports.createPayment = async (req, res, next) => {
     try {
-        const result = await donationService.createPayment(req);
+        await donationService.createPayment(req, res);
+        // console.log(url);
+        // return res.redirect(url);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.executePayment = async (req, res, next) => {
+    try {
+        await donationService.executePayment(req, res);
+        // if ( result) {
+        //     res.redirect('http://localhost:5000/api/campaign/get-detail/Giai-cuu-dua-hau-giup-ba-con-nong-dan-447425');
+        // }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.createPaymentVNPay = async (req, res, next) => {
+    try {
+        const result = await donationService.createPaymentVNPay(req);
         // console.log(result);
         res.redirect(result);
     } catch (error) {
