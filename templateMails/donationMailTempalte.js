@@ -24,12 +24,12 @@ exports.confirmDonateByBanking = (mail) => {
     <p>   - Tên ngân hàng : <b>`+ mail.host.bankName +`</b></p>`
 }
 
-exports.confirmDonateByPaypal = (mail) => {
+exports.confirmDonateByOnlinePayment = (mail) => {
     return html = `<p><b><i>Kính gửi: ` + mail.donor.name + `</i></b></p>
     <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
     <p>cảm ơn bạn đã quyên góp cho chiến dịch: <b><i style='text-transform: uppercase;'>`+ mail.campaignTitle +`.</i></b> </p>
     <p>Số tiền: <b>`+ mail.donation.amount + ` vnđ</b></p>
-    <p>Phương thức chuyển tiền: <b>Thanh toán paypal</b></p>
+    <p>Phương thức chuyển tiền: <b>Thanh toán`+ mail.donation.method +`</b></p>
     <p>Mã xác nhận: <b>`+ mail.donation.trackingCode +`</b></p>`
 }
 

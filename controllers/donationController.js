@@ -144,6 +144,30 @@ exports.executePayment = async (req, res, next) => {
     }
 }
 
+exports.createPaymentVNPay = async (req, res, next) => {
+    try {
+        const result = await donationService.createPaymentVNPay(req);
+        // console.log(result);
+        res.redirect(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.paymentReturn = async (req, res, next) => {
+    try {
+        const result = await donationService.paymentReturn(req);
+        if (result) {
+            res.redirect(result);
+        }
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
 //host tao outside donation
 exports.hostCreate = async (req, res, next) => {
     try {

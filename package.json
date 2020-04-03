@@ -24,6 +24,7 @@
     "connect-flash": "^0.1.1",
     "connect-session-sequelize": "^6.1.1",
     "cors": "^2.8.5",
+    "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
@@ -37,8 +38,10 @@
     "nodemailer": "^6.4.2",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "paypal-rest-sdk": "^1.8.1",
+    "qs": "^6.9.3",
     "randomstring": "^1.1.5",
     "sequelize": "^5.21.4",
+    "sha256": "^0.2.0",
     "slug": "^2.1.1"
   },
   "devDependencies": {

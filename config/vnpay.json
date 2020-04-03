@@ -1,0 +1,6 @@
+{
+    "vnp_TmnCode":"C520SD0G",
+    "vnp_HashSecret":"XZYJQNCYEFPGKGQPDPPJIMALICYQHZLG",
+    "vnp_Url":"http://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
+    "vnp_ReturnUrl": "http://localhost:5000/api/donations/vnpay_return"
+}
