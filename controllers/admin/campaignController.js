@@ -60,6 +60,8 @@ exports.campaignAction = async (req, res, next) => {
     if (campaign) {
         if (action === 'approve') {
             campaign.campaignStatus = 'public';
+            const today = new Date();
+            campaign.campaignStartDate = today;
             await campaign.save();
         } else {
             campaign.campaignStatus = 'block';
