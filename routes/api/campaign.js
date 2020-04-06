@@ -14,6 +14,10 @@ router.get('/get-all', campaignController.getAll);
 // router.get('/get-by-user/:userId', campaignController.getByUser);
 router.get('/get-by-user/:userId', campaignController.getByUser);
 
+//Get recommendated campaigns
+router.get('/get-similar-by-campaign/:campaignSlug', campaignController.getSimilarCampaignsByCampaignSlug);
+router.get('/get-by-similar-users/:userId', campaignController.getCampaignsBySimilarUsers);
+
 /*
 Lay tat ca campaign theo category da public
 Param:category slug
