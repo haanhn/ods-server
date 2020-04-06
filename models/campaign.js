@@ -18,10 +18,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DOUBLE,
             allowNull: true
         },
-        campaignStartDate: {
-            type: DataTypes.DATE,
-            allowNull: true
-        },
         campaignEndDate: {
             type: DataTypes.DATE,
             allowNull: true

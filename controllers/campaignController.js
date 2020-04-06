@@ -1,5 +1,4 @@
 const campaignService = require('../services/campaignService');
-const campaignSuggestService = require('../services/campaignSuggestService');
 const followService = require('../services/followService');
 const campaignValidator = require('../validators/campaignValidator');
 
@@ -14,40 +13,6 @@ exports.getCampaignDetail = async (req, res, next) => {
             return res.status(200).json({
                 success: 'true', message: 'get detail of campaign successfully',
                 campaign, raised, countDonations, countFollowers
-            });
-        }
-        return res.status(404).json({ success: 'false', message: 'cannot find this campaign.' });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Server Error' });
-    }
-}
-
-exports.getSimilarCampaignsByCampaignSlug = async (req, res, next) => {
-    try {
-        const campaignSlug = req.params.campaignSlug;
-        const campaigns = await campaignSuggestService.getSimilarCampaignsByCampaignSlug(campaignSlug);
-        if (campaigns) {
-            return res.status(200).json({
-                success: 'true', message: 'get similar campaigns successfully',
-                campaigns
-            });
-        }
-        return res.status(404).json({ success: 'false', message: 'cannot find this campaign.' });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Server Error' });
-    }
-}
-
-exports.getCampaignsBySimilarUsers = async (req, res, next) => {
-    try {
-        const userId = req.params.userId;
-        const campaigns = await campaignSuggestService.getCampaignsBySimilarUsers(userId);
-        if (campaigns) {
-            return res.status(200).json({
-                success: 'true', message: 'get campaigns by similar users successfully',
-                campaigns
             });
         }
         return res.status(404).json({ success: 'false', message: 'cannot find this campaign.' });
