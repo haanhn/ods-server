@@ -97,3 +97,14 @@ exports.sendCloseMailToHost = (title, raise, goal, percent) => {
     <p>Bạn vui lòng tiếp tục cập nhật thông tin về chiến dịch và chi phí thực hiện chiến dịch</p>
     <p>Xin cảm ơn.</p>`
 }
+
+exports.notiDonation = (donation, campaign, method) => {
+    return html = `<p><b><i>Xin chào</i></b></p>
+    <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
+    <p>Quyên góp cho chiến dịch của bạn: <b><i style='text-transform: uppercase;'>`+ campaign.campaignTitle +`.</i></b> đã 7 ngày chưa được xác nhận.</p>
+    <p>Bạn vui lòng xác nhận cho quyên góp với thông tin sau:</p>
+    <p>   - Số tiền : <b>`+ donation.donationAmount +` vnđ</b></p>
+    <p>   - Phương thức chuyển tiền: <b>`+ method +`</b></p>
+    <p>   - Mã xác nhận : <b>`+ donation.trackingCode +`</b></p>
+    <p>Xin cảm ơn.</p>`
+}

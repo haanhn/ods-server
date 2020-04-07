@@ -172,6 +172,31 @@ const notiEndDate = async (email) => {
     }
 }
 
+const notiDonation = async (host, donation, campaign) => {
+    try {
+        let method = '';
+        switch (donation.donationMethod) {
+            case 'cash':
+                method = 'Chuyển tiền mặt';
+                break;
+            case 'banking':
+                method = 'Chuyển tiền ngân hàng';
+                break;
+            default:
+                break;
+        }
+        const html = templateMails.notiDonation(donation, campaign, method);
+        await transporter.sendMail({
+            to: host,
+            from: 'admin@loveus.com',
+            subject: 'Nhắc nhở xác nhận quyên góp ' + donation.trackingCode,
+            html: html
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = { 
     sendOTP, 
     resetToken, 
@@ -179,5 +204,6 @@ module.exports = {
     updateStatusDonation,
     updatePost, 
     sendCloseMail,
-    notiEndDate
+    notiEndDate,
+    notiDonation
 }
