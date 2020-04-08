@@ -642,8 +642,6 @@ exports.executePaymentVNPay = async (vnp_Params) => {
       noti = data[5] === 'true' ? true : false;;
 
     }
-    console.log('====================' + typeof(noti));
-    console.log('====================' + typeof(anonymous));
     const guestRole = await authenticateService.getRole('guest');
     if (noti) {
         await followService.follow(userId, campaignId, email, fullname);

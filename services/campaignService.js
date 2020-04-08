@@ -10,8 +10,8 @@ const followService = require('./followService');
 const donationService = require('./donationService');
 
 
-// cron.schedule('10 * * * * *', async () => {
-//     console.log('job chay');
+cron.schedule('10 * * * * *', async () => {
+    console.log('job chay');
 //     const campaigns = await Models.Campaign.findAll({
 //         where: {
 //             campaignStatus: 'public',
@@ -34,7 +34,25 @@ const donationService = require('./donationService');
 //             await mailService.notiEndDate(email);
 //         }
 //     }
-// })
+        const donations = await Models.Donation.findAll({
+            where: {
+                donationStatus: 'pending'
+            }
+        });
+        for (let donation of donations) {
+            console.log(donation.createdAt);
+            console.log(calculateDate(donation.createdAt));
+            if (calculateDate(donation.createdAt) === -7){
+                const host = await this.getHost(donation.campaignId);
+                const campaign = await Models.Campaign.findOne({
+                    where: {
+                        id: donation.campaignId
+                    }
+                })
+                await mailService.notiDonation(host.email, donation, campaign);
+            }
+        }
+})
 
 const getMail = async (campaign, countDays) => {
     const email = {};
@@ -72,12 +90,12 @@ cron.schedule('5 0 * * *', async () => {
     for (let campaign of campaigns) {
         console.log(calculateDate(campaign));
         let countDays = -1;
-        if (calculateDate(campaign) === 1) {
+        if (calculateDate(campaign.endDate) === 1) {
             countDays = 1;
-        } else if (calculateDate(campaign) === 3) {
+        } else if (calculateDate(campaign.endDate) === 3) {
             countDays = 3
-        } else if (calculateDate(campaign) <= 0) {
-            email = await getMail(campaign, 0)
+        } else if (calculateDate(campaign.endDate) <= 0) {
+            email = await getMail(campaign.endDate, 0)
             countDays = 0
         }
         if (countDays != -1) {
@@ -85,24 +103,47 @@ cron.schedule('5 0 * * *', async () => {
             await mailService.notiEndDate(email);
         }
     }
+
+    const donations = await Models.Donation.findAll({
+        where: {
+            donationStatus: 'pending'
+        }
+    });
+    for (let donation of donations) {
+        if (calculateDate(donation.createdAt) === -7){
+            const host = await this.getHost(donation.campaignId);
+            const campaign = await Models.Campaign.findOne({
+                where: {
+                    id: donation.campaignId
+                }
+            })
+            await mailService.notiDonation(host.email, donation, campaign);
+        }
+    }
 });
 
-const calculateDate = (campaign) => {
-    const currentDatetime = new Date();
-    const date = currentDatetime.getDate();
-    const month = currentDatetime.getMonth();
-    const year = currentDatetime.getFullYear();
-    let currentDateString = '';
-    if (month.length === 2) {
-        currentDateString = year + '-' + (month + 1) + '-' + date;
-    } else {
-        currentDateString = year + '-0' + (month + 1) + '-' + date;
+const getDateFromDatetime = datetime => {
+    let date = datetime.getDate();
+    let month = datetime.getMonth() + 1;
+    const year = datetime.getFullYear();
+    if (date.length === 1) {
+        date = '0' + date;
     }
+    if (month.length === 1) {
+        month = '0' + month;
+    }
+    const returnDate = year + '-' + month + '-' + date;
+    console.log('return date' + returnDate);
+    return new Date(returnDate);
+}
 
-    const currentDate = new Date(currentDateString);
-    const endDate = new Date(campaign.campaignEndDate);
+const calculateDate = (date) => {
+    const currentDate = getDateFromDatetime(new Date())
+    const checkDate = getDateFromDatetime(date);
+    console.log('check date:' + checkDate);
+    console.log('current date:' + currentDate);
     const one_day = 1000 * 60 * 60 * 24
-    return (Math.ceil((endDate - currentDate) / one_day));
+    return (Math.ceil((checkDate - currentDate) / one_day));
 }
 
 exports.getHost = async (campaignId) => {
