@@ -27,7 +27,8 @@ const findHost = async (hostId) => {
             where: {
                 id: checkHost.userId
             },
-            attributes: {exclude: ['password', 'resetToken', 'resetTokenExpiration', 'rememberToken']}
+            // attributes: {exclude: ['password', 'resetToken', 'resetTokenExpiration', 'rememberToken']}
+            attributes: {exclude: ['password']}
         })
     }
     return false;

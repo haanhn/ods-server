@@ -23,18 +23,18 @@ const sendOTP = async (otp) => {
     }
 }
 
-const resetToken = async (user) => {
-    try {
-        await transporter.sendMail({
-            to: user.email,
-            from: 'admin@loveus.com',
-            subject: 'Reset password OTP Token',
-            html: '<p>Here is your OTP token to reset password: <b>' + user.resetToken + '</b></p>'
-        }) 
-    } catch (error) {
-        console.log(error);
-    }
-}
+// const resetToken = async (user) => {
+//     try {
+//         await transporter.sendMail({
+//             to: user.email,
+//             from: 'admin@loveus.com',
+//             subject: 'Reset password OTP Token',
+//             html: '<p>Here is your OTP token to reset password: <b>' + user.resetToken + '</b></p>'
+//         }) 
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
 
 const confirmDonate = async (mail) => {
     try {
@@ -199,7 +199,7 @@ const notiDonation = async (host, donation, campaign) => {
 
 module.exports = { 
     sendOTP, 
-    resetToken, 
+    // resetToken, 
     confirmDonate, 
     updateStatusDonation,
     updatePost, 

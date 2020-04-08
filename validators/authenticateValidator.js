@@ -38,17 +38,18 @@ const loginValidator = async (req) => {
 }
 
 
-const newPasswordValidatior = async (req) => {
-    req.check('user.email', 'email is required.').not().isEmpty();
-    req.check('user.email', 'Invalid email.').isEmail();
-    req.check('user.password', 'password is required.').not().isEmpty();
-    req.check('user.password', 'Password must be more than 6 characters.').isLength({ min: 5 });
-    req.check('resetToken', 'Token is require.').not().isEmpty();
+// const newPasswordValidatior = async (req) => {
+//     req.check('user.email', 'email is required.').not().isEmpty();
+//     req.check('user.email', 'Invalid email.').isEmail();
+//     req.check('user.password', 'password is required.').not().isEmpty();
+//     req.check('user.password', 'Password must be more than 6 characters.').isLength({ min: 5 });
+//     req.check('resetToken', 'Token is require.').not().isEmpty();
 
-    return raiseErr(req);
-}
+//     return raiseErr(req);
+// }
 
 
 module.exports = {
-    registerValidator, getOTPValidator, loginValidator, newPasswordValidatior
+    // registerValidator, getOTPValidator, loginValidator, newPasswordValidatior
+    registerValidator, getOTPValidator, loginValidator
 }

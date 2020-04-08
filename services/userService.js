@@ -15,7 +15,8 @@ exports.findById = async (req) => {
     const id = req.params.id;
     return await User.findOne({ 
         where: { id: id },
-        attributes: {exclude: ['password', 'resetToken', 'resetTokenExpiration', 'rememberToken']}
+        // attributes: {exclude: ['password', 'resetToken', 'resetTokenExpiration', 'rememberToken']}
+        attributes: {exclude: ['password']}
     });
 }
 
@@ -53,7 +54,6 @@ exports.update = async (req) => {
     const fullname = req.body.user.fullname;
     const address = req.body.user.address;
     const region = req.body.user.region;
-    const bio = req.body.user.bio;
     const userId = req.jwtDecoded.data.id;
 
     const user = await User.findOne({
@@ -73,7 +73,6 @@ exports.update = async (req) => {
     user.fullname = fullname;
     user.address = address;
     user.region = region;
-    user.bio = bio;
     return user.save();
 }
 

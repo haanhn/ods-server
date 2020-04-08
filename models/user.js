@@ -22,14 +22,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        gender: {
-            type: DataTypes.ENUM('male', 'female', 'orther'),
-            defaultValue: 'male'
-        },
-        dateOfBirth: {
-            type: DataTypes.DATE,
-            allowNull: true
-        },
+        // gender: {
+        //     type: DataTypes.ENUM('male', 'female', 'orther'),
+        //     defaultValue: 'male'
+        // },
+        // dateOfBirth: {
+        //     type: DataTypes.DATE,
+        //     allowNull: true
+        // },
         paypal: {
             type: DataTypes.STRING,
             allowNull: true
@@ -42,25 +42,25 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        bio: {
-            type: DataTypes.TEXT,
-            allowNull: true
-        },
-        resetToken: {
-            type: DataTypes.STRING
-        },
-        resetTokenExpiration: {
-            type: DataTypes.DATE
-        }
-        ,
-        rememberToken: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        status: {
-            type: DataTypes.ENUM('not verified', 'verified'),
-            defaultValue: 'not verified'
-        },
+        // bio: {
+        //     type: DataTypes.TEXT,
+        //     allowNull: true
+        // },
+        // resetToken: {
+        //     type: DataTypes.STRING
+        // },
+        // resetTokenExpiration: {
+        //     type: DataTypes.DATE
+        // }
+        // ,
+        // rememberToken: {
+        //     type: DataTypes.STRING,
+        //     allowNull: true
+        // },
+        // status: {
+        //     type: DataTypes.ENUM('not verified', 'verified'),
+        //     defaultValue: 'not verified'
+        // },
         ratingPoint: {
             type: DataTypes.DOUBLE,
             defaultValue: '0'
