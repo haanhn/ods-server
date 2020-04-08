@@ -165,7 +165,30 @@ exports.getAllByCategory = async (req) => {
     if (!category) {
         return false;
     }
-    let campaigns = await category.getCampaigns({ where: { campaignStatus: 'public' } });
+    let campaigns = await category.getCampaigns({ 
+        where: { campaignStatus: 'public' },
+        include: [
+            { model: Models.Category, attributes: ['categoryTitle'] }
+        ]
+    });
+    for (let campaign of campaigns) {
+        const raise = await this.getRaise(campaign.id);
+        campaign.dataValues.raise = raise;
+    }
+    return campaigns;
+}
+
+//lay tat ca campaign theo category
+exports.searchCampaigns = async (req) => {
+    const searchedValue = req.query.searchedValue;
+    let campaigns = await Models.Campaign.findAll({ 
+        where: { campaignTitle: {
+            [Op.like]: `%${searchedValue}%`
+        } },
+        include: [
+            { model: Models.Category, attributes: ['categoryTitle'] }
+        ]
+    });
     for (let campaign of campaigns) {
         const raise = await this.getRaise(campaign.id);
         campaign.dataValues.raise = raise;

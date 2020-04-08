@@ -117,7 +117,10 @@ exports.getCampaignsBySimilarUsers = async (currentUserId) => {
                 [Op.in]: predictCampaignIds
             },
             campaignStatus: 'public'
-        }
+        },
+        include: [
+            { model: Models.Category, attributes: ['id', 'categoryTitle'] }
+        ]
     });
     let i = 0;
     for (i = 0; i < returnedCampaigns.length; i++) {

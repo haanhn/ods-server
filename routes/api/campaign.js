@@ -24,6 +24,7 @@ Param:category slug
 Response: campaigns list
 */
 router.get('/get-by-category/:categorySlug', campaignController.getAllByCategory);
+router.get('/search-campaigns', campaignController.searchCampaigns);
 
 /*
 lay so luong nhat dinh (amount) campaign moi nhat da public

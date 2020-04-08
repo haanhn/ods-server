@@ -103,6 +103,16 @@ exports.getAllByCategory = async (req, res, next) => {
     }
 }
 
+exports.searchCampaigns = async (req, res, next) => {
+    try {
+        const campaigns = await campaignService.searchCampaigns(req);
+        return res.status(200).json({ success: 'true', campaigns });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
 exports.getNewest = async (req, res, next) => {
     try {
         const campaigns = await campaignService.getNewest(req);
