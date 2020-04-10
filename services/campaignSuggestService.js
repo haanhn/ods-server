@@ -34,18 +34,13 @@ exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRe
     if (campaigns && campaigns.length > 0) {
         const viewingTotalDays =
             this.calculateDaysBetweenDates(viewingCampaign.campaignStartDate, viewingCampaign.campaignEndDate);
-        const mapCampaignsRaised = await this.getMapCampaignsRaisedAmount();
+
         let i = 0;
         for (i = 0; i < campaigns.length; i++) {
             const campaign = campaigns[i];
-            const goal = campaign.campaignGoal;
-            const categoryId = campaign.Category.id;
-            const today = new Date();
-            const totalDays = this.calculateDaysBetweenDates(campaign.campaignStartDate, campaign.campaignEndDate);
-            const runningDays = this.calculateDaysBetweenDates(campaign.campaignStartDate, today);
-            const leftDays = this.calculateDaysBetweenDates(today, campaign.campaignEndDate);
 
-            const minProgressAmount = (goal / totalDays) * runningDays;
+            const totalDays = this.calculateDaysBetweenDates(campaign.campaignStartDate, campaign.campaignEndDate);
+
             const percentGoal = calculatePercentage(viewingCampaign.campaignGoal, campaign.campaignGoal);
             const percentDays = calculatePercentage(viewingTotalDays, totalDays);
             let sameCateogry = 0;
@@ -54,20 +49,8 @@ exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRe
             }
 
             const similarity = sameCateogry / 3 + percentGoal / 3 + percentDays / 3;
-            let raisedAmount = mapCampaignsRaised.get(campaign.id);
-            if (!raisedAmount) {
-                raisedAmount = 0;
-            }
-            let progress = raisedAmount / minProgressAmount;
-            if (progress > 1) {
-                progress = 1;
-            }
-            const emergency = this.getCampaignEmergency(leftDays);
-            // console.log('---campaign: ----------- ' + campaign.campaignTitle)
-            // console.log('similiarity ' + similarity)
-            // console.log('emergency ' + emergency)
-            // console.log('progress ' + progress)
-            const priority = 0.3 * similarity + 0.3 * emergency + 0.4 * progress;
+            
+            const priority = 0.3 * similarity + 0.7 * campaign.rankingPoint;
             console.log('priority ' + priority);
             const raised = await campaignService.getRaise(campaign.id);
             returnedCampaigns.push({ ...campaign.dataValues, priority: priority, raise: raised });
@@ -76,7 +59,6 @@ exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRe
             return b.priority - a.priority;
         });
         returnedCampaigns = returnedCampaigns.slice(0, amountRequired);
-        console.log(returnedCampaigns);
     }
     return returnedCampaigns;
 }
@@ -308,25 +290,3 @@ const getMapPredicts = (currentUserId, mapCampaigns, mapUsers, mapSim) => {
     });
     return mapPredicts;
 }
-
-// for (i = 0; i < donations.length; i++) {
-//     const donation = donations[i];
-//     const campaignId = donation.campaignId;
-//     const userId = donation.userId;
-
-//     //mapCampaigns
-//     let setUsers = mapCampaigns.get(campaignId);
-//     if (!setUsers) {
-//         setUsers = new Set();
-//     }
-//     setUsers.add(userId);
-//     mapCampaigns.set(campaignId, setUsers);
-
-//     //mapUsers
-//     let setCampaigns = mapUsers.get(userId);
-//     if (!setCampaigns) {
-//         setCampaigns = new Set();
-//     }
-//     setCampaigns.add(campaignId);
-//     mapUsers.set(userId, setCampaigns);
-// }
