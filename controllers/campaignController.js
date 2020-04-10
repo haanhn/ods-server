@@ -103,6 +103,16 @@ exports.getAllByCategory = async (req, res, next) => {
     }
 }
 
+exports.getAllPublicCampaigns = async (req, res, next) => {
+    try {
+        const campaigns = await campaignService.getAllByStatus('public');
+        return res.status(200).json({ success: 'true', campaigns });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
 exports.searchCampaigns = async (req, res, next) => {
     try {
         const campaigns = await campaignService.searchCampaigns(req);

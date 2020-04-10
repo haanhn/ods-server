@@ -3,7 +3,10 @@ const Models = require('../models');
 const db = require('../models/index');
 const campaignService = require('../services/campaignService');
 
-exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug) => {
+exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRequired) => {
+    if (!amountRequired || amountRequired <= 0) {
+        amountRequired = 4;
+    }
     const viewingCampaign = await Models.Campaign.findOne({
         where: {
             campaignSlug: viewingCampaignSlug,
@@ -27,20 +30,20 @@ exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug) => {
             { model: Models.Category, attributes: ['id', 'categoryTitle'] }
         ]
     });
-    const returnedCampaigns = [];
+    let returnedCampaigns = [];
     if (campaigns && campaigns.length > 0) {
         const viewingTotalDays =
-            calculateDaysBetweenDates(viewingCampaign.campaignStartDate, viewingCampaign.campaignEndDate);
-        const mapCampaignsRaised = await getMapCampaignsRaisedAmount();
+            this.calculateDaysBetweenDates(viewingCampaign.campaignStartDate, viewingCampaign.campaignEndDate);
+        const mapCampaignsRaised = await this.getMapCampaignsRaisedAmount();
         let i = 0;
         for (i = 0; i < campaigns.length; i++) {
             const campaign = campaigns[i];
             const goal = campaign.campaignGoal;
             const categoryId = campaign.Category.id;
             const today = new Date();
-            const totalDays = calculateDaysBetweenDates(campaign.campaignStartDate, campaign.campaignEndDate);
-            const runningDays = calculateDaysBetweenDates(campaign.campaignStartDate, today);
-            const leftDays = calculateDaysBetweenDates(today, campaign.campaignEndDate);
+            const totalDays = this.calculateDaysBetweenDates(campaign.campaignStartDate, campaign.campaignEndDate);
+            const runningDays = this.calculateDaysBetweenDates(campaign.campaignStartDate, today);
+            const leftDays = this.calculateDaysBetweenDates(today, campaign.campaignEndDate);
 
             const minProgressAmount = (goal / totalDays) * runningDays;
             const percentGoal = calculatePercentage(viewingCampaign.campaignGoal, campaign.campaignGoal);
@@ -59,19 +62,21 @@ exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug) => {
             if (progress > 1) {
                 progress = 1;
             }
-            const emergency = getCampaignEmergency(leftDays);
+            const emergency = this.getCampaignEmergency(leftDays);
             // console.log('---campaign: ----------- ' + campaign.campaignTitle)
             // console.log('similiarity ' + similarity)
             // console.log('emergency ' + emergency)
             // console.log('progress ' + progress)
-            const priority = 0.2 * similarity + 0.3 * emergency + 0.5 * progress;
+            const priority = 0.3 * similarity + 0.3 * emergency + 0.4 * progress;
             console.log('priority ' + priority);
             const raised = await campaignService.getRaise(campaign.id);
             returnedCampaigns.push({ ...campaign.dataValues, priority: priority, raise: raised });
         }
         returnedCampaigns.sort((a, b) => {
             return b.priority - a.priority;
-        })
+        });
+        returnedCampaigns = returnedCampaigns.slice(0, amountRequired);
+        console.log(returnedCampaigns);
     }
     return returnedCampaigns;
 }
@@ -138,7 +143,7 @@ exports.getCampaignsBySimilarUsers = async (currentUserId) => {
 }
 
 
-const calculateDaysBetweenDates = (fromDateStr, toDateStr) => {
+exports.calculateDaysBetweenDates = (fromDateStr, toDateStr) => {
     if (!fromDateStr || !toDateStr) {
         return -1;
     }
@@ -177,7 +182,7 @@ const calculatePercentage = (amount1, amount2) => {
     return percentage;
 }
 
-const getMapCampaignsRaisedAmount = async () => {
+exports.getMapCampaignsRaisedAmount = async () => {
     // const campaignsRaisedAmount = await Models.Donation.findAll({
     //     attributes: [
     //         'campaignId',
@@ -204,7 +209,7 @@ const getMapCampaignsRaisedAmount = async () => {
     return map;
 }
 
-const getCampaignEmergency = (leftDays) => {
+exports.getCampaignEmergency = (leftDays) => {
     if (!leftDays) {
         return 0;
     }
@@ -271,7 +276,7 @@ const getMapUserSimilarities = (currentUserId, mapUsers) => {
         })
 
     }
-    console.log('mapSim')
+    console.log('Similarity of user ith to current user:')
     console.log(mapSim);
     return mapSim;
 }

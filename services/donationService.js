@@ -310,6 +310,15 @@ exports.hostUpdateStatusDonation = async (req) => {
         }
     })
     await closeCampaign(campaign);
+
+    //Calculate ranking point of a campaign
+    if (action === 'approve') {
+        const raisedAmount = await campaignService.getRaise(campaign.id);
+        const rankingPoint = campaignService.calculateCampaignRankingPoint(campaign, raisedAmount);
+        campaign.rankingPoint = rankingPoint;
+        await campaign.save();
+    }
+
     return donation;
 }
 

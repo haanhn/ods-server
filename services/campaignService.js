@@ -1,9 +1,11 @@
 const slug = require('slug');
 const randomstring = require('randomstring');
-const { Op } = require('sequelize');
+const { Op, QueryTypes } = require('sequelize');
 const cron = require('node-cron');
 
+const db = require('../models/index');
 const Models = require('../models');
+const campaignSuggestService = require('../services/campaignSuggestService');
 const categoryService = require('../services/categoriesService');
 const mailService = require('./mailService');
 const followService = require('./followService');
@@ -12,46 +14,46 @@ const donationService = require('./donationService');
 
 cron.schedule('10 * * * * *', async () => {
     console.log('job chay');
-//     const campaigns = await Models.Campaign.findAll({
-//         where: {
-//             campaignStatus: 'public',
-//             autoClose: 1,
-//         }
-//     })
-//     for (let campaign of campaigns){
-//         console.log(calculateDate(campaign));
-//         let countDays = -1;
-//         if (calculateDate(campaign) === 1) {
-//             countDays = 1;
-//         } else  if (calculateDate(campaign) === 3) {
-//             countDays = 3
-//         } else if (calculateDate(campaign) <= 0) {
-//             email = await getMail(campaign, 0)
-//             countDays = 0
-//         }
-//         if (countDays != -1) {
-//             const email = await getMail(campaign, countDays);
-//             await mailService.notiEndDate(email);
-//         }
-//     }
-        const donations = await Models.Donation.findAll({
-            where: {
-                donationStatus: 'pending'
-            }
-        });
-        for (let donation of donations) {
-            console.log(donation.createdAt);
-            console.log(calculateDate(donation.createdAt));
-            if (calculateDate(donation.createdAt) === -7){
-                const host = await this.getHost(donation.campaignId);
-                const campaign = await Models.Campaign.findOne({
-                    where: {
-                        id: donation.campaignId
-                    }
-                })
-                await mailService.notiDonation(host.email, donation, campaign);
-            }
+    //     const campaigns = await Models.Campaign.findAll({
+    //         where: {
+    //             campaignStatus: 'public',
+    //             autoClose: 1,
+    //         }
+    //     })
+    //     for (let campaign of campaigns){
+    //         console.log(calculateDate(campaign));
+    //         let countDays = -1;
+    //         if (calculateDate(campaign) === 1) {
+    //             countDays = 1;
+    //         } else  if (calculateDate(campaign) === 3) {
+    //             countDays = 3
+    //         } else if (calculateDate(campaign) <= 0) {
+    //             email = await getMail(campaign, 0)
+    //             countDays = 0
+    //         }
+    //         if (countDays != -1) {
+    //             const email = await getMail(campaign, countDays);
+    //             await mailService.notiEndDate(email);
+    //         }
+    //     }
+    const donations = await Models.Donation.findAll({
+        where: {
+            donationStatus: 'pending'
         }
+    });
+    for (let donation of donations) {
+        console.log(donation.createdAt);
+        console.log(calculateDate(donation.createdAt));
+        if (calculateDate(donation.createdAt) === -7) {
+            const host = await this.getHost(donation.campaignId);
+            const campaign = await Models.Campaign.findOne({
+                where: {
+                    id: donation.campaignId
+                }
+            })
+            await mailService.notiDonation(host.email, donation, campaign);
+        }
+    }
 })
 
 const getMail = async (campaign, countDays) => {
@@ -110,7 +112,7 @@ cron.schedule('5 0 * * *', async () => {
         }
     });
     for (let donation of donations) {
-        if (calculateDate(donation.createdAt) === -7){
+        if (calculateDate(donation.createdAt) === -7) {
             const host = await this.getHost(donation.campaignId);
             const campaign = await Models.Campaign.findOne({
                 where: {
@@ -189,6 +191,9 @@ exports.getAllByStatus = async (status) => {
         include: [
             { model: Models.Category, attributes: ['categoryTitle'] },
             { model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar'], through: { where: { relation: 'host' } } }
+        ],
+        order: [
+            ['rankingPoint', 'DESC']
         ]
     });
 
@@ -206,10 +211,13 @@ exports.getAllByCategory = async (req) => {
     if (!category) {
         return false;
     }
-    let campaigns = await category.getCampaigns({ 
+    let campaigns = await category.getCampaigns({
         where: { campaignStatus: 'public' },
         include: [
             { model: Models.Category, attributes: ['categoryTitle'] }
+        ],
+        order: [
+            ['rankingPoint', 'DESC']
         ]
     });
     for (let campaign of campaigns) {
@@ -222,17 +230,23 @@ exports.getAllByCategory = async (req) => {
 //lay tat ca campaign theo category
 exports.searchCampaigns = async (req) => {
     const searchedValue = req.query.searchedValue;
-    let campaigns = await Models.Campaign.findAll({ 
-        where: { campaignTitle: {
-            [Op.like]: `%${searchedValue}%`
-        } },
-        include: [
-            { model: Models.Category, attributes: ['categoryTitle'] }
-        ]
-    });
+    const campaigns = await db.sequelize.query(
+        "SELECT * from ods_campaigns where MATCH (campaignTitle, campaignShortDescription) AGAINST ('" + searchedValue + "')" +
+        " and campaignStatus='public' ORDER BY rankingPoint DESC",
+        {
+            type: QueryTypes.SELECT
+        });
+    const categories = await Models.Category.findAll();
+    const mapCategories = new Map();
+    if (categories && categories.length > 0) {
+        for (let category of categories) {
+            mapCategories.set(category.id, category);
+        }
+    }
     for (let campaign of campaigns) {
         const raise = await this.getRaise(campaign.id);
-        campaign.dataValues.raise = raise;
+        campaign.raise = raise;
+        campaign.Category = mapCategories.get(campaign.categoryId);
     }
     return campaigns;
 }
@@ -517,4 +531,66 @@ exports.updateStatus = async (req) => {
     campaign.campaignStatus = 'close';
     await donationService.sendCloseMail(campaign);
     return campaign.save();
+}
+
+cron.schedule('15 0 * * *', async () => {
+    console.log('----------Start update campaigns ranking point----------');
+    try {
+        const campaigns = await Models.Campaign.findAll({
+            where: {
+                campaignStatus: 'public'
+            }
+        });
+        const mapRaisedAmount = await campaignSuggestService.getMapCampaignsRaisedAmount();
+        for (i = 0; i < campaigns.length; i++) {
+            const campaign = campaigns[i];
+            
+            let raisedAmount = mapRaisedAmount.get(campaign.id);
+            if (!raisedAmount) {
+                raisedAmount = 0;
+            }
+            const rankingPoint = this.calculateCampaignRankingPoint(campaign, raisedAmount);
+            await Models.Campaign.update({ rankingPoint: rankingPoint }, {
+                where: {
+                    id: campaign.id
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error when Cron update campaign ranking');
+        console.error(error);
+    }
+    console.log('----------End update campaigns ranking point----------');
+})
+
+exports.calculateCampaignRankingPoint = (campaign, raisedAmount) => {
+    if (!campaign) {
+        return -1;
+    }
+
+    const goal = campaign.campaignGoal;
+    const today = new Date();
+    const totalDays = campaignSuggestService.calculateDaysBetweenDates(campaign.campaignStartDate, campaign.campaignEndDate);
+    const runningDays = campaignSuggestService.calculateDaysBetweenDates(campaign.campaignStartDate, today);
+    const leftDays = campaignSuggestService.calculateDaysBetweenDates(today, campaign.campaignEndDate);
+
+    const minProgressAmount = (goal / totalDays) * runningDays;
+
+    let progress = raisedAmount / minProgressAmount;
+    if (progress > 1) {
+        progress = 1;
+    }
+    const emergency = campaignSuggestService.getCampaignEmergency(leftDays);
+    let rankingPoint = 0.4 * emergency + 0.6 * progress;
+    if (emergency >= 0.75) {
+        if (0.3 < progress && progress < 0.5) {
+            rankingPoint = 0.3 * emergency + 0.7 * progress;
+        } else if (progress <= 0.3) {
+            rankingPoint = 0.2 * emergency + 0.8 * progress;
+        }
+    }
+    if (Number.isNaN(rankingPoint)) {
+        rankingPoint = 0;
+    }
+    return rankingPoint;
 }

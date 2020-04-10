@@ -34,6 +34,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DOUBLE,
             defaultValue: '0'
         },
+        rankingPoint: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 0
+        },
         campaignShortDescription: {
             type: DataTypes.TEXT,
             allowNull: true
