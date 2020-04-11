@@ -173,52 +173,27 @@ exports.setPredictCampaignPointForAllUsers = async () => {
         }
     }
 
-    const userCampaignMatches = await Models.UserCampaignMatch.findAll();
-    const mapUserCampaignMatches = new Map();
-    console.log('userCampaignMatches');
-    i = 0;
-    for (i = 0; i < userCampaignMatches.length; i++) {
-        const match = userCampaignMatches[i];
-        const userId = match.userId;
-        const campaignId = match.campaignId;
-
-        let setCampaignMatchesOfUser = mapUserCampaignMatches.get(userId);
-        if (!setCampaignMatchesOfUser) {
-            setCampaignMatchesOfUser = new Set();
-        }
-        setCampaignMatchesOfUser.add(campaignId);
-        mapUserCampaignMatches.set(userId, setCampaignMatchesOfUser);
-    }
+    await Models.UserCampaignMatch.destroy({ truncate: true });
 
     for (let [userId, mapPredicts] of mapAllPredicts) {
         console.log(userId);
         console.log(mapPredicts);
-        let setMatchesOfUser = mapUserCampaignMatches.get(userId);
-        if (!setMatchesOfUser) {
-            setMatchesOfUser = new Set();
-        }
-        console.log(userId)
+        
         // console.log('predictPoint--------------')
         for (let predict of mapPredicts) {
             // console.log('predict ' + predict)
             const campaignId = predict[0];
             let predictPoint = predict[1];
-            const matchExisted = setMatchesOfUser.has(campaignId);
             if (Number.isNaN(predictPoint)) {
                 predictPoint = 0;
             }
             // console.log('campaignId ' + campaignId)
             // console.log('predictPoint ' + predictPoint)
-            if (matchExisted === true) {
-                await Models.UserCampaignMatch.update({ matchPoint: predictPoint }, {
-                    where: { userId: userId, campaignId: campaignId }
-                })
-            } else {
-                await Models.UserCampaignMatch.create({
-                    userId, campaignId,
-                    matchPoint: predictPoint
-                })
-            }
+
+            await Models.UserCampaignMatch.create({
+                userId, campaignId,
+                matchPoint: predictPoint
+            });
         }
     }
 
