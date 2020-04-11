@@ -557,7 +557,7 @@ cron.schedule('15 0 * * *', async () => {
             });
         }
     } catch (error) {
-        console.error('Error when Cron update campaign ranking');
+        console.error('Error when Scheduling update campaign ranking');
         console.error(error);
     }
     console.log('----------End update campaigns ranking point----------');

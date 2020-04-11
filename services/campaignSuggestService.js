@@ -1,6 +1,7 @@
 const { Op, QueryTypes } = require('sequelize');
 const Models = require('../models');
 const db = require('../models/index');
+const cron = require('node-cron');
 const campaignService = require('../services/campaignService');
 
 exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRequired) => {
@@ -49,7 +50,7 @@ exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRe
             }
 
             const similarity = sameCateogry / 3 + percentGoal / 3 + percentDays / 3;
-            
+
             const priority = 0.3 * similarity + 0.7 * campaign.rankingPoint;
             console.log('priority ' + priority);
             const raised = await campaignService.getRaise(campaign.id);
@@ -63,6 +64,13 @@ exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRe
     return returnedCampaigns;
 }
 
+//Runs at 0:20 am to calculate user campaign match
+cron.schedule('20 0 * * *', async () => {
+    console.log('----------Start setting User Campaign Match----------');
+    await this.setPredictCampaignPointForAllUsers();
+    console.log('----------End setting User Campaign Match----------');
+});
+
 exports.getCampaignsBySimilarUsers = async (currentUserId) => {
     const currentUser = Models.User.findOne({
         where: {
@@ -72,58 +80,153 @@ exports.getCampaignsBySimilarUsers = async (currentUserId) => {
     if (!currentUser) {
         return null;
     }
-    const donations = await db.sequelize.query(
-        "select distinct userId, campaignId from ods_donations where userId in(" +
-        "select userId from ods_donations where campaignId in (" +
-        "select campaignId from ods_donations where donationStatus='done' and userId='" + currentUserId + "'))",
-        {
-            type: QueryTypes.SELECT
-        });
-    const userCampaigns = await db.sequelize.query(
-        "select distinct userId, campaignId, relation from ods_user_campaigns where userId in(" +
-        "select userId from ods_user_campaigns where campaignId in (" +
-        "select campaignId from ods_user_campaigns where userId='" + currentUserId + "'))",
-        {
-            type: QueryTypes.SELECT
-        });
-    const mapCampaigns = new Map();
-    const mapUsers = new Map();
-    getUserCampaign(donations, mapCampaigns, mapUsers);
-    getUserCampaign(userCampaigns, mapCampaigns, mapUsers);
 
-    const mapSim = getMapUserSimilarities(currentUserId, mapUsers);
-    const mapPredicts = getMapPredicts(currentUserId, mapCampaigns, mapUsers, mapSim);
-    const predictCampaignIds = [];
-    mapPredicts.forEach((value, key) => {
-        predictCampaignIds.push(key);
-    })
-
+    const matches = await Models.UserCampaignMatch.findAll({
+        where: {
+            userId: currentUserId
+        },
+        include: [
+            { model: Models.Campaign }
+        ],
+        order: [
+            ['matchPoint', 'DESC']
+        ]
+    });
+    let i = 0;
+    const campaignIds = []
+    for (i = 0; i < matches.length; i++) {
+        campaignIds.push(matches[i].campaignId);
+    }
     const returnedCampaigns = await Models.Campaign.findAll({
         where: {
             id: {
-                [Op.in]: predictCampaignIds
+                [Op.in]: campaignIds
             },
             campaignStatus: 'public'
         },
         include: [
             { model: Models.Category, attributes: ['id', 'categoryTitle'] }
+        ],
+        order: [
+            ['rankingPoint', 'DESC']
         ]
     });
-    let i = 0;
+    i = 0;
     for (i = 0; i < returnedCampaigns.length; i++) {
         const raised = await campaignService.getRaise(returnedCampaigns[i].id);
         returnedCampaigns[i].dataValues.raise = raised;
     }
-    // console.log(predictCampaignIds)
-    // console.log('predicts');
-    // console.log(mapPredicts);
-    // console.log(donations);
-    // console.log(userCampaigns);
-    // console.log(mapCampaigns);
-    // console.log(mapUsers.size);
     return returnedCampaigns;
 }
 
+//Calculate prediction matchpoint between user and campaign based on similar users
+//Save to UserCampaignMatch
+exports.setPredictCampaignPointForAllUsers = async () => {
+    const from = new Date();
+
+    const roles = await db.sequelize.query("SELECT id FROM ods_roles WHERE roleName in ('member', 'guest')",
+        { type: QueryTypes.SELECT }
+    );
+    const roleIds = roles.map((role) => role.id);
+    const users = await Models.User.findAll({
+        where: {
+            roleId: roleIds
+        }
+    });
+    if (!users || users.length === 0) {
+        return;
+    }
+    const donations = await db.sequelize.query("select userId, campaignId from ods_donations where donationStatus='done'",
+        { type: QueryTypes.SELECT }
+    );
+    const userCampaigns = await db.sequelize.query("select userId, campaignId from ods_user_campaigns",
+        { type: QueryTypes.SELECT }
+    );
+    const mapCampaigns = new Map();
+    const mapUsers = new Map();
+    getUserCampaign(donations, mapCampaigns, mapUsers);
+    getUserCampaign(userCampaigns, mapCampaigns, mapUsers);
+
+    const mapAllSims = new Map();
+    let i = 0;
+    for (i = 0; i < users.length; i++) {
+        const currentUserId = users[i].id;
+        const mapSim = getMapUserSimilarities2(currentUserId, mapUsers);
+        mapAllSims.set(currentUserId, mapSim);
+    }
+
+    const mapAllPredicts = new Map();
+    i = 0;
+    for (i = 0; i < users.length; i++) {
+        const currentUserId = users[i].id;
+        const setCampaignsOfCurrentUser = mapUsers.get(currentUserId);
+
+        console.log('setCampOfCurrentUser')
+        console.log(setCampaignsOfCurrentUser)
+
+        if (setCampaignsOfCurrentUser && setCampaignsOfCurrentUser.size > 0) {
+            const mapSimOfCurrentUser = mapAllSims.get(currentUserId);
+            if (mapSimOfCurrentUser && mapSimOfCurrentUser.size > 0) {
+                const mapPredicts = getMapPredicts(currentUserId, mapCampaigns, mapUsers, mapSimOfCurrentUser);
+                mapAllPredicts.set(currentUserId, mapPredicts);
+            }
+        }
+    }
+
+    const userCampaignMatches = await Models.UserCampaignMatch.findAll();
+    const mapUserCampaignMatches = new Map();
+    console.log('userCampaignMatches');
+    i = 0;
+    for (i = 0; i < userCampaignMatches.length; i++) {
+        const match = userCampaignMatches[i];
+        const userId = match.userId;
+        const campaignId = match.campaignId;
+
+        let setCampaignMatchesOfUser = mapUserCampaignMatches.get(userId);
+        if (!setCampaignMatchesOfUser) {
+            setCampaignMatchesOfUser = new Set();
+        }
+        setCampaignMatchesOfUser.add(campaignId);
+        mapUserCampaignMatches.set(userId, setCampaignMatchesOfUser);
+    }
+
+    for (let [userId, mapPredicts] of mapAllPredicts) {
+        console.log(userId);
+        console.log(mapPredicts);
+        let setMatchesOfUser = mapUserCampaignMatches.get(userId);
+        if (!setMatchesOfUser) {
+            setMatchesOfUser = new Set();
+        }
+        console.log(userId)
+        // console.log('predictPoint--------------')
+        for (let predict of mapPredicts) {
+            // console.log('predict ' + predict)
+            const campaignId = predict[0];
+            let predictPoint = predict[1];
+            const matchExisted = setMatchesOfUser.has(campaignId);
+            if (Number.isNaN(predictPoint)) {
+                predictPoint = 0;
+            }
+            // console.log('campaignId ' + campaignId)
+            // console.log('predictPoint ' + predictPoint)
+            if (matchExisted === true) {
+                await Models.UserCampaignMatch.update({ matchPoint: predictPoint }, {
+                    where: { userId: userId, campaignId: campaignId }
+                })
+            } else {
+                await Models.UserCampaignMatch.create({
+                    userId, campaignId,
+                    matchPoint: predictPoint
+                })
+            }
+        }
+    }
+
+    const to = new Date();
+    let between = (to.getTime() - from.getTime()) / 1000;
+
+    console.log('Calculation user campaign match in: ' + between + ' seconds');
+}
 
 exports.calculateDaysBetweenDates = (fromDateStr, toDateStr) => {
     if (!fromDateStr || !toDateStr) {
@@ -263,6 +366,34 @@ const getMapUserSimilarities = (currentUserId, mapUsers) => {
     return mapSim;
 }
 
+const getMapUserSimilarities2 = (currentUserId, mapUsers) => {
+    const mapSim = new Map();
+    if (!mapUsers || mapUsers.length === 0) {
+        return mapSim;
+    }
+    let i = 0;
+    for (i = 0; i < mapUsers.size; i++) {
+        mapUsers.forEach((value, key) => {
+            if (key !== currentUserId) {
+                const setCampaigns = value;
+                const setCampaignsOfCurrentUser = mapUsers.get(currentUserId);
+                if (setCampaignsOfCurrentUser && setCampaignsOfCurrentUser.size > 0) {
+
+                    let countCommonCampaigns = 0;
+                    for (campaignId of setCampaignsOfCurrentUser) {
+                        if (setCampaigns.has(campaignId)) {
+                            countCommonCampaigns++;
+                        }
+                    }
+                    const similarity = countCommonCampaigns / (setCampaigns.size + setCampaignsOfCurrentUser.size - countCommonCampaigns);
+                    mapSim.set(key, similarity);
+                }
+            }
+        })
+    }
+    return mapSim;
+}
+
 const getMapPredicts = (currentUserId, mapCampaigns, mapUsers, mapSim) => {
     const mapPredicts = new Map();
     if (!mapCampaigns || mapCampaigns.length === 0) {
@@ -290,3 +421,65 @@ const getMapPredicts = (currentUserId, mapCampaigns, mapUsers, mapSim) => {
     });
     return mapPredicts;
 }
+
+// exports.getCampaignsBySimilarUsers = async (currentUserId) => {
+//     const currentUser = Models.User.findOne({
+//         where: {
+//             id: currentUserId
+//         }
+//     });
+//     if (!currentUser) {
+//         return null;
+//     }
+//     const donations = await db.sequelize.query(
+//         "select distinct userId, campaignId from ods_donations where userId in(" +
+//         "select userId from ods_donations where campaignId in (" +
+//         "select campaignId from ods_donations where donationStatus='done' and userId='" + currentUserId + "'))",
+//         {
+//             type: QueryTypes.SELECT
+//         });
+//     const userCampaigns = await db.sequelize.query(
+//         "select distinct userId, campaignId, relation from ods_user_campaigns where userId in(" +
+//         "select userId from ods_user_campaigns where campaignId in (" +
+//         "select campaignId from ods_user_campaigns where userId='" + currentUserId + "'))",
+//         {
+//             type: QueryTypes.SELECT
+//         });
+//     const mapCampaigns = new Map();
+//     const mapUsers = new Map();
+//     getUserCampaign(donations, mapCampaigns, mapUsers);
+//     getUserCampaign(userCampaigns, mapCampaigns, mapUsers);
+
+//     const mapSim = getMapUserSimilarities(currentUserId, mapUsers);
+//     const mapPredicts = getMapPredicts(currentUserId, mapCampaigns, mapUsers, mapSim);
+//     const predictCampaignIds = [];
+//     mapPredicts.forEach((value, key) => {
+//         predictCampaignIds.push(key);
+//     })
+
+//     const returnedCampaigns = await Models.Campaign.findAll({
+//         where: {
+//             id: {
+//                 [Op.in]: predictCampaignIds
+//             },
+//             campaignStatus: 'public'
+//         },
+//         include: [
+//             { model: Models.Category, attributes: ['id', 'categoryTitle'] }
+//         ]
+//     });
+//     let i = 0;
+//     for (i = 0; i < returnedCampaigns.length; i++) {
+//         const raised = await campaignService.getRaise(returnedCampaigns[i].id);
+//         returnedCampaigns[i].dataValues.raise = raised;
+//     }
+//     // console.log(predictCampaignIds)
+//     // console.log('predicts');
+//     // console.log(mapPredicts);
+//     // console.log(donations);
+//     // console.log(userCampaigns);
+//     // console.log(mapCampaigns);
+//     // console.log(mapUsers.size);
+//     await this.getCampaignsBySimilarUsersForAllUsers();
+//     return returnedCampaigns;
+// }
