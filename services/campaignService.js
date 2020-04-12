@@ -361,6 +361,31 @@ exports.hostGetCampaignDetails = async (req) => {
     return campaign;
 }
 
+exports.hostGetCampaignStats = async (req) => {
+    const slug = req.params.campaignSlug;
+    const campaign = await Models.Campaign.findOne({
+        where: {
+            campaignSlug: slug
+        }
+    });
+
+    if (!campaign) {
+        return 404;
+    }
+
+    const campaignId = campaign.id;
+    const host = await this.getHost(campaignId);
+    // console.log(host);
+    // console.log(req.jwtDecoded.data.id);
+    if (host.id !== req.jwtDecoded.data.id) {
+        return 403; //forbidden
+    }
+    const raised = await this.getRaise(campaignId);
+    const countDonations = await this.getCountDonationsByCampaignId(campaignId, 'done');
+    const result = { raised, countDonations };
+    return result;
+}
+
 exports.create = async (req) => {
     const user = req.jwtDecoded.data;
     const reqSlug = req.body.campaign.campaignSlug;

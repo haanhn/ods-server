@@ -11,7 +11,6 @@ Response: campaigns list
 */
 router.get('/get-all', campaignController.getAll);
 
-// router.get('/get-by-user/:userId', campaignController.getByUser);
 router.get('/get-by-user/:userId', campaignController.getByUser);
 
 //Get recommendated campaigns
@@ -45,6 +44,7 @@ router.get('/get-detail/:campaignSlug', campaignController.getCampaignDetail);
 router.use(AuthMiddleware.isAuth);
 
 router.get('/:campaignSlug', campaignController.hostGetCampaignDetails);
+router.get('/host-get-stats/:campaignSlug', campaignController.hostGetCampaignStats);
 
 /*
 lay ra tat ca nhung campaign ma minh da host hoac supporter
