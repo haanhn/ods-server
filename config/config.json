@@ -16,10 +16,10 @@
     "operatorsAliases": false
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "username": "ojouplahosting_cuongnv23",
+    "password": "vietcuong12",
+    "database": "ojouplahosting_ods_dev",
+    "host": "103.57.221.26",
     "dialect": "mysql",
     "operatorsAliases": false
   }

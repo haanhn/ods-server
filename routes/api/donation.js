@@ -20,9 +20,9 @@ router.post('/paypal', donationController.createPayment);
 router.get('/paypal/success', donationController.executePayment);
 
 //api vnpay payment
-router.post('/create_payment_url', donationController.createPaymentVNPay);
+// router.post('/create_payment_url', donationController.createPaymentVNPay);
 
-router.get('/vnpay_return', donationController.paymentReturn);
+// router.get('/vnpay_return', donationController.paymentReturn);
 
 // router.get('/paypal/cancel', donationController.cancelPayment);
 
