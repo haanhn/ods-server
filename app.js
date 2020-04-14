@@ -81,6 +81,6 @@ models.sequelize
     console.log(err, "Something went wrong with the Database Update!")
   });
 
-app.listen(process.env.PORT || 5000, () => {
+app.listen(process.env.PORT || 5000, "0.0.0.0", () => {
   console.log('App listening on port 5000!');
 });
