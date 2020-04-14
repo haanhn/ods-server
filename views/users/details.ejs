@@ -24,7 +24,7 @@
 				<div class="card-body">
 					<div class="row">
 						<div class="col-md-2 avatar">
-							<img src="/img/users/male.png" alt="Avatar user">
+							<img src="<%= user.avatar? user.avatar : '/img/users/male.png' %>" alt="Avatar user">
 						</div>
 						<div class="col-md-6 ml-lg-5">
 							<h3 class="text-dark"><%= user.fullname %></h3>
@@ -76,9 +76,6 @@
 									</tbody>
 								</table>
 							</div>
-						</div>
-						<div class="col-md-3">
-							<a href="/admin/users/campaigns/<%= user.id %>" class="btn btn-success">Xem chiến dịch đã tạo</a>
 						</div>
 					</div>
 				</div>
