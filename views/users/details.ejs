@@ -4,9 +4,11 @@
 	.table td {
 		border-top: none;
 	}
+
 	.text-dark-medium {
 		color: #111111;
 	}
+
 	.avatar img {
 		width: 100%;
 	}
@@ -22,9 +24,9 @@
 				<div class="card-body">
 					<div class="row">
 						<div class="col-md-2 avatar">
-							<img src="/img/users/male.png" alt="Avatar user" >
+							<img src="/img/users/male.png" alt="Avatar user">
 						</div>
-						<div class="col-md-6 ml-lg-5" >
+						<div class="col-md-6 ml-lg-5">
 							<h3 class="text-dark"><%= user.fullname %></h3>
 							<div class="info-table table-responsive">
 								<table class="table text-nowrap">
@@ -47,19 +49,19 @@
 										</tr>
 										<tr>
 											<td>Chiến dịch đã tạo:</td>
-											<td class="font-medium text-dark-medium">15</td>
+											<td class="font-medium text-dark-medium"><%= campaignCount %></td>
 										</tr>
 										<tr>
-											<td>Chiến dịch đã quyên góp:</td>
-											<td class="font-medium text-dark-medium">50</td>
+											<td>Tổng số tiền được quyên góp:</td>
+											<td class="font-medium text-dark-medium"><%= countRaised %> đ</td>
 										</tr>
 										<tr>
-											<td>Tổng số tiền quyên góp:</td>
-											<td class="font-medium text-dark-medium">20.000.000đ</td>
+											<td>Tổng số tiền đã quyên góp:</td>
+											<td class="font-medium text-dark-medium"><%= countDonating %> đ</td>
 										</tr>
 										<tr>
 											<td>Điểm đánh giá:</td>
-											<td class="font-medium text-dark-medium">8/10</td>
+											<td class="font-medium text-dark-medium"><%= user.ratingPoint %></td>
 										</tr>
 										<tr>
 											<td>Role:</td>
@@ -67,7 +69,9 @@
 										</tr>
 										<tr>
 											<td>Ngày tạo tài khoản:</td>
-											<td class="font-medium text-dark-medium"><%= user.createdAt.getDate() + "-" + (user.createdAt.getMonth() + 1) + "-" + user.createdAt.getFullYear(); %></td>
+											<td class="font-medium text-dark-medium">
+												<%= user.createdAt.getDate() + "-" + (user.createdAt.getMonth() + 1) + "-" + user.createdAt.getFullYear(); %>
+											</td>
 										</tr>
 									</tbody>
 								</table>

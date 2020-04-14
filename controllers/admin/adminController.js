@@ -32,6 +32,7 @@ exports.postLogin = async (req, res, next) => {
                 roleId: memberRole.id
             }
         });
+        console.log(user);
         if (user) {
             const comparePassword = await bcrypt.compare(req.body.password, user.password);
             if (comparePassword) {
@@ -48,7 +49,7 @@ exports.postLogin = async (req, res, next) => {
         }
     } else {
         res.send('Please enter Username and Password!');
-		res.end();
+        res.end();
     }
 }
 

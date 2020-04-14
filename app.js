@@ -20,13 +20,19 @@ const api = require('./routes/api/api');
 const models = require('./models');
 
 //import seed datas
-const { seedRoles, seedUsers, seedCategories } = require('./seedDatas');
+const {
+  seedRoles,
+  seedUsers,
+  seedCategories
+} = require('./seedDatas');
 const seedAdmin = require('./seedAdmin');
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
@@ -52,23 +58,28 @@ app.use('/admin', adminRoutes);
 app.use('/api', api);
 
 app.use((req, res, next) => {
-    res.status(404).json({ success: 'false', message: 'Page not found'});
+  res.status(404).json({
+    success: 'false',
+    message: 'Page not found'
+  });
 });
 
 //Sync Database
 models.sequelize
-    // .sync({ force: true })
-    .sync()
-    .then(() => {
-        seedAdmin.createAdmin();
-        console.log('Nice! Database looks fine');
-        // models.Role.bulkCreate(seedRoles);
-        // models.User.bulkCreate(seedUsers);
-        // models.Category.bulkCreate(seedCategories);
-    })
-    .catch(err => {
-        console.log(err, "Something went wrong with the Database Update!")
-    });
+  // .sync({
+  //   force: true
+  // })
+  .sync()
+  .then(() => {
+    console.log('Nice! Database looks fine');
+    // models.Role.bulkCreate(seedRoles);
+    seedAdmin.createAdmin();
+    // models.User.bulkCreate(seedUsers);
+    // models.Category.bulkCreate(seedCategories);
+  })
+  .catch(err => {
+    console.log(err, "Something went wrong with the Database Update!")
+  });
 
 app.listen(5000, () => {
   console.log('App listening on port 5000!');
