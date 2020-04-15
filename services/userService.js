@@ -23,7 +23,7 @@ exports.findById = async (req) => {
 exports.updateUserAddress = async (req) => {
     const user = await this.findByEmail(req);
     user.address = req.body.address;
-    user.region = req.body.region;
+    user.regionId = req.body.region;
     return await user.save();
 }
 
@@ -72,7 +72,7 @@ exports.update = async (req) => {
     }
     user.fullname = fullname;
     user.address = address;
-    user.region = region;
+    user.regionId = region;
     return user.save();
 }
 

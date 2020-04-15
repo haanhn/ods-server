@@ -190,7 +190,8 @@ exports.getAllByStatus = async (status) => {
         },
         include: [
             { model: Models.Category, attributes: ['categoryTitle'] },
-            { model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar'], through: { where: { relation: 'host' } } }
+            { model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar'], through: { where: { relation: 'host' } } },
+            { model: Models.Region, attributes: ['id', 'name'] }
         ],
         order: [
             ['rankingPoint', 'DESC']
@@ -214,7 +215,8 @@ exports.getAllByCategory = async (req) => {
     let campaigns = await category.getCampaigns({
         where: { campaignStatus: 'public' },
         include: [
-            { model: Models.Category, attributes: ['categoryTitle'] }
+            { model: Models.Category, attributes: ['categoryTitle'] },
+            { model: Models.Region, attributes: ['id', 'name'] }
         ],
         order: [
             ['rankingPoint', 'DESC']
@@ -237,16 +239,24 @@ exports.searchCampaigns = async (req) => {
             type: QueryTypes.SELECT
         });
     const categories = await Models.Category.findAll();
+    const regions = await Models.Region.findAll();
     const mapCategories = new Map();
+    const mapRegions = new Map();
     if (categories && categories.length > 0) {
         for (let category of categories) {
             mapCategories.set(category.id, category);
+        }
+    }
+    if (regions && regions.length > 0) {
+        for (let region of regions) {
+            mapRegions.set(region.id, region);
         }
     }
     for (let campaign of campaigns) {
         const raise = await this.getRaise(campaign.id);
         campaign.raise = raise;
         campaign.Category = mapCategories.get(campaign.categoryId);
+        campaign.Region = mapRegions.get(campaign.regionId);
     }
     return campaigns;
 }
@@ -331,7 +341,11 @@ exports.getCampaignDetail = async (slug) => {
         },
         include: [
             { model: Models.Category, attributes: ['categoryTitle'] },
-            { model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar', 'region'], through: { where: { relation: 'host' } } }
+            {
+                model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar'],
+                through: { where: { relation: 'host' } },
+                include: [ { model: Models.Region, attributes: ['id', 'name'] } ]
+            }
         ]
     });
 }
@@ -478,7 +492,7 @@ exports.createCampaignStep3 = async (req, res, next) => {
         const campaign = await this.findBySlug(reqSlug);
         if (campaign != null) {
             campaign.campaignAddress = reqAddress;
-            campaign.campaignRegion = reqCity;
+            campaign.regionId = reqCity;
             campaign.campaignGoal = reqGoal;
             campaign.campaignEndDate = reqEndDate;
             campaign.autoClose = autoClose;
@@ -547,7 +561,7 @@ exports.update = async (req) => {
     campaign.campaignDescription = req.body.campaign.campaignDescription;
     campaign.campaignThumbnail = req.body.campaign.campaignThumbnail;
     campaign.campaignAddress = req.body.campaign.campaignAddress;
-    campaign.campaignRegion = req.body.campaign.campaignRegion;
+    campaign.regionId = req.body.campaign.campaignRegion;
     campaign.campaignEndDate = req.body.campaign.campaignEndDate;
     campaign.campaignGoal = req.body.campaign.campaignGoal;
     campaign.autoClose = req.body.campaign.autoClose ? 'true' : 'false'

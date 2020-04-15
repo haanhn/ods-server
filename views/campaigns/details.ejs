@@ -25,7 +25,7 @@
 					<div class="font-italic"><i class="fas fa-user mr-3"></i><%= campaign.Users[0].fullname  %></div>
 					<div class="font-italic"><i class="fas fa-tag mr-3"></i><%= campaign.Category.categoryTitle  %></div>
 					<div class="font-italic"><i
-							class="fas fa-map-marker-alt mr-3"></i><%= campaign.campaignAddress + ' - ' + campaign.campaignRegion %>
+							class="fas fa-map-marker-alt mr-3"></i><%= campaign.campaignAddress + ' - ' + campaign.regionId %>
 					</div>
 					<div class="font-italic"><i
 							class="fas fa-calendar-week mr-3"></i><%= campaign.campaignEndDate ? campaign.campaignEndDate.getDate() + "-" + (campaign.campaignEndDate.getMonth() + 1) + "-" + campaign.campaignEndDate.getFullYear() : "" %>

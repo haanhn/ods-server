@@ -225,7 +225,7 @@ exports.sendDonateMail = async (donation) => {
         },
         include: [{
             model: Models.User,
-            attributes: ['id', 'email', 'fullname', 'address', 'region'],
+            attributes: ['id', 'email', 'fullname', 'address', 'regionId'],
             through: {
                 where: {
                     relation: 'host'
@@ -238,6 +238,10 @@ exports.sendDonateMail = async (donation) => {
             userId: campaign.Users[0].id
         }
     })
+    const hostRegion = await Models.Region.findOne({
+        where: { id: campaign.Users[0].regionId }
+    });
+    const regionName = hostRegion ? hostRegion.name : '';
     const regex = /\B(?=(\d{3})+(?!\d))/g;
     let amountFormated = donation.donationAmount + '';
     amountFormated = amountFormated.replace(regex, '.');
@@ -258,7 +262,7 @@ exports.sendDonateMail = async (donation) => {
             email: campaign.Users[0].email,
             name: campaign.Users[0].fullname,
             address: campaign.Users[0].address,
-            region: campaign.Users[0].region,
+            region: regionName,
             accountName: bankAccount.accountName,
             accountNumber: bankAccount.accountNumber,
             bankName: bankAccount.bankName,

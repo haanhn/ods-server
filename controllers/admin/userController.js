@@ -7,7 +7,11 @@ const campaignService = require('../../services/campaignService');
 
 exports.index = async (req, res, next) => {
     try {
-        const users = await models.User.findAll();
+        const users = await models.User.findAll({
+            include: [
+                { model: models.Region, attributes: ['id', 'name'] }
+            ],
+        });
         res.render('users/index', {
             pageTitle: 'Admin - Users',
             path: '/admin/users',
@@ -45,11 +49,11 @@ exports.show = async (req, res, next) => {
                 where: {
                     id: campaignIds[i].campaignId,
                     [Op.or]: [{
-                            campaignStatus: 'public'
-                        },
-                        {
-                            campaignStatus: 'close'
-                        }
+                        campaignStatus: 'public'
+                    },
+                    {
+                        campaignStatus: 'close'
+                    }
                     ]
                 },
                 attributes: ['id'],

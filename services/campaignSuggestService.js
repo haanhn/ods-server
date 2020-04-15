@@ -28,7 +28,8 @@ exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRe
             campaignStatus: 'public'
         },
         include: [
-            { model: Models.Category, attributes: ['id', 'categoryTitle'] }
+            { model: Models.Category, attributes: ['id', 'categoryTitle'] },
+            { model: Models.Region, attributes: ['id', 'name'] }
         ]
     });
     let returnedCampaigns = [];
@@ -105,7 +106,8 @@ exports.getCampaignsBySimilarUsers = async (currentUserId) => {
             campaignStatus: 'public'
         },
         include: [
-            { model: Models.Category, attributes: ['id', 'categoryTitle'] }
+            { model: Models.Category, attributes: ['id', 'categoryTitle'] },
+            { model: Models.Region, attributes: ['id', 'name'] }
         ],
         order: [
             ['rankingPoint', 'DESC']
