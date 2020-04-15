@@ -386,6 +386,21 @@ exports.hostGetCampaignStats = async (req) => {
     return result;
 }
 
+exports.checkBeforeCreateCampaignByUserId = async (req) => {
+    const user = req.jwtDecoded.data;
+    const campaigns = await db.sequelize.query(
+        "SELECT * FROM ods_db.ods_campaigns WHERE campaignStatus IN ('setting', 'waiting') AND id IN " +
+        "(SELECT campaignId FROM ods_user_campaigns WHERE userId = '" + user.id + "' AND relation = 'host')",
+        { type: QueryTypes.SELECT }
+    );
+    // console.log(campaigns);
+    if (campaigns.length > 0) {
+        return campaigns[0];
+    } else {
+        return null;
+    }
+}
+
 exports.create = async (req) => {
     const user = req.jwtDecoded.data;
     const reqSlug = req.body.campaign.campaignSlug;
@@ -569,7 +584,7 @@ cron.schedule('15 0 * * *', async () => {
         const mapRaisedAmount = await campaignSuggestService.getMapCampaignsRaisedAmount();
         for (i = 0; i < campaigns.length; i++) {
             const campaign = campaigns[i];
-            
+
             let raisedAmount = mapRaisedAmount.get(campaign.id);
             if (!raisedAmount) {
                 raisedAmount = 0;
