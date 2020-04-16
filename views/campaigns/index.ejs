@@ -14,10 +14,11 @@
     {
       if (options[i] != 'All') {
         var selected = ( status == options[i] ) ? "selected" : "";
-        %><option value="<%='http://localhost:5000/admin/campaigns/' + options[ i ] %>" <%=selected %>><%=options[i] %>
+        %><option value="<%='https://odsapi.herokuapp.com/admin/campaigns/' + options[ i ] %>" <%=selected %>>
+      <%=options[i] %>
     </option><%
       } else { %>
-    <option value="http://localhost:5000/admin/campaigns/" selected>All</option>
+    <option value="https://odsapi.herokuapp.com/admin/campaigns/" selected>All</option>
     <% }
         
     }
