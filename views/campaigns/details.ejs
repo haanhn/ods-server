@@ -1,57 +1,56 @@
 <%- include('../includes/head.ejs') %>
 <!-- Begin Page Content -->
 <div class="container-fluid">
-	<!-- Page Heading -->
-	<h1 class="h3 mb-2 text-gray-800">Campaign</h1>
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800">Chiến dịch</h1>
 
-	<div class="row mt-5">
-		<div class="col-md-10 offset-md-1">
-			<div class="card">
-				<img class="card-img-top" src="<%= campaign.campaignThumbnail ? campaign.campaignThumbnail : '' %>"
-					alt="Card image cap">
-				<div class="card-body">
-					<div class="row">
-						<div class="col-sm-9">
-							<h5 class="card-title"><%= campaign.campaignTitle %></h5>
-						</div>
-						<div class="col-sm-3">
-							<% 
-								let createdDate = campaign.createdAt;
-								let formatted_date = createdDate.getDate() + "-" + (createdDate.getMonth() + 1) + "-" + createdDate.getFullYear()
-							%>
-							<p class="font-italic">Created At: <%= formatted_date  %></p>
-						</div>
-					</div>
-					<div class="font-italic"><i class="fas fa-user mr-3"></i><%= campaign.Users[0].fullname  %></div>
-					<div class="font-italic"><i class="fas fa-tag mr-3"></i><%= campaign.Category.categoryTitle  %></div>
-					<div class="font-italic"><i
-							class="fas fa-map-marker-alt mr-3"></i><%= campaign.campaignAddress + ' - ' + campaign.campaignRegion %>
-					</div>
-					<div class="font-italic"><i
-							class="fas fa-calendar-week mr-3"></i><%= campaign.campaignEndDate ? campaign.campaignEndDate.getDate() + "-" + (campaign.campaignEndDate.getMonth() + 1) + "-" + campaign.campaignEndDate.getFullYear() : "" %>
-					</div>
+  <div class="row mt-5">
+    <div class="col-md-10 offset-md-1">
+      <div class="card">
+        <img
+          class="card-img-top"
+          src="<%= campaign.campaignThumbnail ? campaign.campaignThumbnail : '' %>"
+          alt="Card image cap"
+        />
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-9">
+              <h5 class="card-title"><%= campaign.campaignTitle %></h5>
+            </div>
+            <div class="col-sm-3">
+              <% let createdDate = campaign.createdAt; let formatted_date = createdDate.getDate() + "-" +
+              (createdDate.getMonth() + 1) + "-" + createdDate.getFullYear() %>
+              <p class="font-italic">Created At: <%= formatted_date %></p>
+            </div>
+          </div>
+          <div class="font-italic"><i class="fas fa-user mr-3"></i><%= campaign.Users[0].fullname %></div>
+          <div class="font-italic"><i class="fas fa-tag mr-3"></i><%= campaign.Category.categoryTitle %></div>
+          <div class="font-italic">
+            <i class="fas fa-map-marker-alt mr-3"></i><%= campaign.campaignAddress + ' - ' + campaign.campaignRegion %>
+          </div>
+          <div class="font-italic">
+            <i class="fas fa-calendar-week mr-3"></i><%= campaign.campaignEndDate ? campaign.campaignEndDate.getDate() +
+            "-" + (campaign.campaignEndDate.getMonth() + 1) + "-" + campaign.campaignEndDate.getFullYear() : "" %>
+          </div>
 
-					<div class="mt-5"><%- campaign.campaignDescription  %></div>
+          <div class="mt-5"><%- campaign.campaignDescription %></div>
 
-					<div class="row mt-2">
-						<% 
-							if (campaign.campaignStatus == 'waiting') {
-						%>
-						<form action="/admin/campaigns/action/approve" method="post">
-							<input type="hidden" name="campaignSlug" value="<%= campaign.campaignSlug %>">
-							<button class="btn btn-primary mt-2" type="submit">Approve</button>
-						</form>
-						<% } %>
-						<form action="/admin/campaigns/action/block" method="post" class="ml-3">
-							<input type="hidden" name="campaignSlug" value="<%= campaign.campaignSlug %>">
-							<button class="btn btn-primary mt-2" type="submit">Block</button>
-						</form>
-					</div>
-
-				</div>
-			</div>
-		</div>
-	</div>
+          <div class="row mt-2">
+            <% if (campaign.campaignStatus == 'waiting') { %>
+            <form action="/admin/campaigns/action/approve" method="post">
+              <input type="hidden" name="campaignSlug" value="<%= campaign.campaignSlug %>" />
+              <button class="btn btn-primary mt-2" type="submit">Chấp thuận</button>
+            </form>
+            <% } %>
+            <form action="/admin/campaigns/action/block" method="post" class="ml-3">
+              <input type="hidden" name="campaignSlug" value="<%= campaign.campaignSlug %>" />
+              <button class="btn btn-primary mt-2" type="submit">Block</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <!-- /.container-fluid -->
 <%- include('../includes/end.ejs') %>
