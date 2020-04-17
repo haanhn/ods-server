@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
     const Region = sequelize.define('Region', {
-        matp: {
+        id: {
             type: DataTypes.STRING,
             primaryKey: true
         },

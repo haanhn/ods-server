@@ -70,3 +70,18 @@ exports.update = async (req, res, next) => {
         res.status(500).json({ error: 'Server Error' });
     }
 }
+
+exports.delete = async (req, res, next) => {
+    try {
+        const postId = req.params.postId;
+        if (!postId) {
+            return res.status(400).json({ message: 'post id is required' });
+        }
+        const result = await postService.deletePost(postId);
+        const message = result ? 'delete post success' : 'no post found';
+        return res.status(200).json({ success: true, message: message });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}

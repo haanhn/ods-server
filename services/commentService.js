@@ -37,7 +37,7 @@ exports.getAll = async (req) => {
                 ['createdAt', 'DESC'],
             ],
             include: [
-                { model: models.User, attributes: [ 'id','email', 'fullname', 'avatar', 'region' ] }
+                { model: models.User, attributes: [ 'id','email', 'fullname', 'avatar', 'regionId' ] }
             ]
         });
     }

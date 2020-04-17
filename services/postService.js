@@ -121,3 +121,12 @@ const sendUpdatePostMail = async (campaignId) => {
 
     await mailService.updatePost(listEmail, campaign.campaignTitle, campaign.campaignSlug);
 }
+
+exports.deletePost = async (postId) => {
+    const result = await Models.Post.destroy({
+        where: {
+            id: postId
+        }
+    });
+    return result;
+}

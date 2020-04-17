@@ -53,6 +53,8 @@ Response: list campaign
 */
 router.get('/get-by-relation/:relation', campaignController.getByRelation);
 
+router.post('/check-before-create', campaignController.checkBeforeCreateCampaign);
+
 router.post('/create', campaignController.createCampaign);
 
 router.post('/create-step2', campaignController.createCampaignStep2);

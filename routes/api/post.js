@@ -16,6 +16,7 @@ router.post('/host/create', postController.create);
 
 router.post('/host/update', postController.update);
 
+router.delete('/host/delete/:postId', postController.delete);
 
 
 

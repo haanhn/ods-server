@@ -83,11 +83,11 @@ exports.hostGetCampaignStats = async (req, res, next) => {
     try {
         const result = await campaignService.hostGetCampaignStats(req);
         if (result === 404) {
-            return res.status(404).json({  message: 'cannot find this campaign' });
+            return res.status(404).json({ message: 'cannot find this campaign' });
         } else if (result === 403) {
-            return res.status(403).json({  message: 'You are not host of this campaign'});
+            return res.status(403).json({ message: 'You are not host of this campaign' });
         } else if (result) {
-            return res.status(200).json({  success: true, message: 'Host get stats successfully', result});
+            return res.status(200).json({ success: true, message: 'Host get stats successfully', result });
         }
     } catch (error) {
         console.log(error);
@@ -98,7 +98,7 @@ exports.hostGetCampaignStats = async (req, res, next) => {
 exports.getByUser = async (req, res, next) => {
     try {
         const campaigns = await campaignService.getAllByUser(req);
-        return res.status(200).json({ success: 'true', campaigns});
+        return res.status(200).json({ success: 'true', campaigns });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
@@ -163,6 +163,19 @@ exports.getByRelation = async (req, res, next) => {
     try {
         const campaigns = await campaignService.getByRelation(req);
         return res.status(200).json({ campaigns });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+}
+
+exports.checkBeforeCreateCampaign = async (req, res, next) => {
+    try {
+        const campaign = await campaignService.checkBeforeCreateCampaignByUserId(req);
+        return res.status(200).json({
+            success: true, message: 'Get campaign status: setting or waiting success',
+            campaign: campaign
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Server Error' });
