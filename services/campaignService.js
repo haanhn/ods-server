@@ -422,15 +422,15 @@ exports.create = async (req) => {
     const reqCategory = req.body.campaign.category;
     const reqShortDescription = req.body.campaign.campaignShortDescription;
     const random = randomstring.generate({
-        length: 6,
+        length: 10,
         charset: 'numeric'
     });
-
+    const lowerCaseTitle = reqTitle.toLowerCase();
     if (!reqSlug) {
         console.log('tao moi');
         const campaign = await Models.Campaign.create({
             campaignTitle: reqTitle,
-            campaignSlug: slug(reqTitle) + '-' + random,
+            campaignSlug: slug(lowerCaseTitle) + '-' + random,
             campaignShortDescription: reqShortDescription,
             categoryId: reqCategory
         });
@@ -445,8 +445,8 @@ exports.create = async (req) => {
         const campaign = await this.findBySlug(reqSlug);
         if (campaign != null) {
             campaign.campaignTitle = reqTitle;
-            campaign.campaignSlug = slug(reqTitle) + '-' + random;
-            campaign.categoryID = reqCategory;
+            campaign.campaignSlug = slug(lowerCaseTitle) + '-' + random;
+            campaign.categoryId = reqCategory;
             campaign.campaignShortDescription = reqShortDescription;
             await campaign.save();
 
