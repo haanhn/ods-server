@@ -47,8 +47,8 @@ router.get('/:campaignSlug', campaignController.hostGetCampaignDetails);
 router.get('/host-get-stats/:campaignSlug', campaignController.hostGetCampaignStats);
 
 /*
-lay ra tat ca nhung campaign ma minh da host hoac supporter
-Param:relation(host/supporter)
+lay ra tat ca nhung campaign ma minh da host hoac follow
+Param:relation(host/follow)
 Response: list campaign
 */
 router.get('/get-by-relation/:relation', campaignController.getByRelation);

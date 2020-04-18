@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4
         },
         relation: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM('host', 'follower'),
             allowNull: false
         }
     }, {

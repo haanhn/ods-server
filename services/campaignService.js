@@ -312,12 +312,12 @@ exports.getAllByUser = async (req) => {
     return campaigns;
 }
 
-//lay tat ca nhung campaign ma minh lam host hoac supporter
+//lay tat ca nhung campaign ma minh lam host hoac follower
 exports.getByRelation = async (req) => {
     const relation = req.params.relation;
     console.log(relation);
     const reqUser = req.jwtDecoded.data;
-    if (relation != 'host' && relation != 'supporter') {
+    if (relation != 'host' && relation != 'follower') {
         return false;
     }
 
