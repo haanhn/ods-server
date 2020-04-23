@@ -41,8 +41,8 @@
             <tr>
               <td class="text-center"><%= user.fullname %></td>
               <td class="text-center"><%= user.email  %></td>
-              <td class="text-center"><%= user.regionId %></td>
-              <td class="text-center"><%= user.roleId %></td>
+              <td class="text-center"><%= user.Region ? user.Region.name : '' %></td>
+              <td class="text-center"><%= user.Role.roleName %></td>
               <td class="text-center"><%= user.createdAt.getDate() + "-" + (user.createdAt.getMonth() + 1) + "-" + user.createdAt.getFullYear(); %></td>
               <td class="text-center">
                 <div class="btn-group" role="group">

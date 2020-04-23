@@ -41,7 +41,7 @@
                     </tr>
                     <tr>
                       <td>Thành phố:</td>
-                      <td class="font-medium text-dark-medium"><%= user.region %></td>
+                      <td class="font-medium text-dark-medium"><%= user.Region ? user.Region.name : '' %></td>
                     </tr>
                     <tr>
                       <td>E-mail:</td>
@@ -65,7 +65,7 @@
                     </tr>
                     <tr>
                       <td>Role:</td>
-                      <td class="font-medium text-dark-medium"><%= user.role %></td>
+                      <td class="font-medium text-dark-medium"><%= user.Role.roleName %></td>
                     </tr>
                     <tr>
                       <td>Ngày tạo tài khoản:</td>
