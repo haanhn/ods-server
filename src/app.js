@@ -28,7 +28,7 @@ const {
 const seedAdmin = require('./seedAdmin');
 
 app.set('view engine', 'ejs');
-app.set('views', 'views');
+app.set('views', 'src/views');
 
 app.use(bodyParser.urlencoded({
   extended: false

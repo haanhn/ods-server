@@ -1,0 +1,24 @@
+FROM node:12.16-alpine
+
+WORKDIR /app/
+
+ENV NODE_ENV=test
+ENV SESSION_SECRET=some_secret_session
+ENV ACCESS_TOKEN_LIFE=365d
+ENV ACCESS_TOKEN_SECRET=access-token-secret-by-cuong-nv-a@
+ENV CLOUD_NAME=dzs2og1cd
+ENV CLOUDINARY_API_KEY=982256886974765
+ENV CLOUDINARY_API_SECRET=P1-2GCeg5ZsDc2IfOLJj74eVv2s
+ENV PAYPAL_MODE=sandbox
+ENV PAYPAL_CLIENT_ID=Ab-IWjL5PsL2EWGI3iUgxtT5gl6FWdk0ijtiFBiavuV8UQPoLGQlCBzcaVcp0FA0Pl-OlmO9XCKx5EdM
+ENV PAYPAL_CLIENT_SECRET=EGSiD9wqRqfswTMxCLz_sycy2dR9cAguVLugo38FgOINE4vyPb-ba6wNUqEAwtj_8fbVc4GcAINkxRGy
+ENV ADMIN_PASSWORD=abc123
+
+ADD package.json .
+RUN npm install --production=true
+ADD src ./src
+
+CMD [ "npm", "start" ]
+EXPOSE 5000
+
+
