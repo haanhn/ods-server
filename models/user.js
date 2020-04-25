@@ -30,18 +30,14 @@ module.exports = (sequelize, DataTypes) => {
         //     type: DataTypes.DATE,
         //     allowNull: true
         // },
-        paypal: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
+        // paypal: {
+        //     type: DataTypes.STRING,
+        //     allowNull: true
+        // },
         address: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        // region: {
-        //     type: DataTypes.STRING,
-        //     allowNull: true
-        // },
         // bio: {
         //     type: DataTypes.TEXT,
         //     allowNull: true

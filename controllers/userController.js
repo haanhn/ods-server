@@ -28,19 +28,19 @@ exports.updateAddress = async (req, res, next) => {
     }
 }
 
-exports.updatePaypal = async (req, res, next) => {
-    try {
-        const result = await userService.updatePaypalAccount(req);
-        if (result) {
-            return res.status(201).json({ success: "true", message: "user's Paypal account has been updated successfully", result });
-        } else {
-            return res.status(400).json({ success: 'false', message: 'fail in update user address'});
-        }
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Server Error' });
-    }
-}
+// exports.updatePaypal = async (req, res, next) => {
+//     try {
+//         const result = await userService.updatePaypalAccount(req);
+//         if (result) {
+//             return res.status(201).json({ success: "true", message: "user's Paypal account has been updated successfully", result });
+//         } else {
+//             return res.status(400).json({ success: 'false', message: 'fail in update user address'});
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ error: 'Server Error' });
+//     }
+// }
 
 exports.getUserById = async (req, res, next) => {
     try {

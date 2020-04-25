@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
         donationStatus: {
-            type: DataTypes.ENUM('pending', 'reject' ,'done'),
+            type: DataTypes.ENUM('pending', 'reject' ,'done', 'returned'),
             defaultValue: 'pending'
         }
     }, {

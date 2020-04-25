@@ -12,7 +12,7 @@ const followService = require('./followService');
 const donationService = require('./donationService');
 
 
-cron.schedule('10 * * * * *', async () => {
+cron.schedule('10 0 * * *', async () => {
     console.log('job chay');
     //     const campaigns = await Models.Campaign.findAll({
     //         where: {
@@ -90,7 +90,7 @@ cron.schedule('5 0 * * *', async () => {
         }
     })
     for (let campaign of campaigns) {
-        console.log(calculateDate(campaign));
+        console.log(calculateDate(campaign.endDate));
         let countDays = -1;
         if (calculateDate(campaign.endDate) === 1) {
             countDays = 1;
@@ -396,7 +396,8 @@ exports.hostGetCampaignStats = async (req) => {
     }
     const raised = await this.getRaise(campaignId);
     const countDonations = await this.getCountDonationsByCampaignId(campaignId, 'done');
-    const result = { raised, countDonations };
+    const campaignStatus = campaign.campaignStatus;
+    const result = { raised, countDonations, campaignStatus };
     return result;
 }
 

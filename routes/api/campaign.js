@@ -14,7 +14,7 @@ router.get('/get-all', campaignController.getAll);
 router.get('/get-by-user/:userId', campaignController.getByUser);
 
 //Get recommendated campaigns
-router.get('/get-similar-by-campaign/:campaignSlug', campaignController.getSimilarCampaignsByCampaignSlug);
+router.get('/get-similar-by-campaign/:campaignSlug', campaignController.getCampaignsByWeightSumPoint);
 router.get('/get-by-similar-users/:userId', campaignController.getCampaignsBySimilarUsers);
 
 /*
