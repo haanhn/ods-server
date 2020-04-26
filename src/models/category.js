@@ -14,10 +14,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        categoryIcon: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
+        // categoryIcon: {
+        //     type: DataTypes.STRING,
+        //     allowNull: true
+        // },
         status: {
             type: DataTypes.ENUM('enable', 'disable'),
             defaultValue: 'enable'

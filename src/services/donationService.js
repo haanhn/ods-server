@@ -278,18 +278,18 @@ exports.sendDonateMail = async (donation) => {
 const closeCampaign = async (campaign) => {
     if (campaign.autoClose) {
         const raise = await campaignService.getRaise(campaign.id);
-        if (raise >= campaign.campaignGoal) {
-            const waitingDonations = await Models.Donation.findAll({
-                where: {
-                    campaignId: campaign.id,
-                    donationStatus: 'pending'
-                }
-            })
-            if (waitingDonations.length === 0) {
-                campaign.campaignStatus = 'close';
-                await campaign.save();
-                await this.sendCloseMail(campaign);
-            }
+        if (raise >= campaign.campaignGoal && campaign.campaignStatus !== 'close') {
+            // const waitingDonations = await Models.Donation.findAll({
+            //     where: {
+            //         campaignId: campaign.id,
+            //         donationStatus: 'pending'
+            //     }
+            // })
+            // if (waitingDonations.length === 0) {
+            campaign.campaignStatus = 'close';
+            await campaign.save();
+            await this.sendCloseMail(campaign);
+            // }
         }
     }
 }
@@ -317,7 +317,7 @@ exports.hostUpdateStatusDonation = async (req) => {
     if (!checkHost) {
         return 2;
     }
-    action === 'approve' ? donation.donationStatus = 'done' : donation.donationStatus = 'reject'
+    action === 'approve' ? donation.donationStatus = 'done' : donation.donationStatus = 'reject';
     await this.sendUpdateStatusDonationMail(donation);
     await donation.save();
 
@@ -432,7 +432,7 @@ const create_payment_json = async (req) => {
                     "quantity": "1",
                     "price": reqAmount,
                     "currency": "USD"
-                }, ]
+                },]
             },
             "amount": {
                 "total": amount,
@@ -567,13 +567,16 @@ exports.executePayment = async (req, res) => {
                 id: campaignId
             }
         });
-        await closeCampaign(campaign);
-        //Calculate ranking point of a campaign
-        const raisedAmount = await campaignService.getRaise(campaignId);
-        const rankingPoint = campaignService.calculateCampaignRankingPoint(campaign, raisedAmount);
-        campaign.rankingPoint = rankingPoint;
-        await campaign.save();
-
+        try {
+            await closeCampaign(campaign);
+            //Calculate ranking point of a campaign
+            const raisedAmount = await campaignService.getRaise(campaign.id);
+            const rankingPoint = campaignService.calculateCampaignRankingPoint(campaign, raisedAmount);
+            campaign.rankingPoint = rankingPoint;
+            await campaign.save();
+        } catch (error) {
+            console.log(error);
+        }
         res.redirect('http://localhost:3000/campaigns/' + campaign.campaignSlug);
     });
 }
@@ -599,7 +602,7 @@ exports.hostCreate = async (req) => {
         }
     });
 
-    if (campaign.campaignStatus != 'public') {
+    if (campaign.campaignStatus != 'public' && campaign.campaignStatus !== 'close') {
         return -1;
     }
 
@@ -618,12 +621,34 @@ exports.hostCreate = async (req) => {
         anonymous: anonymous,
         donationStatus: 'done',
         donationMessage: message
-    });
-    await closeCampaign(campaign);
-    //Calculate ranking point of a campaign
-    const raisedAmount = await campaignService.getRaise(campaign.id);
-    const rankingPoint = campaignService.calculateCampaignRankingPoint(campaign, raisedAmount);
-    campaign.rankingPoint = rankingPoint;
-    await campaign.save();
+    })
+    try {
+        await closeCampaign(campaign);
+        //Calculate ranking point of a campaign
+        const raisedAmount = await campaignService.getRaise(campaign.id);
+        const rankingPoint = campaignService.calculateCampaignRankingPoint(campaign, raisedAmount);
+        campaign.rankingPoint = rankingPoint;
+        await campaign.save();
+    } catch (error) {
+        console.log(error);
+    }
     return donation;
 }
+
+// function sortObject(o) {
+//     var sorted = {},
+//         key, a = [];
+
+//     for (key in o) {
+//         if (o.hasOwnProperty(key)) {
+//             a.push(key);
+//         }
+//     }
+
+//     a.sort();
+
+//     for (key = 0; key < a.length; key++) {
+//         sorted[a[key]] = o[a[key]];
+//     }
+//     return sorted;
+// }

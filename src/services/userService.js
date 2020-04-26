@@ -27,11 +27,11 @@ exports.updateUserAddress = async (req) => {
     return await user.save();
 }
 
-exports.updatePaypalAccount = async (req) => {
-    const user = await this.findByEmail(req);
-    user.paypal = req.body.paypal;
-    return await user.save();
-}
+// exports.updatePaypalAccount = async (req) => {
+//     const user = await this.findByEmail(req);
+//     user.paypal = req.body.paypal;
+//     return await user.save();
+// }
 
 exports.getStats = async (req) => {
     const campaigns = await campaignService.getAllByUser(req);

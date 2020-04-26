@@ -19,7 +19,7 @@ router.post('/update', userController.update);
 
 router.post('/update-address', userController.updateAddress);
 
-router.post('/update-paypal', userController.updatePaypal);
+// router.post('/update-paypal', userController.updatePaypal);
 
 
 module.exports = router;

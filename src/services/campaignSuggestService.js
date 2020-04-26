@@ -4,7 +4,7 @@ const db = require('../models/index');
 const cron = require('node-cron');
 const campaignService = require('../services/campaignService');
 
-exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRequired) => {
+exports.getCampaignsByWeightSumPoint = async (viewingCampaignSlug, amountRequired) => {
     if (!amountRequired || amountRequired <= 0) {
         amountRequired = 4;
     }
@@ -67,6 +67,13 @@ exports.getSimilarCampaignsByCampaignSlug = async (viewingCampaignSlug, amountRe
 
 //Runs at 0:20 am to calculate user campaign match
 cron.schedule('20 0 * * *', async () => {
+    console.log('----------Start setting User Campaign Match----------');
+    await this.setPredictCampaignPointForAllUsers();
+    console.log('----------End setting User Campaign Match----------');
+});
+
+//Runs at 12:00 pm to calculate user campaign match
+cron.schedule('0 12 * * *', async () => {
     console.log('----------Start setting User Campaign Match----------');
     await this.setPredictCampaignPointForAllUsers();
     console.log('----------End setting User Campaign Match----------');

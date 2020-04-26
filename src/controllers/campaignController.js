@@ -23,10 +23,10 @@ exports.getCampaignDetail = async (req, res, next) => {
     }
 }
 
-exports.getSimilarCampaignsByCampaignSlug = async (req, res, next) => {
+exports.getCampaignsByWeightSumPoint = async (req, res, next) => {
     try {
         const campaignSlug = req.params.campaignSlug;
-        const campaigns = await campaignSuggestService.getSimilarCampaignsByCampaignSlug(campaignSlug);
+        const campaigns = await campaignSuggestService.getCampaignsByWeightSumPoint(campaignSlug);
         if (campaigns) {
             return res.status(200).json({
                 success: 'true', message: 'get similar campaigns successfully',

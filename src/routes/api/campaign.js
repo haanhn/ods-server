@@ -14,7 +14,7 @@ router.get('/get-all', campaignController.getAll);
 router.get('/get-by-user/:userId', campaignController.getByUser);
 
 //Get recommendated campaigns
-router.get('/get-similar-by-campaign/:campaignSlug', campaignController.getSimilarCampaignsByCampaignSlug);
+router.get('/get-similar-by-campaign/:campaignSlug', campaignController.getCampaignsByWeightSumPoint);
 router.get('/get-by-similar-users/:userId', campaignController.getCampaignsBySimilarUsers);
 
 /*
@@ -47,8 +47,8 @@ router.get('/:campaignSlug', campaignController.hostGetCampaignDetails);
 router.get('/host-get-stats/:campaignSlug', campaignController.hostGetCampaignStats);
 
 /*
-lay ra tat ca nhung campaign ma minh da host hoac supporter
-Param:relation(host/supporter)
+lay ra tat ca nhung campaign ma minh da host hoac follow
+Param:relation(host/follow)
 Response: list campaign
 */
 router.get('/get-by-relation/:relation', campaignController.getByRelation);
