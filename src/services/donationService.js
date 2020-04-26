@@ -400,7 +400,11 @@ const getCurrencylayer = async url => {
 
 const create_payment_json = async (req) => {
     const rate = await getCurrencylayer(url);
-    const reqAmount = Math.ceil(parseInt(req.body.amount) / rate);
+    // const reqAmount = Math.ceil(parseInt(req.body.amount) / rate);
+    const amountRoundedStr = parseInt(req.body.amount) / rate;
+    const amountToFixed = amountRoundedStr.toFixed(1);
+    const reqAmount = parseFloat(amountToFixed); 
+
     const amount = reqAmount + 1.5;
     const userId = req.body.userId || "";
     const campaign = await Models.Campaign.findByPk(req.body.campaignId);
@@ -446,7 +450,11 @@ exports.createPayment = async (req, res) => {
         if (error) {
             console.log('error paypal');
             console.log(error);
-            throw error;
+            console.log(error.response.details);
+            // throw error;
+            res.status(500).json({
+                message: 'Co loi paypal'
+            })
         } else {
             console.log(payment);
             for (let i = 0; i < payment.links.length; i++) {
@@ -465,8 +473,14 @@ exports.createPayment = async (req, res) => {
 const execute_payment_json = async (req) => {
     const rate = await getCurrencylayer(url);
     const payerId = req.query.PayerID;
-    const reqAmount = Math.ceil(parseInt(req.query.amount) / rate);
+    // const reqAmount = Math.ceil(parseInt(req.query.amount) / rate);
+    // const amount = reqAmount + 1.5;
+    //-----
+    const amountRoundedStr = parseInt(req.query.amount) / rate;
+    const amountToFixed = amountRoundedStr.toFixed(1);
+    const reqAmount = parseFloat(amountToFixed); 
     const amount = reqAmount + 1.5;
+
     console.log(req.query);
     return payment_json = {
         "payer_id": payerId,
