@@ -195,9 +195,8 @@ exports.hostUpdateDonationStatusViaEmail = async (req, res, next) => {
 
 exports.createPayment = async (req, res, next) => {
   try {
+    // console.log(req.body);
     await donationService.createPayment(req, res);
-    // console.log(url);
-    // return res.redirect(url);
   } catch (error) {
     console.log(error);
     res.status(500).json({

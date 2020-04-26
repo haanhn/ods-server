@@ -240,7 +240,9 @@ exports.sendDonateMail = async (donation) => {
         }
     })
     const hostRegion = await Models.Region.findOne({
-        where: { id: campaign.Users[0].regionId }
+        where: {
+            id: campaign.Users[0].regionId
+        }
     });
     const regionName = hostRegion ? hostRegion.name : '';
     const regex = /\B(?=(\d{3})+(?!\d))/g;
@@ -411,7 +413,8 @@ const create_payment_json = async (req) => {
     const campaign = await Models.Campaign.findByPk(req.body.campaignId);
     const message = req.body.message || "";
     const fullname = slug(req.body.fullname);
-    // const handleFee = 1.5 + (reqAmount * )
+    const noti = req.body.noti;
+    const email = req.body.email;
     console.log(fullname);
     return payment_json = {
         "intent": "sale",
@@ -419,7 +422,7 @@ const create_payment_json = async (req) => {
             "payment_method": "paypal"
         },
         "redirect_urls": {
-            "return_url": "http://localhost:5000/api/donations/paypal/success?amount=" + req.body.amount + '&userId=' + userId + '&campaignId=' + campaign.id + '&fullname=' + fullname,
+            "return_url": "http://localhost:5000/api/donations/paypal/success?amount=" + req.body.amount + '&userId=' + userId + '&campaignId=' + campaign.id + '&fullname=' + fullname + '&noti=' + noti + '&email=' + email,
             "cancel_url": "http://localhost:5000/api/donations/paypal/cancel"
         },
         "transactions": [{
@@ -429,7 +432,7 @@ const create_payment_json = async (req) => {
                     "quantity": "1",
                     "price": reqAmount,
                     "currency": "USD"
-                },]
+                }, ]
             },
             "amount": {
                 "total": amount,
@@ -474,6 +477,7 @@ exports.createPayment = async (req, res) => {
 const execute_payment_json = async (req) => {
     const rate = await getCurrencylayer(url);
     const payerId = req.query.PayerID;
+    console.log("execute_payment_json =>", payerId);
     // const reqAmount = Math.ceil(parseInt(req.query.amount) / rate);
     // const amount = reqAmount + 1.5;
     //-----
@@ -481,8 +485,6 @@ const execute_payment_json = async (req) => {
     const amountToFixed = amountRoundedStr.toFixed(1);
     const reqAmount = parseFloat(amountToFixed);
     const amount = reqAmount + 1.5;
-
-    console.log(req.query);
     return payment_json = {
         "payer_id": payerId,
         "transactions": [{
@@ -500,6 +502,8 @@ exports.executePayment = async (req, res) => {
     const userId = req.query.userId;
     const campaignId = req.query.campaignId;
     const fullname = req.query.fullname;
+    const email = req.query.email;
+    const noti = req.query.noti;
     let user;
     const trackingCode = randomstring.generate({
         length: 12,
@@ -523,17 +527,20 @@ exports.executePayment = async (req, res) => {
             } else {
                 user = await Models.User.findOne({
                     where: {
-                        email: payment.payer.payer_info.email
+                        email: email
                     }
                 });
                 if (!user) {
                     user = await Models.User.create({
-                        email: payment.payer.payer_info.email,
+                        email: email,
                         password: '123456',
                         fullname: fullname.replace(/-/g, " "),
                         roleId: guestRole.id
                     })
                 }
+            }
+            if (noti) {
+                await followService.follow(user.id, campaignId, email, fullname);
             }
             const donation = await Models.Donation.create({
                 userId: user.id,
@@ -571,181 +578,6 @@ exports.executePayment = async (req, res) => {
     });
 }
 
-// exports.createPaymentVNPay = async (req) => {
-//     const campaignId = req.body.campaignId || '';
-//     const fullname = req.body.fullname || '';
-//     const email = req.body.email || '';
-//     const message = req.body.message || '';
-//     const anonymous = req.body.anonymous;
-//     const noti = req.body.noti;
-
-//     console.log(typeof (email));
-//     console.log(typeof ('cuongnv230796@gmail.com'));
-
-//     const ipAddr = req.headers['x-forwarded-for'] ||
-//         req.connection.remoteAddress ||
-//         req.socket.remoteAddress ||
-//         req.connection.socket.remoteAddress;
-
-//     const tmnCode = config.vnp_TmnCode;
-//     const secretKey = config.vnp_HashSecret;
-//     let vnpUrl = config.vnp_Url;
-//     const returnUrl = config.vnp_ReturnUrl;
-
-//     const date = new Date();
-
-//     const createDate = dateFormat(date, 'yyyymmddHHmmss');
-//     const orderId = dateFormat(date, 'HHmmss');
-//     const amount = req.body.amount;
-//     const bankCode = req.body.bankCode;
-
-//     let orderInfo = '';
-//     if (req.jwtDecoded) {
-//         orderInfo = req.jwtDecoded.data.id + "/" + campaignId + "/" + message + "/" + anonymous + "/" + noti;
-//     } else {
-//         orderInfo = email + "/" + fullname + "/" + campaignId + "/" + message + "/" + anonymous + "/" + noti;
-
-//     }
-//     // const orderInfo = email + '/' + fullname;
-//     const orderType = '250006';
-//     var locale = 'vn'
-//     const currencyCode = 'VND';
-//     let vnp_Params = {};
-
-//     vnp_Params['vnp_Version'] = '2';
-//     vnp_Params['vnp_Command'] = 'pay';
-//     vnp_Params['vnp_TmnCode'] = tmnCode;
-//     vnp_Params['vnp_CurrCode'] = currencyCode;
-//     vnp_Params['vnp_Locale'] = locale;
-//     vnp_Params['vnp_TxnRef'] = orderId;
-//     vnp_Params['vnp_OrderInfo'] = orderInfo;
-//     vnp_Params['vnp_OrderType'] = orderType;
-//     vnp_Params['vnp_Amount'] = amount * 100;
-//     vnp_Params['vnp_ReturnUrl'] = returnUrl;
-//     vnp_Params['vnp_IpAddr'] = ipAddr;
-//     vnp_Params['vnp_CreateDate'] = createDate;
-//     if (bankCode !== null && bankCode !== '') {
-//         vnp_Params['vnp_BankCode'] = bankCode;
-//     }
-
-//     vnp_Params = sortObject(vnp_Params);
-
-//     const signData = secretKey + querystring.stringify(vnp_Params, {
-//         encode: false
-//     });
-
-
-//     const secureHash = sha256(signData);
-
-//     vnp_Params['vnp_SecureHashType'] = 'SHA256';
-//     vnp_Params['vnp_SecureHash'] = secureHash;
-//     vnpUrl += '?' + querystring.stringify(vnp_Params, {
-//         encode: true
-//     });
-//     return vnpUrl;
-// }
-
-// exports.paymentReturn = async (req) => {
-//     let vnp_Params = req.query;
-//     const secureHash = vnp_Params['vnp_SecureHash'];
-//     delete vnp_Params['vnp_SecureHash'];
-//     delete vnp_Params['vnp_SecureHashType'];
-
-//     vnp_Params = sortObject(vnp_Params);
-
-//     const tmnCode = config.vnp_TmnCode;
-//     const secretKey = config.vnp_HashSecret;
-
-//     const signData = secretKey + querystring.stringify(vnp_Params, {
-//         encode: false
-//     });
-
-//     const sha256 = require('sha256');
-
-//     const checkSum = sha256(signData);
-//     console.log(vnp_Params);
-//     if (secureHash === checkSum) {
-//         const url = this.executePaymentVNPay(vnp_Params);
-//         console.log(vnp_Params);
-//         return url;
-//     }
-//     return false;
-
-// }
-
-
-// exports.executePaymentVNPay = async (vnp_Params) => {
-//     let userId;
-//     let email;
-//     let fullname
-//     let campaignId;
-//     let message;
-//     let anonymous;
-//     let noti;
-//     let user;
-//     let data = vnp_Params.vnp_OrderInfo.split('/');
-//     if (data.length === 5) {
-//         userId = data[0];
-//         campaignId = data[1];
-//         message = data[2];
-//         anonymous = data[3] === 'true' ? true : false;
-//         noti = data[4] === 'true' ? true : false;;
-//     } else {
-//         email = data[0];
-//         fullname = data[1];
-//         campaignId = data[2];
-//         message = data[3];
-//         anonymous = data[4] === 'true' ? true : false;;
-//         noti = data[5] === 'true' ? true : false;;
-
-//     }
-//     const guestRole = await authenticateService.getRole('guest');
-//     if (noti) {
-//         await followService.follow(userId, campaignId, email, fullname);
-//     }
-
-//     if (userId) {
-//         user = await Models.User.findOne({
-//             where: {
-//                 id: userId
-//             }
-//         });
-//     } else {
-//         user = await Models.User.findOne({
-//             where: {
-//                 email: email
-//             }
-//         });
-//         if (!user) {
-//             user = await Models.User.create({
-//                 email: email,
-//                 password: '123456',
-//                 fullname: fullname,
-//                 roleId: guestRole.id
-//             })
-//         }
-//     }
-//     const donation = await Models.Donation.create({
-//         userId: user.id,
-//         campaignId: campaignId,
-//         donationAmount: vnp_Params.vnp_Amount / 100,
-//         donationMethod: "vnpay",
-//         trackingCode: vnp_Params.vnp_TransactionNo,
-//         donationStatus: 'done',
-//         donationMessage: message,
-//         anonymous: anonymous
-//     })
-//     await this.sendDonateMail(donation);
-
-
-//     const campaign = await Models.Campaign.findOne({
-//         where: {
-//             id: campaignId
-//         }
-//     });
-//     await closeCampaign(campaign);
-//     return 'http://localhost:3000/campaigns/' + campaign.campaignSlug;
-// }
 
 
 //host create outside donation
@@ -795,21 +627,3 @@ exports.hostCreate = async (req) => {
     await campaign.save();
     return donation;
 }
-
-// function sortObject(o) {
-//     var sorted = {},
-//         key, a = [];
-
-//     for (key in o) {
-//         if (o.hasOwnProperty(key)) {
-//             a.push(key);
-//         }
-//     }
-
-//     a.sort();
-
-//     for (key = 0; key < a.length; key++) {
-//         sorted[a[key]] = o[a[key]];
-//     }
-//     return sorted;
-// }
