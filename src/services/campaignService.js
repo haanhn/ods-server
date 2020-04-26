@@ -100,8 +100,10 @@ cron.schedule('5 0 * * *', async () => {
         } else if (calculateDate(campaign.endDate) === 3) {
             countDays = 3
         } else if (calculateDate(campaign.endDate) <= 0) {
-            email = await getMail(campaign.endDate, 0)
-            countDays = 0
+            campaign.campaignStatus = 'close';
+            await campaign.save();
+            email = await getMail(campaign.endDate, 0);
+            countDays = 0;
         }
         if (countDays != -1) {
             const email = await getMail(campaign, countDays);
@@ -150,6 +152,7 @@ const calculateDate = (date) => {
     const one_day = 1000 * 60 * 60 * 24
     return (Math.ceil((checkDate - currentDate) / one_day));
 }
+
 
 exports.getHost = async (campaignId) => {
     const userCampaign = await Models.UserCampaign.findOne({
@@ -205,10 +208,23 @@ exports.getAllByStatus = async (status) => {
         where: {
             campaignStatus: status
         },
-        include: [
-            { model: Models.Category, attributes: ['categoryTitle'] },
-            { model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar'], through: { where: { relation: 'host' } } },
-            { model: Models.Region, attributes: ['id', 'name'] }
+        include: [{
+                model: Models.Category,
+                attributes: ['categoryTitle']
+            },
+            {
+                model: Models.User,
+                attributes: ['id', 'email', 'fullname', 'avatar'],
+                through: {
+                    where: {
+                        relation: 'host'
+                    }
+                }
+            },
+            {
+                model: Models.Region,
+                attributes: ['id', 'name']
+            }
         ],
         order: [
             ['rankingPoint', 'DESC']
@@ -230,10 +246,17 @@ exports.getAllByCategory = async (req) => {
         return false;
     }
     let campaigns = await category.getCampaigns({
-        where: { campaignStatus: 'public' },
-        include: [
-            { model: Models.Category, attributes: ['categoryTitle'] },
-            { model: Models.Region, attributes: ['id', 'name'] }
+        where: {
+            campaignStatus: 'public'
+        },
+        include: [{
+                model: Models.Category,
+                attributes: ['categoryTitle']
+            },
+            {
+                model: Models.Region,
+                attributes: ['id', 'name']
+            }
         ],
         order: [
             ['rankingPoint', 'DESC']
@@ -366,12 +389,22 @@ exports.getCampaignDetail = async (slug) => {
             campaignSlug: slug,
             campaignStatus: ['public', 'close']
         },
-        include: [
-            { model: Models.Category, attributes: ['categoryTitle'] },
+        include: [{
+                model: Models.Category,
+                attributes: ['categoryTitle']
+            },
             {
-                model: Models.User, attributes: ['id', 'email', 'fullname', 'avatar'],
-                through: { where: { relation: 'host' } },
-                include: [ { model: Models.Region, attributes: ['id', 'name'] } ]
+                model: Models.User,
+                attributes: ['id', 'email', 'fullname', 'avatar'],
+                through: {
+                    where: {
+                        relation: 'host'
+                    }
+                },
+                include: [{
+                    model: Models.Region,
+                    attributes: ['id', 'name']
+                }]
             }
         ]
     });
@@ -425,7 +458,11 @@ exports.hostGetCampaignStats = async (req) => {
     const raised = await this.getRaise(campaignId);
     const countDonations = await this.getCountDonationsByCampaignId(campaignId, 'done');
     const campaignStatus = campaign.campaignStatus;
-    const result = { raised, countDonations, campaignStatus };
+    const result = {
+        raised,
+        countDonations,
+        campaignStatus
+    };
     return result;
 }
 
@@ -433,8 +470,9 @@ exports.checkBeforeCreateCampaignByUserId = async (req) => {
     const user = req.jwtDecoded.data;
     const campaigns = await db.sequelize.query(
         "SELECT * FROM ods_campaigns WHERE campaignStatus IN ('setting', 'waiting') AND id IN " +
-        "(SELECT campaignId FROM ods_user_campaigns WHERE userId = '" + user.id + "' AND relation = 'host')",
-        { type: QueryTypes.SELECT }
+        "(SELECT campaignId FROM ods_user_campaigns WHERE userId = '" + user.id + "' AND relation = 'host')", {
+            type: QueryTypes.SELECT
+        }
     );
     // console.log(campaigns);
     if (campaigns.length > 0) {
