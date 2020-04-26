@@ -7,11 +7,8 @@
   <div class="row mt-5">
     <div class="col-md-10 offset-md-1">
       <div class="card">
-        <img
-          class="card-img-top"
-          src="<%= campaign.campaignThumbnail ? campaign.campaignThumbnail : '' %>"
-          alt="Card image cap"
-        />
+        <img class="card-img-top" src="<%= campaign.campaignThumbnail ? campaign.campaignThumbnail : '' %>"
+          alt="Card image cap" />
         <div class="card-body">
           <div class="row">
             <div class="col-sm-9">
@@ -26,7 +23,7 @@
           <div class="font-italic"><i class="fas fa-user mr-3"></i><%= campaign.Users[0].fullname %></div>
           <div class="font-italic"><i class="fas fa-tag mr-3"></i><%= campaign.Category.categoryTitle %></div>
           <div class="font-italic">
-            <i class="fas fa-map-marker-alt mr-3"></i><%= campaign.campaignAddress + ' - ' + campaign.campaignRegion %>
+            <i class="fas fa-map-marker-alt mr-3"></i><%= campaign.campaignAddress + ' - ' + campaign.Region.name %>
           </div>
           <div class="font-italic">
             <i class="fas fa-calendar-week mr-3"></i><%= campaign.campaignEndDate ? campaign.campaignEndDate.getDate() +

@@ -2,25 +2,20 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
   <!-- Page Heading -->
-  <h1 class="h3 mb-2 text-gray-800">Danh mục</h1>
+  <h1 class="h3 mb-2 text-gray-800">Thể loại</h1>
 
   <div class="row mt-5">
     <div class="col-md-8 offset-md-2">
       <div class="card">
         <form action="/admin/categories/edit/<%= category.categorySlug %>" method="POST">
           <div class="card-body">
-            <h4 class="card-title">Cập nhật danh mục</h4>
+            <h4 class="card-title">Cập nhật thể loại</h4>
             <input type="hidden" name="categoryId" value="<%= category.id %>" />
             <div class="form-group row">
-              <label for="categoryTitle" class="col-sm-3 text-right control-label col-form-label">Tên danh mục</label>
+              <label for="categoryTitle" class="col-sm-3 text-right control-label col-form-label">Tên thể loại</label>
               <div class="col-sm-6">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="categoryTitle"
-                  name="categoryTitle"
-                  value="<%= category.categoryTitle %> "
-                />
+                <input type="text" class="form-control" id="categoryTitle" name="categoryTitle"
+                  value="<%= category.categoryTitle %> " />
               </div>
             </div>
             <div class="form-group row">
@@ -28,7 +23,7 @@
               <div class="col-sm-9">
                 <div class="custom-control custom-checkbox mr-sm-2">
                   <input type="checkbox" class="custom-control-input" id="status" name="status" <%= category.status ===
-                  'enable' ? 'checked' : '' %> >
+                  'enable' ? 'checked' : '' %>>
                   <label class="custom-control-label" for="status"></label>
                 </div>
               </div>

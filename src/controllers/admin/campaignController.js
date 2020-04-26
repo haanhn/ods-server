@@ -30,13 +30,27 @@ exports.getByStatus = async (req, res, next) => {
 
 exports.show = async (req, res, next) => {
     const slug = req.params.campaignSlug;
-    const campaign = await models.Campaign.findOne({ 
-        where: { 
+    const campaign = await models.Campaign.findOne({
+        where: {
             campaignSlug: slug
         },
-        include: [
-            { model: models.Category, attributes: [ 'categoryTitle' ] },
-            { model: models.User, attributes: [ 'id','email', 'fullname', 'avatar' ], through: { where: { relation: 'host' } } }
+        include: [{
+                model: models.Category,
+                attributes: ['categoryTitle']
+            },
+            {
+                model: models.Region,
+                attributes: ['id', 'name']
+            },
+            {
+                model: models.User,
+                attributes: ['id', 'email', 'fullname', 'avatar'],
+                through: {
+                    where: {
+                        relation: 'host'
+                    }
+                }
+            }
         ]
     });
     res.render('campaigns/details', {
@@ -50,13 +64,13 @@ exports.show = async (req, res, next) => {
 exports.campaignAction = async (req, res, next) => {
     const action = req.params.action;
     const campaignSlug = req.body.campaignSlug;
-    
+
     const campaign = await models.Campaign.findOne({
         where: {
             campaignSlug: campaignSlug
         }
     });
-    
+
     if (campaign) {
         if (action === 'approve') {
             campaign.campaignStatus = 'public';
@@ -67,8 +81,8 @@ exports.campaignAction = async (req, res, next) => {
             campaign.campaignStatus = 'block';
             await campaign.save();
         }
-        return res.redirect('/admin/campaigns');    
+        return res.redirect('/admin/campaigns');
     } else {
-        return res.redirect('/admin/campaigns');    
+        return res.redirect('/admin/campaigns');
     }
 }
