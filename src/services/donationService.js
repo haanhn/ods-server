@@ -544,6 +544,13 @@ exports.executePayment = async (req, res) => {
                 donationStatus: 'done',
                 donationMessage: payment.transactions[0].description
             })
+            await Models.CampaignTransaction.create({
+                userId: user.id,
+                campaignId: campaignId,
+                donationId: donation.id,
+                amount: req.query.amount,
+                transactionType: "receive",
+            });
             await this.sendDonateMail(donation);
             // const campaign = await Models.Campaign.findByPk(campaignId);
             // return true;

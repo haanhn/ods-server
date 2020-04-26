@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     CampaignTransaction.associate = function(models) {
         CampaignTransaction.belongsTo(models.User, { foreignKey: 'userId' });
         CampaignTransaction.belongsTo(models.Campaign, { foreignKey: 'campaignId' });
+        CampaignTransaction.belongsTo(models.Donation, { foreignKey: 'donationId' });
     };
 
     return CampaignTransaction;
