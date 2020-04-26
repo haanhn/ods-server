@@ -73,7 +73,7 @@ models.sequelize
   .then(() => {
     console.log('Nice! Database looks fine');
     // models.Role.bulkCreate(seedRoles);
-    seedAdmin.createAdmin();
+    // seedAdmin.createAdmin();
     // models.User.bulkCreate(seedUsers);
     // models.Category.bulkCreate(seedCategories);
   })

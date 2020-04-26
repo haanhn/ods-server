@@ -432,7 +432,7 @@ exports.hostGetCampaignStats = async (req) => {
 exports.checkBeforeCreateCampaignByUserId = async (req) => {
     const user = req.jwtDecoded.data;
     const campaigns = await db.sequelize.query(
-        "SELECT * FROM ods_db.ods_campaigns WHERE campaignStatus IN ('setting', 'waiting') AND id IN " +
+        "SELECT * FROM ods_campaigns WHERE campaignStatus IN ('setting', 'waiting') AND id IN " +
         "(SELECT campaignId FROM ods_user_campaigns WHERE userId = '" + user.id + "' AND relation = 'host')",
         { type: QueryTypes.SELECT }
     );
