@@ -121,6 +121,7 @@ exports.hostGetAll = async (req) => {
 
 exports.createAsMember = async (req) => {
     const userId = req.body.userId;
+    const email = req.body.email;
     const method = req.body.donation.method;
     const amount = req.body.donation.amount;
     const message = req.body.donation.message;
@@ -132,7 +133,7 @@ exports.createAsMember = async (req) => {
     });
     const noti = req.body.noti;
     if (noti) {
-        await followService.follow(req);
+        await followService.follow(userId, campaignId, email);
     }
 
     const campaign = await Models.Campaign.findOne({
@@ -173,7 +174,7 @@ exports.createAsGuest = async (req) => {
 
     const noti = req.body.noti;
     if (noti) {
-        await followService.follow(req);
+        await followService.follow(null, campaignId, email, fullname);
     }
 
     const campaign = await Models.Campaign.findOne({
@@ -403,7 +404,7 @@ const create_payment_json = async (req) => {
     // const reqAmount = Math.ceil(parseInt(req.body.amount) / rate);
     const amountRoundedStr = parseInt(req.body.amount) / rate;
     const amountToFixed = amountRoundedStr.toFixed(1);
-    const reqAmount = parseFloat(amountToFixed); 
+    const reqAmount = parseFloat(amountToFixed);
 
     const amount = reqAmount + 1.5;
     const userId = req.body.userId || "";
@@ -428,7 +429,7 @@ const create_payment_json = async (req) => {
                     "quantity": "1",
                     "price": reqAmount,
                     "currency": "USD"
-                }, ]
+                },]
             },
             "amount": {
                 "total": amount,
@@ -478,7 +479,7 @@ const execute_payment_json = async (req) => {
     //-----
     const amountRoundedStr = parseInt(req.query.amount) / rate;
     const amountToFixed = amountRoundedStr.toFixed(1);
-    const reqAmount = parseFloat(amountToFixed); 
+    const reqAmount = parseFloat(amountToFixed);
     const amount = reqAmount + 1.5;
 
     console.log(req.query);
@@ -553,6 +554,12 @@ exports.executePayment = async (req, res) => {
             }
         });
         await closeCampaign(campaign);
+        //Calculate ranking point of a campaign
+        const raisedAmount = await campaignService.getRaise(campaignId);
+        const rankingPoint = campaignService.calculateCampaignRankingPoint(campaign, raisedAmount);
+        campaign.rankingPoint = rankingPoint;
+        await campaign.save();
+
         res.redirect('http://localhost:3000/campaigns/' + campaign.campaignSlug);
     });
 }
@@ -762,7 +769,7 @@ exports.hostCreate = async (req) => {
         return 0;
     }
 
-    return await Models.Donation.create({
+    const donation = await Models.Donation.create({
         userId: userId,
         campaignId: campaignId,
         donationAmount: amount,
@@ -772,8 +779,14 @@ exports.hostCreate = async (req) => {
         anonymous: anonymous,
         donationStatus: 'done',
         donationMessage: message
-    })
-
+    });
+    await closeCampaign(campaign);
+    //Calculate ranking point of a campaign
+    const raisedAmount = await campaignService.getRaise(campaign.id);
+    const rankingPoint = campaignService.calculateCampaignRankingPoint(campaign, raisedAmount);
+    campaign.rankingPoint = rankingPoint;
+    await campaign.save();
+    return donation;
 }
 
 // function sortObject(o) {
