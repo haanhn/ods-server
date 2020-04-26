@@ -100,7 +100,13 @@ cron.schedule('5 0 * * *', async () => {
         } else if (calculateDate(campaign.endDate) === 3) {
             countDays = 3
         } else if (calculateDate(campaign.endDate) <= 0) {
+            const raisedAmount = this.getRaise(campaign.id);
             campaign.campaignStatus = 'close';
+            if (raisedAmount >= campaign.campaignGoal) {
+                campaign.success = true;
+            } else {
+                campaign.success = false;
+            }
             await campaign.save();
             email = await getMail(campaign.endDate, 0);
             countDays = 0;

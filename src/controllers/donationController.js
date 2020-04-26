@@ -125,10 +125,10 @@ exports.create = async (req, res, next) => {
 exports.hostUpdateDonationStatus = async (req, res, next) => {
   const action = req.params.action;
   try {
-    if (action != 'reject' && action != 'approve') {
+    if (action != 'reject' && action != 'approve' && action != 'return') {
       return res.status(400).json({
         success: 'false',
-        message: 'action does not allowed. Please send approve or reject.',
+        message: 'action does not allowed. Please send approve or reject, return.',
       });
     }
     const result = await donationService.hostUpdateStatusDonation(req);

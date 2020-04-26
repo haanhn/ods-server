@@ -287,6 +287,7 @@ const closeCampaign = async (campaign) => {
             // })
             // if (waitingDonations.length === 0) {
             campaign.campaignStatus = 'close';
+            campaign.success = true;
             await campaign.save();
             await this.sendCloseMail(campaign);
             // }
@@ -317,8 +318,17 @@ exports.hostUpdateStatusDonation = async (req) => {
     if (!checkHost) {
         return 2;
     }
-    action === 'approve' ? donation.donationStatus = 'done' : donation.donationStatus = 'reject';
-    await this.sendUpdateStatusDonationMail(donation);
+    if (action === 'approve') {
+        donation.donationStatus = 'done';
+    } else if (action === 'reject') {
+        donation.donationStatus = 'reject';
+    } else {
+        donation.donationStatus = 'returned';
+    }
+    // action === 'approve' ? donation.donationStatus = 'done' : donation.donationStatus = 'reject';
+    if (action === 'approve' || action === 'reject') {
+        await this.sendUpdateStatusDonationMail(donation);
+    }
     await donation.save();
 
     const campaign = await Models.Campaign.findOne({
@@ -577,7 +587,7 @@ exports.executePayment = async (req, res) => {
         } catch (error) {
             console.log(error);
         }
-        res.redirect('http://localhost:3000/campaigns/' + campaign.campaignSlug);
+        res.redirect('http://127.0.0.1:3000/campaign/' + campaign.campaignSlug + '/paypal-complete');
     });
 }
 
