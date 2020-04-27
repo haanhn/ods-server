@@ -226,3 +226,24 @@ exports.notiDonation = (donation, campaign, method) => {
     `</b></p>
     <p>Xin cảm ơn.</p>`);
 };
+
+exports.rejectDonation = (donor, donation, campaign, method) => {
+  return (html =
+    `<p><b><i>Xin chào</i></b></p>
+    <p>Lời đầu tiên <b style='color: #3cc88f;'>LoveUs</b> xin cảm ơn đã tin dùng dịch vụ của chúng tôi.</p>
+    <p>Quyên góp cho chiến dịch: <b><i style='text-transform: uppercase;'>` +
+    campaign.campaignTitle +
+    `</i></b> đã bị hủy bỏ vì 10 ngày chưa được xác nhận.</p>
+    <p>Thông tin chi tiết về quyên góp:</p>
+    <p>   - Số tiền : <b>` +
+    donation.donationAmount +
+    ` vnđ</b></p>
+    <p>   - Phương thức chuyển tiền: <b>` +
+    method +
+    `</b></p>
+    <p>   - Mã xác nhận : <b>` +
+    donation.trackingCode +
+    `</b></p>
+    <p>Nếu có bất kỳ ý kiến thắc mắc xin vui lòng liên hệ ban quản trị ODS Platform</p>
+    <p>Xin cảm ơn.</p>`);
+}

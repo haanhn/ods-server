@@ -17,36 +17,13 @@ const donationService = require('./donationService');
 
 // cron.schedule('10 * * * * *', async () => {
 //     console.log('job chay');
-//     const campaigns = await Models.Campaign.findAll({
-//         where: {
-//             campaignStatus: 'public',
-//             autoClose: 1,
-//         }
-//     })
-//     for (let campaign of campaigns){
-//         console.log(calculateDate(campaign));
-//         let countDays = -1;
-//         if (calculateDate(campaign) === 1) {
-//             countDays = 1;
-//         } else  if (calculateDate(campaign) === 3) {
-//             countDays = 3
-//         } else if (calculateDate(campaign) <= 0) {
-//             email = await getMail(campaign, 0)
-//             countDays = 0
-//         }
-//         if (countDays != -1) {
-//             const email = await getMail(campaign, countDays);
-//             await mailService.notiEndDate(email);
-//         }
-//     }
 //     const donations = await Models.Donation.findAll({
 //         where: {
 //             donationStatus: 'pending'
 //         }
 //     });
 //     for (let donation of donations) {
-//         console.log(donation.createdAt);
-//         console.log(calculateDate(donation.createdAt));
+//         console.log('===========Cron job==========', calculateDate(donation.createdAt));
 //         if (calculateDate(donation.createdAt) === -7) {
 //             const host = await this.getHost(donation.campaignId);
 //             const campaign = await Models.Campaign.findOne({
@@ -54,7 +31,18 @@ const donationService = require('./donationService');
 //                     id: donation.campaignId
 //                 }
 //             })
-//             await mailService.notiDonation(host.email, donation, campaign);
+//             await mailService.notiDonation(host.email, null, donation, campaign);
+//         } else if (calculateDate(donation.createdAt) === -10) {
+//             donation.donationStatus = 'reject';
+//             await donation.save();
+//             const user = await Models.User.findByPk(donation.userId);
+//             const host = await this.getHost(donation.campaignId);
+//             const campaign = await Models.Campaign.findOne({
+//                 where: {
+//                     id: donation.campaignId
+//                 }
+//             })
+//             await mailService.notiDonation(host.email, user.email, donation, campaign);
 //         }
 //     }
 // })
@@ -130,7 +118,18 @@ cron.schedule('5 0 * * *', async () => {
                     id: donation.campaignId
                 }
             })
-            await mailService.notiDonation(host.email, donation, campaign);
+            await mailService.notiDonation(host.email, null, donation, campaign);
+        } else if (calculateDate(donation.createdAt) === -10) {
+            donation.donationStatus = 'reject';
+            await donation.save();
+            const user = await Models.User.findByPk(donation.userId);
+            const host = await this.getHost(donation.campaignId);
+            const campaign = await Models.Campaign.findOne({
+                where: {
+                    id: donation.campaignId
+                }
+            })
+            await mailService.notiDonation(host.email, user.email, donation, campaign);
         }
     }
 });

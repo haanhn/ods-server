@@ -17,7 +17,7 @@ const sendOTP = async (otp) => {
             from: 'admin@loveus.com',
             subject: 'Register OTP Token',
             html: '<p>Here is your OTP: <b>' + otp.otpToken + '</b></p>'
-        }) 
+        })
     } catch (error) {
         console.log(error);
     }
@@ -147,7 +147,7 @@ const notiEndDate = async (email) => {
                         subject: 'Cập nhật thông tin chiến dịch ' + email.campaign.campaignTitle,
                         html: 'Chien dich con 1 ngay la ket thuc'
                     })
-                    
+
                 }
             }
         } else {
@@ -164,7 +164,7 @@ const notiEndDate = async (email) => {
                     subject: 'Cập nhật thông tin chiến dịch ' + email.campaign.campaignTitle,
                     html: 'Chien dich da ket thuc'
                 })
-                
+
             }
         }
     } catch (error) {
@@ -172,7 +172,7 @@ const notiEndDate = async (email) => {
     }
 }
 
-const notiDonation = async (host, donation, campaign) => {
+const notiDonation = async (host, donor, donation, campaign) => {
     try {
         let method = '';
         switch (donation.donationMethod) {
@@ -185,24 +185,41 @@ const notiDonation = async (host, donation, campaign) => {
             default:
                 break;
         }
-        const html = templateMails.notiDonation(donation, campaign, method);
-        await transporter.sendMail({
-            to: host,
-            from: 'admin@loveus.com',
-            subject: 'Nhắc nhở xác nhận quyên góp ' + donation.trackingCode,
-            html: html
-        })
+        if (!donor) {
+            const html = templateMails.notiDonation(donation, campaign, method);
+            await transporter.sendMail({
+                to: host,
+                from: 'admin@loveus.com',
+                subject: 'Nhắc nhở xác nhận quyên góp ' + donation.trackingCode,
+                html: html
+            })
+        } else {
+            const html = templateMails.rejectDonation(donor, donation, campaign, method);
+            await transporter.sendMail({
+                to: host,
+                from: 'admin@loveus.com',
+                subject: 'Hủy bỏ quyên góp ' + donation.trackingCode,
+                html: html
+            });
+            await transporter.sendMail({
+                to: donor,
+                from: 'admin@loveus.com',
+                subject: 'Hủy bỏ quyên góp ' + donation.trackingCode,
+                html: html
+            })
+        }
+
     } catch (error) {
         console.log(error);
     }
 }
 
-module.exports = { 
-    sendOTP, 
+module.exports = {
+    sendOTP,
     // resetToken, 
-    confirmDonate, 
+    confirmDonate,
     updateStatusDonation,
-    updatePost, 
+    updatePost,
     sendCloseMail,
     notiEndDate,
     notiDonation
