@@ -22,6 +22,7 @@ exports.findById = async (req) => {
 
 exports.updateUserAddress = async (req) => {
     const user = await this.findByEmail(req);
+    user.phone = req.body.phone;
     user.address = req.body.address;
     user.regionId = req.body.region;
     return await user.save();
@@ -54,6 +55,7 @@ exports.update = async (req) => {
     const fullname = req.body.user.fullname;
     const address = req.body.user.address;
     const region = req.body.user.region;
+    const phone = req.body.user.phone;
     const userId = req.jwtDecoded.data.id;
 
     const user = await User.findOne({
@@ -73,6 +75,7 @@ exports.update = async (req) => {
     user.fullname = fullname;
     user.address = address;
     user.regionId = region;
+    user.phone = phone;
     return user.save();
 }
 
