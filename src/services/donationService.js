@@ -412,7 +412,10 @@ const getCurrencylayer = async url => {
 };
 
 const create_payment_json = async (req) => {
-    const rate = await getCurrencylayer(url);
+    let rate = await getCurrencylayer(url);
+    if (!rate) {
+        rate = 23500;
+    }
     // const reqAmount = Math.ceil(parseInt(req.body.amount) / rate);
     const amountRoundedStr = parseInt(req.body.amount) / rate;
     const amountToFixed = amountRoundedStr.toFixed(1);
@@ -442,7 +445,7 @@ const create_payment_json = async (req) => {
                     "quantity": "1",
                     "price": reqAmount,
                     "currency": "USD"
-                },]
+                }, ]
             },
             "amount": {
                 "total": amount,
