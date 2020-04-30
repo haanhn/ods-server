@@ -590,7 +590,7 @@ exports.executePayment = async (req, res) => {
         } catch (error) {
             console.log(error);
         }
-        res.redirect('http://127.0.0.1:3000/campaign/' + campaign.campaignSlug + '/paypal-complete');
+        res.redirect('http://127.0.0.1:3000/campaign/' + campaign.campaignSlug + '/donate/paypal-complete');
     });
 }
 
