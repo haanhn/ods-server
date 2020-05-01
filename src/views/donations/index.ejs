@@ -5,20 +5,20 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
   <!-- Page Heading -->
-  <h1 class="h3 mb-2 text-gray-800">Chiến dịch</h1>
+  <h1 class="h3 mb-2 text-gray-800">Quyên góp bằng tiền mặt</h1>
 
   <select class="custom-select" id="selection" onchange="location = this.value" style="width: 100px;">
     <%
-    var options = ["All", "setting", "waiting", "public", "close", "block"];
+    var options = ["All", "pending", "done", "reject"];
     for ( var i = 0; i < options.length; i++ )
     {
       if (options[i] != 'All') {
         var selected = ( status == options[i] ) ? "selected" : "";
-        %><option value="<%='http://127.0.0.1:5000/admin/campaigns/' + options[ i ] %>" <%=selected %>>
+        %><option value="<%='http://127.0.0.1:5000/admin/donations/' + options[ i ] %>" <%=selected %>>
       <%=options[i] %>
     </option><%
       } else { %>
-    <option value="http://127.0.0.1:5000/admin/campaigns/" selected>All</option>
+    <option value="http://127.0.0.1:5000/admin/donations/" selected>All</option>
     <% }
         
     }
@@ -30,43 +30,43 @@
   <!-- DataTales Example -->
   <div class="card shadow mb-4 mt-5">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Chiến dịch</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Quyên góp bằng tiền mặt</h6>
     </div>
     <div class="card-body">
       <div class="table-responsive">
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
+              <th class="text-center">Mã giao dịch</th>
               <th class="text-center">Tên</th>
-              <th class="text-center">Chủ chiến dịch</th>
-              <th class="text-center">Danh mục</th>
+              <th class="text-center">Chiến dịch</th>
+              <th class="text-center">Số tiền</th>
+              <th class="text-center">Địa chỉ</th>
               <th class="text-center">Trạng thái</th>
               <th class="text-center text-danger"><i class="fa fa-bolt"></th>
             </tr>
           </thead>
           <tbody>
-            <% for (let campaign of campaigns) { %>
+            <% for (let donation of donations) { %>
             <tr>
-              <td class="text-center"><%= campaign.campaignTitle %></td>
-              <td class="text-center"><%= campaign.Users[0].fullname %></td>
-              <td class="text-center"><%= campaign.Category.categoryTitle %></td>
+              <td class="text-center"><%= donation.trackingCode %></td>
+              <td class="text-center"><%= donation.User.fullname %></td>
+              <td class="text-center"><%= donation.Campaign.campaignTitle %></td>
+              <td class="text-center"><%= donation.donationAmount %></td>
+              <td class="text-center"><%= donation.User.address || '' %></td>
               <td class="text-center">
-                <% if(campaign.campaignStatus === 'setting'){%>
-                <span class="badge badge-secondary"><%= campaign.campaignStatus %></span>
-                <% } else if(campaign.campaignStatus === 'waiting'){ %>
-                <span class="badge badge-warning"><%= campaign.campaignStatus %></span>
-                <% } else if(campaign.campaignStatus === 'block'){ %>
-                <span class="badge badge-danger"><%= campaign.campaignStatus %></span>
-                <% } else if(campaign.campaignStatus === 'public'){ %>
-                <span class="badge badge-success"><%= campaign.campaignStatus %></span>
-                <% } else if(campaign.campaignStatus === 'close'){ %>
-                <span class="badge badge-success"><%= campaign.campaignStatus %></span>
+                <% if(donation.donationStatus === 'pending'){%>
+                <span class="badge badge-warning"><%= donation.donationStatus %></span>
+                <% } else if(donation.donationStatus === 'done'){ %>
+                <span class="badge badge-success"><%= donation.donationStatus %></span>
+                <% } else if(donation.donationStatus === 'reject'){ %>
+                <span class="badge badge-danger"><%= donation.donationStatus %></span>
                 <% } %>
               </td>
               <td class="text-center">
                 <div class="btn-group" role="group">
-                  <a href="/admin/campaigns/details/<%= campaign.campaignSlug %>" class="btn btn-sm btn-primary"
-                    title="View list campaign"><i class="fas fa-eye"></i></a>
+                  <a href="/admin/donations/details/<%= donation.id %>" class="btn btn-sm btn-primary"
+                    title="View donation's details"><i class="fas fa-eye"></i></a>
                 </div>
               </td>
             </tr>

@@ -99,7 +99,7 @@ exports.confirmDonateForHost = (mail, method) => {
     mail.donation.trackingCode +
     `</b></p>
     <p>
-        <i>Khi nhận được tiền mong bạn vui lòng cập nhật trạng thái trên hệ thống hoặc click vào đây <form action="https://odsserver.herokuapp.com/api/donations/host/update-donation-status-via-email/approve" method="post">
+        <i>Khi nhận được tiền mong bạn vui lòng cập nhật trạng thái trên hệ thống hoặc click vào đây <form action="http://127.0.0.1:5000/api/donations/host/update-donation-status-via-email/approve" method="post">
                 <input type="hidden" name="donationId" value="` +
     mail.donation.id +
     `">
@@ -167,7 +167,7 @@ exports.updatePost = (title, slug) => {
     <p>Chiến dịch bạn đang theo dõi: <b><i style='text-transform: uppercase;'>` +
     title +
     `.</i></b> đã được cập nhật thông tin.</p>
-    Vui lòng click vào <a href='http://localhost:5000/api/posts/get-all-post/` +
+    Vui lòng click vào <a href='http://127.0.0.1:5000/api/posts/get-all-post/` +
     slug +
     `' target='_blank'><u>đây</u> để xem chi tiết</a>`);
 };

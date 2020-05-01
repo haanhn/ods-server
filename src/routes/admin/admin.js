@@ -6,6 +6,7 @@ const userRoutes = require('./user');
 const categoryRoutes = require('./category');
 const roleRoutes = require('./role');
 const adminController = require('../../controllers/admin/adminController');
+const donationRoutes = require('./donation');
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.use(AdminMiddleware.isAdmin);
 router.get('/', (req, res, next) => {
   res.render('index', {
     pageTitle: 'Admin Dashboard',
-    path: '/admin', 
+    path: '/admin',
     admin: req.user
   });
 });
@@ -36,5 +37,8 @@ router.use('/users', userRoutes);
 
 //role routes
 router.use('/roles', roleRoutes);
+
+//donation routes
+router.use('/donations', donationRoutes);
 
 module.exports = router;

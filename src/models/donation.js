@@ -20,7 +20,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         trackingCode: {
             type: DataTypes.STRING,
-            allowNull:false,
+            allowNull: false,
+        },
+        description: {
+            type: DataTypes.STRING,
+            allowNull: true,
         },
         outsideDonor: {
             type: DataTypes.STRING,
@@ -31,16 +35,20 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
         donationStatus: {
-            type: DataTypes.ENUM('pending', 'reject' ,'done', 'returned'),
+            type: DataTypes.ENUM('pending', 'reject', 'done', 'returned'),
             defaultValue: 'pending'
         }
     }, {
         tableName: 'ods_donations'
     });
 
-    Donation.associate = function(models) {
-        Donation.belongsTo(models.User, { foreignKey: 'userId' });
-        Donation.belongsTo(models.Campaign, { foreignKey: 'campaignId' });
+    Donation.associate = function (models) {
+        Donation.belongsTo(models.User, {
+            foreignKey: 'userId'
+        });
+        Donation.belongsTo(models.Campaign, {
+            foreignKey: 'campaignId'
+        });
     };
 
     return Donation;

@@ -1,0 +1,62 @@
+<%- include('../includes/head.ejs') %>
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800">Quyên góp bằng tiền mặt</h1>
+
+  <div class="row mt-5">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Chi tiết quyên góp:</h4>
+          <table class="table text-nowrap">
+            <tbody>
+              <tr style="border: none;">
+                <td>Tên:</td>
+                <td class="font-medium text-dark-medium"><%= donation.User.fullname %></td>
+              </tr>
+              <tr>
+                <td>Số tiền:</td>
+                <td class="font-medium text-dark-medium"><%= donation.donationAmount %> đ</td>
+              </tr>
+              <tr>
+                <td>Mã giao dịch:</td>
+                <td class="font-medium text-dark-medium"><%= donation.trackingCode %> đ</td>
+              </tr>
+              <tr>
+                <td>Chiến dịch:</td>
+                <td class="font-medium text-dark-medium"><%= donation.Campaign.campaignTitle %></td>
+              </tr>
+              <tr>
+                <td>Địa chỉ:</td>
+                <td class="font-medium text-dark-medium"><%= donation.User.address %></td>
+              </tr>
+              <tr>
+                <td>Thành phố:</td>
+                <td class="font-medium text-dark-medium">TP. Hồ Chí Minh</td>
+              </tr>
+              <tr>
+                <td>E-mail:</td>
+                <td class="font-medium text-dark-medium"><%= donation.User.email || '' %></td>
+              </tr>
+              <tr>
+                <td>Số điện thoại:</td>
+                <td class="font-medium text-dark-medium"><%= donation.User.phone || '' %></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="row mt-2 mx-auto">
+            <% if (donation.donationStatus == 'pending') { %>
+            <a href="/admin/donations/approve/<%= donation.id %>" class="btn btn-success">Chấp nhận</a>
+            <a href="/admin/donations/reject/<%= donation.id %>" class="btn btn-danger ml-3">Từ chối</a>
+
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.container-fluid -->
+<%- include('../includes/end.ejs') %>
