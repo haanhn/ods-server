@@ -119,9 +119,9 @@ exports.getAllByCategory = async (req, res, next) => {
     }
 }
 
-exports.getAllPublicCampaigns = async (req, res, next) => {
+exports.userGetAllCampaigns = async (req, res, next) => {
     try {
-        const campaigns = await campaignService.getAllByStatus('public');
+        const campaigns = await campaignService.userGetAll(req);
         return res.status(200).json({ success: 'true', campaigns });
     } catch (error) {
         console.log(error);

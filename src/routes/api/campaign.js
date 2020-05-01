@@ -24,7 +24,8 @@ Response: campaigns list
 */
 router.get('/get-by-category/:categorySlug', campaignController.getAllByCategory);
 router.get('/search-campaigns', campaignController.searchCampaigns);
-router.get('/get-public-campaigns', campaignController.getAllPublicCampaigns);
+// router.get('/get-public-campaigns', campaignController.getAllPublicCampaigns);
+router.get('/get-public-campaigns', campaignController.userGetAllCampaigns);
 
 /*
 lay so luong nhat dinh (amount) campaign moi nhat da public

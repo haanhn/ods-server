@@ -243,16 +243,10 @@ exports.getAllByStatus = async (status) => {
     return campaigns;
 }
 
-//lay tat ca campaign theo category
-exports.getAllByCategory = async (req) => {
-    const categorySlug = req.params.categorySlug;
-    const category = await categoryService.findCategoryBySlug(categorySlug);
-    if (!category) {
-        return false;
-    }
-    let campaigns = await category.getCampaigns({
+exports.userGetAll = async (req) => {
+    const campaigns = await Models.Campaign.findAll({
         where: {
-            campaignStatus: 'public'
+            campaignStatus: ['public', 'close']
         },
         include: [{
                 model: Models.Category,
@@ -264,6 +258,39 @@ exports.getAllByCategory = async (req) => {
             }
         ],
         order: [
+            ['campaignStatus', 'ASC'],
+            ['rankingPoint', 'DESC']
+        ]
+    });
+    for (let campaign of campaigns) {
+        const raise = await this.getRaise(campaign.id);
+        campaign.dataValues.raise = raise;
+    }
+    return campaigns;
+}
+
+//lay tat ca campaign theo category
+exports.getAllByCategory = async (req) => {
+    const categorySlug = req.params.categorySlug;
+    const category = await categoryService.findCategoryBySlug(categorySlug);
+    if (!category) {
+        return false;
+    }
+    let campaigns = await category.getCampaigns({
+        where: {
+            campaignStatus: ['public', 'close']
+        },
+        include: [{
+                model: Models.Category,
+                attributes: ['categoryTitle']
+            },
+            {
+                model: Models.Region,
+                attributes: ['id', 'name']
+            }
+        ],
+        order: [
+            ['campaignStatus', 'ASC'],
             ['rankingPoint', 'DESC']
         ]
     });
@@ -279,7 +306,7 @@ exports.searchCampaigns = async (req) => {
     const searchedValue = req.query.searchedValue;
     const campaigns = await db.sequelize.query(
         "SELECT * from ods_campaigns where MATCH (campaignTitle, campaignShortDescription) AGAINST ('" + searchedValue + "')" +
-        " and campaignStatus='public' ORDER BY rankingPoint DESC", {
+        " and campaignStatus in ('public','close') ORDER BY campaignStatus ASC, rankingPoint DESC", {
             type: QueryTypes.SELECT
         });
     const categories = await Models.Category.findAll();
@@ -463,9 +490,16 @@ exports.hostGetCampaignStats = async (req) => {
     const raised = await this.getRaise(campaignId);
     const countDonations = await this.getCountDonationsByCampaignId(campaignId, 'done');
     const campaignStatus = campaign.campaignStatus;
+    const donations = await Models.Donation.findAll({
+        where: {
+            campaignId: campaignId,
+            donationStatus: 'done'
+        }
+    })
     const result = {
         raised,
         countDonations,
+        donations,
         campaignStatus
     };
     return result;
