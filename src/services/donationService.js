@@ -164,8 +164,9 @@ exports.createAsGuest = async (req) => {
   const message = req.body.donation.message;
   const anonymous = req.body.donation.anonymous ? 1 : 0;
   const campaignId = req.body.campaignId;
-  const address = req.body.donation.address || '';
-  const region = req.body.donation.region || '';
+  const phone = req.body.phone || '';
+  const address = req.body.address || '';
+  const region = req.body.region || '';
   const trackingCode = randomstring.generate({
     length: 12,
     charset: 'numeric',
@@ -197,17 +198,19 @@ exports.createAsGuest = async (req) => {
   if (checkUser) {
     userId = checkUser.id;
   } else {
+    let user = {};
     if (method === 'cash') {
-      const user = await Models.User.create({
+      user = await Models.User.create({
         email: email,
         password: '123456',
         fullname: fullname,
         roleId: guestRole.id,
+        phone: phone,
         address: address,
         regionId: region
       });
     } else {
-      const user = await Models.User.create({
+      user = await Models.User.create({
         email: email,
         password: '123456',
         fullname: fullname,
