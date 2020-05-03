@@ -256,7 +256,7 @@ exports.hostCreate = async (req, res, next) => {
       if (result === -1) {
         return res.status(400).json({
           success: 'false',
-          message: 'campaign has been closed',
+          message: 'campaign is not public or closed',
         });
       } else if (result === 0) {
         return res.status(400).json({

@@ -319,6 +319,7 @@ exports.hostUpdateStatusDonation = async (req) => {
   const action = req.params.action;
   const donationId = req.body.donationId;
   const userId = req.body.userId;
+  const description = req.body.description;
 
   const donation = await Models.Donation.findOne({
     where: {
@@ -340,6 +341,7 @@ exports.hostUpdateStatusDonation = async (req) => {
   }
   if (action === 'approve') {
     donation.donationStatus = 'done';
+    donation.description = description;
   } else if (action === 'reject') {
     donation.donationStatus = 'reject';
   } else {
@@ -631,6 +633,7 @@ exports.hostCreate = async (req) => {
   const name = req.body.donation.name;
   const amount = req.body.donation.amount;
   const message = req.body.donation.message;
+  const description = req.body.donation.description;
   const anonymous = req.body.donation.anonymous ? 1 : 0;
   const campaignId = req.body.campaignId;
   const trackingCode = randomstring.generate({
@@ -663,6 +666,7 @@ exports.hostCreate = async (req) => {
     anonymous: anonymous,
     donationStatus: 'done',
     donationMessage: message,
+    description: description
   });
   try {
     await this.closeCampaign(campaign);
