@@ -1,72 +1,189 @@
-<%- include('../includes/head.ejs') %>
-<!-- Begin Page Content -->
-<div class="container-fluid">
-  <!-- Page Heading -->
-  <h1 class="h3 mb-2 text-gray-800">Quyên góp bằng tiền mặt</h1>
+<!DOCTYPE html>
+<html lang="en">
 
-  <div class="row mt-5">
-    <div class="col-md-8 offset-md-2">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Chi tiết quyên góp:</h4>
-          <table class="table text-nowrap">
-            <tbody>
-              <tr style="border: none;">
-                <td>Tên:</td>
-                <td class="font-medium text-dark-medium"><%= donation.User.fullname %></td>
-              </tr>
-              <tr>
-                <td>Số tiền:</td>
-                <td class="font-medium text-dark-medium"><%= donation.donationAmount %> đ</td>
-              </tr>
-              <tr>
-                <td>Mã giao dịch:</td>
-                <td class="font-medium text-dark-medium"><%= donation.trackingCode %> đ</td>
-              </tr>
-              <tr>
-                <td>Chiến dịch:</td>
-                <td class="font-medium text-dark-medium"><%= donation.Campaign.campaignTitle %></td>
-              </tr>
-              <tr>
-                <td>Địa chỉ:</td>
-                <td class="font-medium text-dark-medium"><%= donation.User.address %></td>
-              </tr>
-              <tr>
-                <td>Thành phố:</td>
-                <td class="font-medium text-dark-medium">TP. Hồ Chí Minh</td>
-              </tr>
-              <tr>
-                <td>E-mail:</td>
-                <td class="font-medium text-dark-medium"><%= donation.User.email || '' %></td>
-              </tr>
-              <tr>
-                <td>Số điện thoại:</td>
-                <td class="font-medium text-dark-medium"><%= donation.User.phone || '' %></td>
-              </tr>
-            </tbody>
-          </table>
+<head>
 
-          <div class="row mt-2 mx-auto">
-            <% if (donation.donationStatus == 'pending') { %>
-            <form action="/admin/donations/approve" method="post">
-              <input type="hidden" name="donationId" value="<%= donation.id %>" />
-              <input type="file" class="form-control-file mx-auto" name="image"" id=" exampleFormControlFile1" required>
-              <div class="border-top">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title><%= pageTitle %></title>
+
+  <!-- Custom fonts for this template-->
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+
+  <!-- Custom styles for page have datatable-->
+  <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+  <script>
+    tinymce.init({
+      selector: '#mytextarea',
+      content_css: '//www.tiny.cloud/css/codepen.min.css',
+      plugins: 'image code',
+      toolbar: 'undo redo | image code',
+
+      /* we override default upload handler to simulate successful upload*/
+      images_upload_handler: function (blobInfo, success, failure) {
+        // var xhr, formData;
+        // xhr = new XMLHttpRequest();
+        // xhr.withCredentials = false;
+        // xhr.open('POST', 'http://127.0.0.1:5000/api/uploads');
+        // xhr.onload = function () {
+        //   var json;
+
+        //   if (xhr.status != 200) {
+        //     failure('HTTP Error: ' + xhr.status);
+        //     return;
+        //   }
+        //   json = JSON.parse(xhr.responseText);
+
+        //   if (!json || typeof json.location != 'string') {
+        //     failure('Invalid JSON: ' + xhr.responseText);
+        //     return;
+        //   }
+        //   success(json.location);
+        // };
+        // formData = new FormData();
+        // formData.append('file', blobInfo.blob(), fileName(blobInfo));
+        // xhr.send(formData);
+
+        console.log('blobInfo');
+        console.log(blobInfo.blob());
+        console.log(blobInfo.filename());
+        var xhr, formData;
+
+        xhr = new XMLHttpRequest();
+        xhr.withCredentials = false;
+        xhr.open('POST', 'http://127.0.0.1:5000/api/uploads');
+
+        xhr.onload = function () {
+          var json;
+
+          if (xhr.status != 200) {
+            console.log(`xhr status ${xhr.status}`)
+            failure('HTTP Error: ' + xhr.status);
+            return;
+          }
+
+          json = JSON.parse(xhr.responseText);
+
+          //   if (!json || typeof json.location != 'string') {
+          if (!json || typeof json.data.url != 'string') {
+            console.log('HTTP Error: ' + xhr.responseText);
+            failure('Invalid JSON: ' + xhr.responseText);
+            return;
+          }
+
+          console.log('json success: ' + json);
+          success(json.data.url);
+        };
+
+        formData = new FormData();
+        // formData.append('image', blobInfo.blob(), blobInfo.filename());
+        formData.append('image', blobInfo.blob());
+
+        xhr.send(formData);
+      }
+    });
+  </script>
+</head>
+
+<body id="page-top">
+
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+
+    <!-- Sidebar -->
+    <%- include('../includes/sidebar.ejs') %>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        <%- include('../includes/navigation.ejs') %>
+        <!-- End of Topbar -->
+
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+          <!-- Page Heading -->
+          <h1 class="h3 mb-2 text-gray-800">Quyên góp bằng tiền mặt</h1>
+
+          <div class="row mt-5">
+            <div class="col-md-8 offset-md-2">
+              <div class="card">
                 <div class="card-body">
-                  <button type="submit" class="btn btn-success">Chấp nhận</button>
-                  <a href="/admin/donations/details/<%= donation.id %>" class="btn btn-secondary ml-3">Hủy</a>
+                  <h4 class="card-title">Chi tiết quyên góp:</h4>
+                  <table class="table text-nowrap">
+                    <tbody>
+                      <tr style="border: none;">
+                        <td>Tên:</td>
+                        <td class="font-medium text-dark-medium"><%= donation.User.fullname %></td>
+                      </tr>
+                      <tr>
+                        <td>Số tiền:</td>
+                        <td class="font-medium text-dark-medium"><%= donation.donationAmount %> đ</td>
+                      </tr>
+                      <tr>
+                        <td>Mã giao dịch:</td>
+                        <td class="font-medium text-dark-medium"><%= donation.trackingCode %> đ</td>
+                      </tr>
+                      <tr>
+                        <td>Chiến dịch:</td>
+                        <td class="font-medium text-dark-medium"><%= donation.Campaign.campaignTitle %></td>
+                      </tr>
+                      <tr>
+                        <td>Địa chỉ:</td>
+                        <td class="font-medium text-dark-medium"><%= donation.User.address %></td>
+                      </tr>
+                      <tr>
+                        <td>Thành phố:</td>
+                        <td class="font-medium text-dark-medium">TP. Hồ Chí Minh</td>
+                      </tr>
+                      <tr>
+                        <td>E-mail:</td>
+                        <td class="font-medium text-dark-medium"><%= donation.User.email || '' %></td>
+                      </tr>
+                      <tr>
+                        <td>Số điện thoại:</td>
+                        <td class="font-medium text-dark-medium"><%= donation.User.phone || '' %></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="row mt-2 mx-auto">
+                    <% if (donation.donationStatus == 'pending') { %>
+                    <form action="/admin/donations/approve" method="post" class="w-100">
+                      <input type="hidden" name="donationId" value="<%= donation.id %>" />
+                      <textarea id="mytextarea" name='description'></textarea>
+                      <div class="border-top">
+                        <div class="card-body">
+                          <button type="submit" class="btn btn-success">Chấp nhận</button>
+                          <a href="/admin/donations/details/<%= donation.id %>" class="btn btn-secondary ml-3">Hủy</a>
+                        </div>
+                      </div>
+
+                    </form>
+
+
+                    <% } %>
+                  </div>
                 </div>
               </div>
-
-            </form>
-
-
-            <% } %>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- /.container-fluid -->
-<%- include('../includes/end.ejs') %>
+        <!-- /.container-fluid -->
+        <%- include('../includes/end.ejs') %>

@@ -122,16 +122,15 @@ exports.getApproveDonation = async (req, res, next) => {
 
 exports.postApproveDonation = async (req, res, next) => {
     //todo get image from form and send to api upload => received url.
-    const url = 'abc';
+    const description = req.body.description;
     const id = req.body.donationId;
-
     const donation = await Models.Donation.findOne({
         where: {
-            id: id
+            id: id,
         }
     });
     donation.donationStatus = 'done';
-    donation.description = url;
+    donation.description = description;
     await donation.save();
     await donationService.sendUpdateStatusDonationMail(donation);
 
